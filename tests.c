@@ -89,21 +89,26 @@ void test_battery()
 	}
 }
 
+void test_msg_callback(char *msg)
+{
+	printf("Message received: %s\n", msg);
+}
+
 void test_sx1278()
 {
 	printf("\n\n### Testing sx1278 ###\n");
-	printf("waiting 10 sec for serial connection...\n");
 	sleep_ms(10000);
 	sx1278 *lora = sx1278_init(
 			SX1278_MOSI,
 			SX1278_MISO,
 			SX1278_SCK,
 			SX1278_CS,
-			SX1278_ON_RECV_INTERRUPT,
+			SX1278_INTERRUPT,
 			0,
 			SX1278_SPI_PORT,
 			SX1278_SPI_BAUDRATE,
-			SX1278_TX_POWER);
+			SX1278_TX_POWER,
+			test_msg_callback);
 	printf("\n\n### Testing sx1278 receive ###\n");
 	sx1278_set_mode_rx(lora);
 	for (uint i = 0; i < 50; i++)
@@ -147,9 +152,9 @@ void test_sd_card()
 	free(sd);
 }
 
-void test_all_hardware()
+void wait_for_user_input()
 {
-	printf("Waiting for user to input 'a' in the serial monitor to start tests");
+	printf("Waiting for user to input 'a'\n");
 	char buf[100];
 	while (true)
 	{
@@ -159,11 +164,17 @@ void test_all_hardware()
 			break;
 		}
 	}
-	// test_battery();
-	// test_rtc();
-	// test_ens160();
-	// test_ssd1306();
-	// test_sx1278();
+}
+
+void test_all_hardware()
+{
+	wait_for_user_input();
+	printf("\n\n### Testing all hardware... ###\n");
+	test_battery();
+	test_rtc();
+	test_ens160();
+	test_ssd1306();
+	test_sx1278();
 	test_sd_card();
 	printf("\n\n### All tests completed ! ###\n");
 }

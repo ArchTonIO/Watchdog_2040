@@ -59,6 +59,7 @@ typedef struct
   uint8_t mode;
   uint8_t packet_sent_timeout_ms;
   uint8_t irq_flags;
+  void (*message_received_callback)(char *msg);
 } sx1278;
 
 sx1278 *sx1278_init(
@@ -70,7 +71,8 @@ sx1278 *sx1278_init(
     uint8_t addr,
     spi_inst_t *spi_port,
     uint32_t baudrate,
-    uint8_t tx_power);
+    uint8_t tx_power,
+    void (*message_received_callback)(char *msg));
 
 void sx1278_sleep(sx1278 *radio);
 void sx1278_set_mode_tx(sx1278 *radio);

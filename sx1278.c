@@ -17,15 +17,16 @@ void message_sent_callback();
 void message_received_callback();
 
 sx1278 *sx1278_init(
-	pin mosi,
-	pin miso,
-	pin sck,
-	pin cs,
-	pin interrupt,
-	uint8_t addr,
-	spi_inst_t *spi_port,
-	uint32_t baudrate,
-	uint8_t tx_power)
+		pin mosi,
+		pin miso,
+		pin sck,
+		pin cs,
+		pin interrupt,
+		uint8_t addr,
+		spi_inst_t *spi_port,
+		uint32_t baudrate,
+		uint8_t tx_power,
+		void (*message_received_callback)(char *msg))
 {
 	sx1278 *new_radio = (sx1278 *)malloc(sizeof(sx1278));
 	new_radio->mosi = mosi;
@@ -40,6 +41,7 @@ sx1278 *sx1278_init(
 	new_radio->mode = NULL;
 	new_radio->irq_flags = NULL;
 	new_radio->packet_sent_timeout_ms = 200;
+	new_radio->message_received_callback = message_received_callback;
 
 	// interrupt set up
 	gpio_init(interrupt);
@@ -67,9 +69,9 @@ sx1278 *sx1278_init(
 	if (reg_01_op_mode_content != (MODE_SLEEP | LONG_RANGE_MODE))
 	{
 		printf(
-			"SX1278 initialization error, reading on REG_01_OP_MODE resulted in: %d, expecting: %d\n",
-			reg_01_op_mode_content,
-			MODE_SLEEP | LONG_RANGE_MODE);
+				"SX1278 initialization error, reading on REG_01_OP_MODE resulted in: %d, expecting: %d\n",
+				reg_01_op_mode_content,
+				MODE_SLEEP | LONG_RANGE_MODE);
 		return new_radio;
 	}
 
@@ -253,4 +255,5 @@ void message_received_callback()
 	uint8_t buffer[length];
 	spi_read_reg_multi_byte(instance, REG_00_FIFO, buffer, length);
 	printf("RX done, received: %s\n", buffer);
+	instance->message_received_callback((char *)buffer);
 }
