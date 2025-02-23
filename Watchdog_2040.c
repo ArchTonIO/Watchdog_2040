@@ -3,33 +3,18 @@
 #include "string_list.h"
 #include "tests.h"
 #include "hardware_config.h"
-#include "sx1278.h"
-
-void msg_callback(char *msg)
-{
-  printf("Message received: %s\n", msg);
-}
+#include "pico/rand.h"
+#include "lora.h"
+#include <stdlib.h>
+#include <string.h>
 
 int main()
 {
   stdio_init_all();
-  // test_all_hardware();
-  wait_for_user_input();
-  sx1278 *lora_radio = sx1278_init(
-      SX1278_MOSI,
-      SX1278_MISO,
-      SX1278_SCK,
-      SX1278_CS,
-      SX1278_INTERRUPT,
-      0,
-      SX1278_SPI_PORT,
-      SX1278_SPI_BAUDRATE,
-      SX1278_TX_POWER,
-      msg_callback);
-  sx1278_set_mode_rx(lora_radio);
-  while (1)
+  init_lora(0);
+  for (int i = 0; i < 10; i++)
   {
-    sleep_ms(1000);
+    send_msg(1, "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.");
+    sleep_ms(10000);
   }
-  return 0;
 }
