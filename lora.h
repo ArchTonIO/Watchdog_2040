@@ -9,7 +9,7 @@ Author: Antonio Del Cogliano
 /*Headers fields lenght*/
 #define SRC_ADDRESS_LEN 2
 #define DEST_ADDRESS_LEN 2
-#define TRANSACTION_UID_LENGTH 9
+#define TRANSACTION_UID_LENGTH 8
 #define PAYLOAD_TYPE_LEN 1
 #define PAYLOAD_LENGTH_LEN 2
 #define PACKET_MAX_SIZE 230
@@ -34,13 +34,15 @@ Author: Antonio Del Cogliano
 #include "stdint.h"
 #include "sx1278.h"
 
-typedef struct {
+typedef struct
+{
   sx1278 *radio;
   uint16_t address;
   void (*on_recv_callback)(char *msg);
 } lora_instance;
 
-typedef struct{
+typedef struct
+{
   uint16_t src_address;
   uint16_t dest_address;
   char *transaction_uid;
@@ -48,15 +50,15 @@ typedef struct{
   uint16_t payload_length;
 } header;
 
-typedef struct{
+typedef struct
+{
   header *header;
-  char* payload;
+  char *payload;
 } message;
-
 
 void init_lora(uint16_t this_addr);
 void lora_receive();
-uint8_t send_msg(uint16_t dest_address, char* payload);
+uint8_t send_msg(uint16_t dest_address, char *payload);
 uint8_t send_ack(char *received_msg_uid, uint16_t dest_address);
 uint8_t ping(uint16_t dest_address);
 uint8_t pong(uint16_t dest_address);

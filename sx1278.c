@@ -188,6 +188,16 @@ void sx1278_send_str(sx1278 *radio, char *data)
 	sx1278_set_mode_tx(radio);
 }
 
+void sx1278_send_raw(sx1278 *radio, char *data, size_t length)
+{
+	wait_packet_sent(radio);
+	sx1278_set_mode_idle(radio);
+	spi_write_reg_single_byte(radio, REG_0D_FIFO_ADDR_PTR, 0x00);
+	spi_write_reg_multi_byte(radio, REG_00_FIFO, (uint8_t *)data, length);
+	spi_write_reg_single_byte(radio, REG_22_PAYLOAD_LENGTH, length);
+	sx1278_set_mode_tx(radio);
+}
+
 void spi_write_reg_single_byte(sx1278 *radio, uint8_t reg, uint8_t payload)
 {
 	uint8_t buffer[2] = {reg | 0x80, payload};
