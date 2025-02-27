@@ -113,7 +113,19 @@ void write_cmd(ssd1306 *display, uint8_t cmd);
 void send2(ssd1306 *display, uint8_t v1, uint8_t v2);
 void send_data(ssd1306 *display, uint8_t *data, int nbytes);
 int pages(ssd1306 *display);
+void ssd1306_invert(ssd1306 *display, uint8_t invert) { write_cmd(display, SET_NORM_INV | (invert & 1)); }
 
+/*
+ * @brief Initialize the display
+ * @param sda: the sda pin
+ * @param sck: the sck pin
+ * @param i2c_port: the i2c port to use
+ * @param baudrate: the baudrate of the i2c port
+ * @param width: the width of the display
+ * @param height: the height of the display
+ * @param SID: the slave address of the display
+ * @return the display
+ */
 ssd1306 *ssd1306_init(pin sda, pin sck, i2c_inst_t *i2c_port, uint32_t baudrate, uint8_t width, uint8_t height, uint8_t SID)
 {
 	ssd1306 *new_display = (ssd1306 *)malloc(sizeof(ssd1306));
@@ -161,6 +173,15 @@ ssd1306 *ssd1306_init(pin sda, pin sck, i2c_inst_t *i2c_port, uint32_t baudrate,
 	return new_display;
 }
 
+/*
+ * @brief Draw a pixel at the specified position
+ * The origin is the top left corner of the display (0, 0),
+ * x and y progress to the right and down respectively
+ * @param display: the display to draw to
+ * @param x: the x position of the pixel
+ * @param y: the y position of the pixel
+ * @param color: the color of the pixel (1 for white, 0 for black, -1 for invert)
+ */
 void ssd1306_draw_pixel(ssd1306 *display, int16_t x, int16_t y, int color)
 {
 	if (x < 0 || x >= display->width || y < 0 || y >= display->height)
@@ -184,14 +205,24 @@ void ssd1306_draw_pixel(ssd1306 *display, int16_t x, int16_t y, int color)
 	}
 }
 
-void ssd1306_draw_letter_at(ssd1306 *display, uint8_t x, uint8_t y, char c)
+/*
+ * @brief Draw a character at the specified position,
+ * every character is 6 pixels wide and 8 pixels tall
+ *
+ * @param display: the display to draw to
+ * @param x: the x position of the first character
+ * @param y: the y position of the first character
+ * @param c: the character to draw
+ * @param reversed: whether to draw the character in reversed colors (thus making it black fg in white bg)
+ */
+void ssd1306_draw_letter_at(ssd1306 *display, uint8_t x, uint8_t y, char c, bool reversed)
 {
 	if (c < ' ' || c > 0x7F)
 		c = '?';
 	int offset = 4 + (c - ' ') * 6;
 	for (int col = 0; col < 6; col++)
 	{
-		uint8_t line = ssd1306_font6x8[offset + col];
+		uint8_t line = reversed ? ~ssd1306_font6x8[offset + col] : ssd1306_font6x8[offset + col];
 		for (int row = 0; row < 8; row++)
 		{
 			ssd1306_draw_pixel(display, x + col, y + row, line & 1);
@@ -205,7 +236,17 @@ void ssd1306_draw_letter_at(ssd1306 *display, uint8_t x, uint8_t y, char c)
 	}
 }
 
-void ssd1306_print(ssd1306 *display, const char *str, uint8_t x, uint8_t y)
+/*
+ * @brief Print a string to the display at the specified position,
+ * every character is 6 pixels wide and 8 pixels tall
+
+ * @param display: the display to print to
+ * @param str: the string to print
+ * @param x: the x position of the first character (CHAR_WIDTH will be multiplied by this value)
+ * @param y: the y position of the first character (CHAR_HEIGHT will be multiplied by this value)
+ * @param reversed: whether to print the string in reversed colors (thus making it black fg in white bg)
+ */
+void ssd1306_print(ssd1306 *display, const char *str, uint8_t x, uint8_t y, bool reversed)
 {
 	display->cursorx = x * CHAR_WIDTH;
 	display->cursory = y * CHAR_HEIGHT;
@@ -219,11 +260,17 @@ void ssd1306_print(ssd1306 *display, const char *str, uint8_t x, uint8_t y)
 			display->cursory += 8;
 			continue;
 		}
-		ssd1306_draw_letter_at(display, display->cursorx, display->cursory, c);
+		ssd1306_draw_letter_at(display, display->cursorx, display->cursory, c, reversed);
 		display->cursorx += 8;
 	}
 }
 
+/*
+ * @brief Show the display buffer on the screen,
+ * (display buffer is the buffer that holds the pixel data)
+ *
+ * @param display: the display to show
+ */
 void ssd1306_show(ssd1306 *display)
 {
 
@@ -249,11 +296,22 @@ void init_i2c(ssd1306 *display)
 	gpio_pull_up(display->sck);
 }
 
+/*
+ * @brief Clear the display buffer
+ *
+ * @param display: the display to clear
+ */
 void ssd1306_clear(ssd1306 *display)
 {
 	memset(display->scr, 0, sizeof(display->scr));
 }
 
+/*
+ * @brief Set the cursor position
+ * @param display: the display to set the cursor position for
+ * @param x: the x position of the cursor in characters coordinates (CHAR_WIDTH will be multiplied by this value)
+ * @param y: the y position of the cursor in characters coordinates (CHAR_HEIGHT will be multiplied by this value)
+ */
 void ssd1306_set_cursor(ssd1306 *display, uint8_t x, uint8_t y)
 {
 	display->cursorx = CHAR_WIDTH * x;

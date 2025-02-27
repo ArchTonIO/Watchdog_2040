@@ -28,6 +28,9 @@ extern const uint8_t ssd1306_font6x8[];
 #define CHAR_WIDTH 8  // char width in pixels
 #define I2C_PORT i2c1
 
+#define MAX_X_CHARS 16
+#define MAX_Y_CHARS 8
+
 typedef struct
 {
   pin sda;
@@ -45,9 +48,10 @@ typedef struct
 
 ssd1306 *ssd1306_init(pin sda, pin sck, i2c_inst_t *i2c_port, uint32_t baudrate, uint8_t width, uint8_t height, uint8_t SID);
 void ssd1306_draw_pixel(ssd1306 *screen, int16_t x, int16_t y, int color);
-void ssd1306_draw_letter_at(ssd1306 *screen, uint8_t x, uint8_t y, char c);
-void ssd1306_print(ssd1306 *screen, const char *str, uint8_t x, uint8_t y);
+void ssd1306_draw_letter_at(ssd1306 *screen, uint8_t x, uint8_t y, char c, bool reversed);
+void ssd1306_print(ssd1306 *screen, const char *str, uint8_t x, uint8_t y, bool reversed);
 void ssd1306_set_cursor(ssd1306 *screen, uint8_t x, uint8_t y);
+void ssd1306_invert(ssd1306 *display, uint8_t invert);
 void ssd1306_show(ssd1306 *screen);
 void ssd1306_clear(ssd1306 *screen);
 
