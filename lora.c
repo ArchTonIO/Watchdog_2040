@@ -15,6 +15,11 @@ void mes_received_callback(char *msg)
   printf("Message received: %s\n", msg);
 }
 
+/*
+* @brief Initializes the lora hardware module, self address and recv callback
+
+* @param this_addr: the address of this lora module
+*/
 void init_lora(uint16_t this_addr)
 {
   this_lora = malloc(sizeof(lora_instance));
@@ -33,6 +38,9 @@ void init_lora(uint16_t this_addr)
       this_lora->on_recv_callback);
 }
 
+/*
+ * @brief Puts the lora module in receive mode
+ */
 void lora_receive()
 {
   sx1278_set_mode_rx(this_lora->radio);
@@ -173,6 +181,12 @@ void send_pong_packet(uint16_t dest_addr, char *transaction_uid)
   sleep_ms(PACKET_TIMEOUT);
 }
 
+/*
+ * @brief Sends a message to a destination address
+ *
+ * @param dest_address: the address of the destination lora module
+ * @param payload: the message to be sent
+ */
 uint8_t send_msg(uint16_t dest_address, char *payload)
 {
   char *transaction_uid = gen_random_string(TRANSACTION_UID_LENGTH);
