@@ -62,7 +62,7 @@ void test_ssd1306()
 	for (uint i = 0; i < 8; i++)
 	{
 		ssd1306_clear(oled);
-		ssd1306_print(oled, "Hello, World!", 0, i);
+		ssd1306_print(oled, "Hello, World!", 0, i, false);
 		ssd1306_show(oled);
 		sleep_ms(1000);
 	}
