@@ -3,8 +3,8 @@ An Uncomplicated LoRa Communication Protocol (ULCP)
 Author: Antonio Del Cogliano
 */
 
-#ifndef LORA_H
-#define LORA_H
+#ifndef ULCP_H
+#define ULCP_H
 
 /*Headers fields lenght*/
 #define SRC_ADDRESS_LEN 2
@@ -29,10 +29,10 @@ Author: Antonio Del Cogliano
 #define MSG 0x04
 #define ACK 0x05
 
-#include "hardware_config.h"
+#include "hardware_drivers/config.h"
 #include "stdio.h"
 #include "stdint.h"
-#include "sx1278.h"
+#include "hardware_drivers/sx1278.h"
 
 typedef struct
 {
@@ -56,11 +56,9 @@ typedef struct
   char *payload;
 } message;
 
-void init_lora(uint16_t this_addr);
+void lora_init(uint16_t this_addr);
 void lora_receive();
-uint8_t send_msg(uint16_t dest_address, char *payload);
-uint8_t send_ack(char *received_msg_uid, uint16_t dest_address);
-uint8_t ping(uint16_t dest_address);
-uint8_t pong(uint16_t dest_address);
+uint8_t lora_send_msg(uint16_t dest_address, char *payload);
+uint8_t lora_ping(uint16_t dest_address);
 
 #endif

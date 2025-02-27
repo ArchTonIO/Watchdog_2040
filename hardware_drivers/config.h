@@ -1,5 +1,5 @@
-#ifndef HARDWARE_CONFIG_HPP
-#define HARDWARE_CONFIG_HPP
+#ifndef CONFIG_HPP
+#define CONFIG_HPP
 
 #define pin uint8_t
 

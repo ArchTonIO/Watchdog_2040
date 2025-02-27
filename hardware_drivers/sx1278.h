@@ -41,7 +41,7 @@
 
 #define FXOSC = 32000000.0
 
-#include "hardware_config.h"
+#include "config.h"
 #include "hardware/spi.h"
 #include "stdio.h"
 

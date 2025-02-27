@@ -2,7 +2,7 @@
 #define SSD1306_H
 
 #include <stdint.h>
-#include "hardware_config.h"
+#include "config.h"
 #include "hardware/i2c.h"
 
 extern const uint8_t ssd1306_font6x8[];

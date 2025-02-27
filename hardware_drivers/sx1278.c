@@ -1,5 +1,5 @@
 #include "sx1278.h"
-#include "hardware_config.h"
+#include "config.h"
 #include "pico/stdlib.h"
 #include "hardware/irq.h"
 #include <string.h>

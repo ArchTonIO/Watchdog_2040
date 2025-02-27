@@ -2,7 +2,7 @@
 #define ENS160_H
 
 #include <stdint.h>
-#include "hardware_config.h"
+#include "config.h"
 #include "hardware/i2c.h"
 
 typedef struct

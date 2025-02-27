@@ -1,7 +1,7 @@
 #include "battery.h"
 #include <stdio.h>
 #include "hardware/adc.h"
-#include "hardware_config.h"
+#include "config.h"
 #include "pico/stdlib.h"
 #include <stdlib.h>
 

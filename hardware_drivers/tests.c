@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "hardware_config.h"
+#include "config.h"
 #include "ens160.h"
 #include "rtc_time.h"
 #include "ssd1306.h"
 #include "battery.h"
 #include "sx1278.h"
 #include "sdcard.h"
-#include "string_list.h"
+#include "data_structures/string_list.h"
 #include <stdlib.h>
 #include "tests.h"
 

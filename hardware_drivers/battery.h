@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
-#include "hardware_config.h"
+#include "config.h"
 
 typedef struct
 {
