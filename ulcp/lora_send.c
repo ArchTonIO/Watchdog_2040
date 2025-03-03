@@ -18,8 +18,9 @@ uint8_t *build_packet(
     char *transaction_uid,
     char *payload);
 
-void send_start_packet(lora_instance *this_lora, uint16_t dest_addr, char *transaction_uid)
+void send_start_packet(uint16_t dest_addr, char *transaction_uid)
 {
+  sleep_ms(PACKET_TIMEOUT);
   char *packet = build_packet(
       this_lora->address,
       dest_addr,
@@ -28,11 +29,11 @@ void send_start_packet(lora_instance *this_lora, uint16_t dest_addr, char *trans
       "");
   sx1278_send_raw(this_lora->radio, packet, HEADER_SIZE);
   free(packet);
-  sleep_ms(PACKET_TIMEOUT);
 }
 
-void send_end_packet(lora_instance *this_lora, uint16_t dest_addr, char *transaction_uid)
+void send_end_packet(uint16_t dest_addr, char *transaction_uid)
 {
+  sleep_ms(PACKET_TIMEOUT);
   char *packet = build_packet(
       this_lora->address,
       dest_addr,
@@ -41,11 +42,11 @@ void send_end_packet(lora_instance *this_lora, uint16_t dest_addr, char *transac
       "");
   sx1278_send_raw(this_lora->radio, packet, HEADER_SIZE);
   free(packet);
-  sleep_ms(PACKET_TIMEOUT);
 }
 
-void send_msg_packet(lora_instance *this_lora, uint16_t dest_addr, char *transaction_uid, char *payload)
+void send_msg_packet(uint16_t dest_addr, char *transaction_uid, char *payload)
 {
+  sleep_ms(PACKET_TIMEOUT);
   char *packet = build_packet(
       this_lora->address,
       dest_addr,
@@ -54,11 +55,11 @@ void send_msg_packet(lora_instance *this_lora, uint16_t dest_addr, char *transac
       payload);
   sx1278_send_raw(this_lora->radio, packet, HEADER_SIZE + strlen(payload));
   free(packet);
-  sleep_ms(PACKET_TIMEOUT);
 }
 
-void send_ack_packet(lora_instance *this_lora, uint16_t dest_addr, char *transaction_uid)
+void send_ack_packet(uint16_t dest_addr, char *transaction_uid)
 {
+  sleep_ms(PACKET_TIMEOUT);
   char *packet = build_packet(
       this_lora->address,
       dest_addr,
@@ -67,11 +68,11 @@ void send_ack_packet(lora_instance *this_lora, uint16_t dest_addr, char *transac
       "");
   sx1278_send_raw(this_lora->radio, packet, HEADER_SIZE);
   free(packet);
-  sleep_ms(PACKET_TIMEOUT);
 }
 
-void send_ping_packet(lora_instance *this_lora, uint16_t dest_addr, char *transaction_uid)
+void send_ping_packet(uint16_t dest_addr, char *transaction_uid)
 {
+  sleep_ms(PACKET_TIMEOUT);
   char *packet = build_packet(
       this_lora->address,
       dest_addr,
@@ -80,11 +81,11 @@ void send_ping_packet(lora_instance *this_lora, uint16_t dest_addr, char *transa
       "");
   sx1278_send_raw(this_lora->radio, packet, HEADER_SIZE);
   free(packet);
-  sleep_ms(PACKET_TIMEOUT);
 }
 
-void send_pong_packet(lora_instance *this_lora, uint16_t dest_addr, char *transaction_uid)
+void send_pong_packet(uint16_t dest_addr, char *transaction_uid)
 {
+  sleep_ms(PACKET_TIMEOUT);
   char *packet = build_packet(
       this_lora->address,
       dest_addr,
@@ -93,7 +94,6 @@ void send_pong_packet(lora_instance *this_lora, uint16_t dest_addr, char *transa
       "");
   sx1278_send_raw(this_lora->radio, packet, HEADER_SIZE);
   free(packet);
-  sleep_ms(PACKET_TIMEOUT);
 }
 
 uint8_t *serialize_packet(message *msg)

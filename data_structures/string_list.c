@@ -44,13 +44,14 @@ str_list *list()
  */
 void lstappend(str_list *list, char *value)
 {
-  if (list->len == sizeof(uinteger) * 255)
+  if (list->len >= MAX_LIST_LEN)
   {
-    printf(
-        "%s because of the uinteger definition in list.h the list reached max "
-        "lengt (%d), adding items will cause overflow, pop items or change "
-        "uinteger definition to a bigger one",
-        max_len_reached_str, sizeof(uinteger) * 255);
+    printf("%s\n", max_len_reached_str);
+    return;
+  }
+  if (strlen(value) > MAX_STR_LEN)
+  {
+    printf("[MAX_STR_LEN_REACHED]\n");
     return;
   }
   list->len++;
@@ -59,7 +60,14 @@ void lstappend(str_list *list, char *value)
   {
     list->tail->next = newnode;
   }
-  newnode->value = value;
+  char *valuecp = (char *)malloc(strlen(value) + 1);
+  if (valuecp == NULL)
+  {
+    printf("[MEMORY ERROR]\n");
+    return;
+  }
+  strcpy(valuecp, value);
+  newnode->value = valuecp;
   newnode->next = NULL;
   newnode->prev = list->tail;
   list->tail = newnode;
@@ -105,14 +113,14 @@ char *lstget(str_list *list, integer index)
   struct lnode *cursor = list->head;
   if (index < 0)
   {
-    index = list->len - (index * -1);
+    index = list->len + index;
   }
-  if (index > list->len - 1)
+  if (index >= list->len)
   {
     printf("%s: %d\n", index_err_str, index);
     return index_err_str;
   }
-  for (uinteger i = 0; i < index; i++)
+  for (uinteger i = 0; i < index && cursor != NULL; i++)
   {
     cursor = cursor->next;
   }
@@ -238,6 +246,78 @@ uinteger lstcmp(str_list *list1, str_list *list2)
     return 0;
   }
   return 1;
+}
+
+/*
+ * @brief Concatenate all the strings in the list.
+ *
+ * @param *list The list to concatenate.
+ * @return char * The concatenated string.
+ */
+char *lstconcat(str_list *list)
+{
+  if (list->len == 0)
+  {
+    char *empty = (char *)malloc(1);
+    if (!empty)
+      return NULL;
+    empty[0] = '\0';
+    return empty;
+  }
+  size_t total_length = 0;
+  for (int i = 0; i < list->len; i++)
+  {
+    total_length += strlen(lstget(list, i));
+  }
+  total_length += 1;
+  char *total_payload = (char *)malloc(total_length);
+  if (!total_payload)
+    return NULL;
+  char *ptr = total_payload;
+  for (int i = 0; i < list->len; i++)
+  {
+    char *payload = lstget(list, i);
+    strcpy(ptr, payload);
+    ptr += strlen(payload);
+  }
+  return total_payload;
+}
+
+/*
+ * @brief Extend a list with another list.
+ *
+ * @param *list1 The first list.
+ * @param *list2 The second list.
+ * @return str_list * The new list.
+ */
+str_list *lstextend(str_list *list1, str_list *list2)
+{
+  str_list *newlist = list();
+  for (uinteger i = 0; i < list1->len; i++)
+  {
+    lstappend(newlist, lstget(list1, i));
+  }
+  for (uinteger i = 0; i < list2->len; i++)
+  {
+    lstappend(newlist, lstget(list2, i));
+  }
+  return newlist;
+}
+
+/*
+ * @brief Copy a list.
+ *
+ * @param *to_copy The list to copy.
+ * @return str_list * The new list.
+ */
+str_list *lstcopy(str_list *to_copy)
+{
+  str_list *newlist = list();
+  for (uinteger i = 0; i < to_copy->len; i++)
+  {
+    lstappend(newlist, lstget(to_copy, i));
+  }
+  return newlist;
 }
 
 /*

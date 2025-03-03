@@ -8,6 +8,8 @@
 #include <string.h>
 #include "pico/stdlib.h"
 #include "lora_receive.h"
+#include "lora_send.h"
+#include "data_structures/string_list.h"
 
 message *deserialize_packet(uint8_t *packet)
 {
@@ -33,7 +35,72 @@ message *deserialize_packet(uint8_t *packet)
   return msg;
 }
 
+void free_message(message *msg)
+{
+  free(msg->header->transaction_uid);
+  free(msg->header);
+  free(msg->payload);
+  free(msg);
+}
+
 void on_recv(char *msg)
 {
-  printf("Message received: %s\n", msg);
+  message *deserialized = deserialize_packet(msg);
+  if (deserialized->header->dest_address != this_lora->address)
+  {
+    free_message(deserialized);
+    return;
+  }
+  if (deserialized->header->packet_type == PING)
+  {
+    send_pong_packet(deserialized->header->src_address, deserialized->header->transaction_uid);
+    free_message(deserialized);
+    return;
+  }
+  if (deserialized->header->packet_type == PONG && strcmp(deserialized->header->transaction_uid, this_lora->tx->sent_transac_uid) == 0)
+  {
+    printf("PONG RECEIVED\n");
+    this_lora->tx->pong_received = true;
+    free_message(deserialized);
+    return;
+  }
+  if (deserialized->header->packet_type == ACK && strcmp(deserialized->header->transaction_uid, this_lora->tx->sent_transac_uid) == 0)
+  {
+    // printf("ACK RECEIVED\n");
+    this_lora->tx->ack_received = true;
+    free_message(deserialized);
+    return;
+  }
+  if (deserialized->header->packet_type == START)
+  {
+    lstclear(this_lora->rx->recv_payloads_list);
+    strcpy(this_lora->rx->recv_transac_uid, deserialized->header->transaction_uid);
+    free_message(deserialized);
+    return;
+  }
+  if (deserialized->header->packet_type == MSG)
+  {
+    if (strcmp(deserialized->header->transaction_uid, this_lora->rx->recv_transac_uid) != 0)
+    {
+      free_message(deserialized);
+      return;
+    }
+    lstappend(this_lora->rx->recv_payloads_list, deserialized->payload);
+    free_message(deserialized);
+    return;
+  }
+  if (deserialized->header->packet_type == END)
+  {
+    if (strcmp(deserialized->header->transaction_uid, this_lora->rx->recv_transac_uid) != 0)
+    {
+      free_message(deserialized);
+      this_lora->rx->recv_transac_uid = calloc(TRANSACTION_UID_LENGTH + 1, sizeof(char));
+      return;
+    }
+    this_lora->rx->must_send_ack_dest = deserialized->header->src_address;
+    this_lora->rx->must_send_ack_transac_uid = deserialized->header->transaction_uid;
+    this_lora->rx->must_send_ack = true;
+    printf("TRANSAC RECEIVED\n");
+    return;
+  }
 }

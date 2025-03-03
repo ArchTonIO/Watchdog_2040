@@ -12,6 +12,8 @@
 
 lora_instance *this_lora;
 
+void reset_ack();
+
 /**
  * @brief Initializes the lora hardware module, self address and recv callback
  * @param this_addr: the address of this lora module
@@ -19,7 +21,8 @@ lora_instance *this_lora;
 void lora_init(uint16_t this_addr)
 {
   this_lora = malloc(sizeof(lora_instance));
-  this_lora->address = this_addr;
+  this_lora->tx = malloc(sizeof(tx_fields));
+  this_lora->rx = malloc(sizeof(rx_fields));
   this_lora->on_recv_callback = on_recv;
   this_lora->radio = sx1278_init(
       SX1278_MOSI,
@@ -32,6 +35,25 @@ void lora_init(uint16_t this_addr)
       SX1278_SPI_BAUDRATE,
       SX1278_TX_POWER,
       this_lora->on_recv_callback);
+  this_lora->address = this_addr;
+  /*tx fields initialization*/
+  this_lora->tx->transac_sending_attempts = 0;
+  this_lora->tx->sent_transac_uid = (char *)calloc(TRANSACTION_UID_LENGTH + 1, sizeof(char));
+  this_lora->tx->ack_received = false;
+  this_lora->tx->pong_received = false;
+  this_lora->tx->sent_pyaloads_list = list();
+  /*rx fields initialization*/
+  this_lora->rx->recv_transac_uid = (char *)calloc(TRANSACTION_UID_LENGTH + 1, sizeof(char));
+  this_lora->rx->must_send_ack_transac_uid = (char *)calloc(TRANSACTION_UID_LENGTH + 1, sizeof(char));
+  this_lora->rx->must_send_ack_dest = 0;
+  this_lora->rx->must_send_ack = false;
+  this_lora->rx->recv_payloads_list = list();
+}
+
+void reset_ack()
+{
+  this_lora->tx->ack_received = false;
+  this_lora->tx->transac_sending_attempts = 0;
 }
 
 /**
@@ -56,23 +78,11 @@ char *gen_random_string(uint8_t length)
   return s;
 }
 
-/**
- * @brief Sends a message to the specified destination address.
- *
- * This function sends a message over the LoRa network, handling packet segmentation
- * if necessary. It also waits for an acknowledgment (ACK) from the receiver.
- *
- * @param dest_address The address of the destination LoRa module.
- * @param payload      Pointer to the message to be sent (null-terminated string).
- *
- * @retval `0`: The message was sent successfully and an ACK was received.
- * @retval `1`: The message was sent successfully but no ACK was received.
- * @retval `2`: The message transmission failed.
- */
-uint8_t lora_send_msg(uint16_t dest_address, char *payload)
+void attempt_single_transaction(uint16_t dest_address, char *payload)
 {
   char *transaction_uid = gen_random_string(TRANSACTION_UID_LENGTH);
-  send_start_packet(this_lora, dest_address, transaction_uid);
+  this_lora->tx->sent_transac_uid = transaction_uid;
+  send_start_packet(dest_address, transaction_uid);
   size_t payload_len = strlen(payload);
   uint8_t num_packets = (payload_len / PAYLOAD_MAX_SIZE) + (payload_len % PAYLOAD_MAX_SIZE ? 1 : 0);
   for (uint8_t i = 0; i < num_packets; i++)
@@ -81,15 +91,55 @@ uint8_t lora_send_msg(uint16_t dest_address, char *payload)
     char *packet_payload = (char *)malloc(chunk_size + 1);
     if (!packet_payload)
     {
-      return 1;
+      return;
     }
     memcpy(packet_payload, payload + i * PAYLOAD_MAX_SIZE, chunk_size);
     packet_payload[chunk_size] = '\0';
-    send_msg_packet(this_lora, dest_address, transaction_uid, packet_payload);
+    send_msg_packet(dest_address, transaction_uid, packet_payload);
     free(packet_payload);
   }
-  send_end_packet(this_lora, dest_address, transaction_uid);
-  return 0;
+  send_end_packet(dest_address, transaction_uid);
+  printf("TRANSAC ENDED\n");
+}
+
+/**
+ * @brief Sends a message to the specified destination address.
+ *
+ * This function sends a message over the LoRa network, handling packet segmentation
+ * if necessary. It also waits for an acknowledgment (ACK) from the receiver.
+ *
+ * @param dest_address The address of the destination LoRa module.
+ * @param payload      Pointer to the message to be sent (null-terminated string).
+ * The payload must not exceed MAX_PAYLOAD_FOR_TRANSACTION, actually set at 2760 bytes
+ * (for security reasons), everything beyond that will be ignored.
+ *
+ * @retval `0`: The message was sent successfully and an ACK was received.
+ * @retval `1`: The message was sent successfully but no ACK was received.
+ * @retval `2`: The message transmission failed.
+ */
+uint8_t lora_send_msg(uint16_t dest_address, char *payload)
+{
+  if (strlen(payload) > MAX_PAYLOAD_FOR_TRANSACTION)
+    return 2;
+  while (!this_lora->tx->ack_received && this_lora->tx->transac_sending_attempts < MAX_SENDING_ATTEMPTS)
+  {
+    this_lora->tx->transac_sending_attempts++;
+    attempt_single_transaction(dest_address, payload);
+    lora_receive();
+    sleep_ms(TRANSAC_TIMEOUT);
+  }
+  if (this_lora->tx->ack_received)
+  {
+    reset_ack();
+    return 0;
+  }
+  if (this_lora->tx->transac_sending_attempts >= MAX_SENDING_ATTEMPTS)
+  {
+    reset_ack();
+    return 1;
+  }
+  reset_ack();
+  return 2;
 }
 
 /**
@@ -101,11 +151,28 @@ uint8_t lora_send_msg(uint16_t dest_address, char *payload)
  *
  * @retval `0`: The ping message was sent successfully and a pong message was received.
  * @retval `1`: The ping message was sent successfully but no pong message was received.
- * @retval `2`: The ping message transmission failed.
  */
 uint8_t lora_ping(uint16_t dest_address)
 {
   char *transaction_uid = gen_random_string(TRANSACTION_UID_LENGTH);
-  send_ping_packet(this_lora, dest_address, transaction_uid);
-  return 0;
+  this_lora->tx->sent_transac_uid = transaction_uid;
+  send_ping_packet(dest_address, transaction_uid);
+  sleep_ms(TRANSAC_TIMEOUT);
+  if (this_lora->tx->pong_received)
+  {
+    this_lora->tx->pong_received = false;
+    return 0;
+  }
+  return 1;
+}
+
+void lora_eventually_send_ack()
+{
+  if (!this_lora->rx->must_send_ack)
+    return;
+  send_ack_packet(this_lora->rx->must_send_ack_dest, this_lora->rx->must_send_ack_transac_uid);
+  this_lora->rx->must_send_ack = false;
+  sleep_ms(PACKET_TIMEOUT);
+  lora_receive();
+  printf("ACK SENT\n");
 }
