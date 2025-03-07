@@ -1,0 +1,9 @@
+#include <stdio.h>
+#include "pico/stdlib.h"
+#include "hardware_drivers/tests.h"
+#include "pico/rand.h"
+#include "ulcp/ulcp.h"
+#include "hardware_drivers/sdcard.h"
+#include <stdlib.h>
+#include <string.h>
+#include "utils.h"

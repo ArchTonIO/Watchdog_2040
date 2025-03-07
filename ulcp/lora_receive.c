@@ -73,7 +73,8 @@ void on_recv(char *msg)
   }
   if (deserialized->header->packet_type == START)
   {
-    lstclear(this_lora->rx->recv_payloads_list);
+    // printf("START RECEIVED\n");
+    this_lora->rx->recv_payloads_buf[0] = '\0';
     strcpy(this_lora->rx->recv_transac_uid, deserialized->header->transaction_uid);
     free_message(deserialized);
     return;
@@ -85,7 +86,9 @@ void on_recv(char *msg)
       free_message(deserialized);
       return;
     }
-    lstappend(this_lora->rx->recv_payloads_list, deserialized->payload);
+    size_t resize_len = strlen(this_lora->rx->recv_payloads_buf) + strlen(deserialized->payload) + 1;
+    this_lora->rx->recv_payloads_buf = (char *)realloc(this_lora->rx->recv_payloads_buf, resize_len);
+    strcat(this_lora->rx->recv_payloads_buf, deserialized->payload);
     free_message(deserialized);
     return;
   }
@@ -98,9 +101,11 @@ void on_recv(char *msg)
       return;
     }
     this_lora->rx->must_send_ack_dest = deserialized->header->src_address;
-    this_lora->rx->must_send_ack_transac_uid = deserialized->header->transaction_uid;
+    strcpy(this_lora->rx->must_send_ack_transac_uid, deserialized->header->transaction_uid);
+    // printf("TRANSAC RECEIVED :%s\n", this_lora->rx->recv_payloads_buf);
     this_lora->rx->must_send_ack = true;
-    printf("TRANSAC RECEIVED\n");
+    free_message(deserialized);
+    this_lora->rx->on_transac_ended_callback(this_lora->rx->must_send_ack_dest);
     return;
   }
 }

@@ -18,7 +18,9 @@ void reset_ack();
  * @brief Initializes the lora hardware module, self address and recv callback
  * @param this_addr: the address of this lora module
  */
-void lora_init(uint16_t this_addr)
+lora_instance *lora_init(
+    uint16_t this_addr,
+    void (*on_transac_ended_callback)(uint16_t src_address))
 {
   this_lora = malloc(sizeof(lora_instance));
   this_lora->tx = malloc(sizeof(tx_fields));
@@ -47,7 +49,9 @@ void lora_init(uint16_t this_addr)
   this_lora->rx->must_send_ack_transac_uid = (char *)calloc(TRANSACTION_UID_LENGTH + 1, sizeof(char));
   this_lora->rx->must_send_ack_dest = 0;
   this_lora->rx->must_send_ack = false;
-  this_lora->rx->recv_payloads_list = list();
+  this_lora->rx->recv_payloads_buf = (char *)malloc(16);
+  this_lora->rx->on_transac_ended_callback = on_transac_ended_callback;
+  return this_lora;
 }
 
 void reset_ack()
@@ -126,7 +130,7 @@ uint8_t lora_send_msg(uint16_t dest_address, char *payload)
     this_lora->tx->transac_sending_attempts++;
     attempt_single_transaction(dest_address, payload);
     lora_receive();
-    sleep_ms(TRANSAC_TIMEOUT);
+    sleep_ms(TRANSAC_TIMEOUT - 200);
   }
   if (this_lora->tx->ack_received)
   {

@@ -22,7 +22,7 @@ Author: Antonio Del Cogliano
 #define PACKET_TIMEOUT 200
 
 /*The number of milliseconds to wait after a transaction is sent*/
-#define TRANSAC_TIMEOUT 400
+#define TRANSAC_TIMEOUT 600
 
 /*The limit of packets for a single transaction*/
 #define MAX_PACKET_FOR_TRANSACTION 25
@@ -59,11 +59,12 @@ typedef struct
 
 typedef struct
 {
+  void (*on_transac_ended_callback)(uint16_t src_address);
   char *recv_transac_uid;
   char *must_send_ack_transac_uid;
   uint16_t must_send_ack_dest;
   bool must_send_ack;
-  str_list *recv_payloads_list;
+  char *recv_payloads_buf;
 } rx_fields;
 
 typedef struct
@@ -92,7 +93,7 @@ typedef struct
 
 extern lora_instance *this_lora;
 
-void lora_init(uint16_t this_addr);
+lora_instance *lora_init(uint16_t this_addr, void (*on_transac_ended_callback)(uint16_t src_address));
 void lora_receive();
 uint8_t lora_send_msg(uint16_t dest_address, char *payload);
 uint8_t lora_ping(uint16_t dest_address);

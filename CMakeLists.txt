@@ -35,7 +35,21 @@ pico_sdk_init()
 add_subdirectory(lib/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(Watchdog_2040 Watchdog_2040.c data_structures/string_list.c hardware_drivers/battery.c hardware_drivers/ssd1306.c hardware_drivers/rtc_time.c hardware_drivers/ens160.c hardware_drivers/sx1278.c hardware_drivers/sdcard.c hardware_drivers/tests.c ulcp/ulcp.c ulcp/lora_send.c ulcp/lora_receive.c)
+add_executable(Watchdog_2040
+Watchdog_2040.c
+data_structures/string_list.c
+hardware_drivers/battery.c
+hardware_drivers/ssd1306.c
+hardware_drivers/rtc_time.c
+hardware_drivers/ens160.c
+hardware_drivers/sx1278.c
+hardware_drivers/sdcard.c
+hardware_drivers/tests.c
+ulcp/ulcp.c
+ulcp/lora_send.c
+ulcp/lora_receive.c
+utils.c
+)
 
 pico_set_program_name(Watchdog_2040 "Watchdog_2040")
 pico_set_program_version(Watchdog_2040 "0.1")
