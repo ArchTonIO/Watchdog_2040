@@ -38,6 +38,7 @@ add_subdirectory(lib/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
 add_executable(Watchdog_2040
 Watchdog_2040.c
 data_structures/string_list.c
+data_structures/hashmap.c
 hardware_drivers/battery.c
 hardware_drivers/ssd1306.c
 hardware_drivers/rtc_time.c
@@ -49,6 +50,8 @@ ulcp/ulcp.c
 ulcp/lora_send.c
 ulcp/lora_receive.c
 utils.c
+hw_manager.c
+msg_manager.c
 )
 
 pico_set_program_name(Watchdog_2040 "Watchdog_2040")

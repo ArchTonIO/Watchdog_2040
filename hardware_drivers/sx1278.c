@@ -22,7 +22,6 @@ sx1278 *sx1278_init(
 		pin sck,
 		pin cs,
 		pin interrupt,
-		uint8_t addr,
 		spi_inst_t *spi_port,
 		uint32_t baudrate,
 		uint8_t tx_power,
@@ -34,7 +33,6 @@ sx1278 *sx1278_init(
 	new_radio->sck = sck;
 	new_radio->cs = cs;
 	new_radio->interrupt = interrupt;
-	new_radio->addr = addr;
 	new_radio->spi_port = spi_port;
 	new_radio->baudrate = baudrate;
 	new_radio->tx_power = tx_power;
@@ -123,6 +121,11 @@ sx1278 *sx1278_init(
 	// printf("15 - REG_09_PA_CONFIG: %d\n", spi_read_reg_single_byte(new_radio, REG_09_PA_CONFIG)); //! DEBUG SHIT
 	instance = new_radio;
 	return new_radio;
+}
+
+void sx1278_attach_isr(sx1278 *radio, void (*new_callback)(char *msg))
+{
+	radio->message_received_callback = new_callback;
 }
 
 void sx1278_sleep(sx1278 *radio)

@@ -104,7 +104,6 @@ void test_sx1278()
 			SX1278_SCK,
 			SX1278_CS,
 			SX1278_INTERRUPT,
-			0,
 			SX1278_SPI_PORT,
 			SX1278_SPI_BAUDRATE,
 			SX1278_TX_POWER,
@@ -135,16 +134,6 @@ void test_sd_card()
 	printf("Listing all files in the sd card:\n");
 	str_list *files = sdcard_list_files(sd);
 	lstprint(files);
-	// printf("Deleting file test.txt\n");
-	// sdcard_delete_file(sd, "test.txt");
-	// printf("Listing all files in the sd card:\n");
-	// files = sdcard_list_files(sd);
-	// lstprint(files);
-	// printf("Formatting sd card\n");
-	// sdcard_format(sd);
-	// printf("Listing all files in the sd card:\n");
-	// files = sdcard_list_files(sd);
-	// lstprint(files);
 	lstdel(lines);
 	lstdel(files);
 	sdcard_unmount(sd);

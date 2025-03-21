@@ -20,36 +20,26 @@ void reset_ack();
  */
 lora_instance *lora_init(
     uint16_t this_addr,
+    sx1278 *sx1278_radio,
     void (*on_transac_ended_callback)(uint16_t src_address))
 {
   this_lora = malloc(sizeof(lora_instance));
   this_lora->tx = malloc(sizeof(tx_fields));
   this_lora->rx = malloc(sizeof(rx_fields));
-  this_lora->on_recv_callback = on_recv;
-  this_lora->radio = sx1278_init(
-      SX1278_MOSI,
-      SX1278_MISO,
-      SX1278_SCK,
-      SX1278_CS,
-      SX1278_INTERRUPT,
-      0,
-      SX1278_SPI_PORT,
-      SX1278_SPI_BAUDRATE,
-      SX1278_TX_POWER,
-      this_lora->on_recv_callback);
+  this_lora->radio = sx1278_radio;
   this_lora->address = this_addr;
   /*tx fields initialization*/
   this_lora->tx->transac_sending_attempts = 0;
   this_lora->tx->sent_transac_uid = (char *)calloc(TRANSACTION_UID_LENGTH + 1, sizeof(char));
   this_lora->tx->ack_received = false;
   this_lora->tx->pong_received = false;
-  this_lora->tx->sent_pyaloads_list = list();
   /*rx fields initialization*/
   this_lora->rx->recv_transac_uid = (char *)calloc(TRANSACTION_UID_LENGTH + 1, sizeof(char));
   this_lora->rx->must_send_ack_transac_uid = (char *)calloc(TRANSACTION_UID_LENGTH + 1, sizeof(char));
   this_lora->rx->must_send_ack_dest = 0;
   this_lora->rx->must_send_ack = false;
   this_lora->rx->recv_payloads_buf = (char *)malloc(16);
+  this_lora->radio->message_received_callback = on_recv;
   this_lora->rx->on_transac_ended_callback = on_transac_ended_callback;
   return this_lora;
 }

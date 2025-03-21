@@ -45,7 +45,6 @@ Author: Antonio Del Cogliano
 #include "stdio.h"
 #include "stdint.h"
 #include "hardware_drivers/sx1278.h"
-#include "data_structures/string_list.h"
 
 typedef struct
 {
@@ -53,8 +52,6 @@ typedef struct
   char *sent_transac_uid;
   bool ack_received;
   bool pong_received;
-  str_list *sent_pyaloads_list;
-
 } tx_fields;
 
 typedef struct
@@ -71,7 +68,6 @@ typedef struct
 {
   sx1278 *radio;
   uint16_t address;
-  void (*on_recv_callback)(char *msg);
   tx_fields *tx;
   rx_fields *rx;
 } lora_instance;
@@ -93,7 +89,7 @@ typedef struct
 
 extern lora_instance *this_lora;
 
-lora_instance *lora_init(uint16_t this_addr, void (*on_transac_ended_callback)(uint16_t src_address));
+lora_instance *lora_init(uint16_t this_addr, sx1278 *sx1278_radio, void (*on_transac_ended_callback)(uint16_t src_address));
 void lora_receive();
 uint8_t lora_send_msg(uint16_t dest_address, char *payload);
 uint8_t lora_ping(uint16_t dest_address);

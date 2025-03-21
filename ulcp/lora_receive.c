@@ -37,9 +37,16 @@ message *deserialize_packet(uint8_t *packet)
 
 void free_message(message *msg)
 {
-  free(msg->header->transaction_uid);
-  free(msg->header);
-  free(msg->payload);
+  if (!msg)
+    return;
+  if (msg->header)
+  {
+    if (msg->header->transaction_uid)
+      free(msg->header->transaction_uid);
+    free(msg->header);
+  }
+  if (msg->payload)
+    free(msg->payload);
   free(msg);
 }
 
@@ -64,9 +71,9 @@ void on_recv(char *msg)
     free_message(deserialized);
     return;
   }
-  if (deserialized->header->packet_type == ACK && strcmp(deserialized->header->transaction_uid, this_lora->tx->sent_transac_uid) == 0)
+  if (deserialized->header->packet_type == ACK) //&& strcmp(deserialized->header->transaction_uid, this_lora->tx->sent_transac_uid) == 0)
   {
-    // printf("ACK RECEIVED\n");
+    printf("ACK RECEIVED\n");
     this_lora->tx->ack_received = true;
     free_message(deserialized);
     return;
