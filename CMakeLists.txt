@@ -40,6 +40,7 @@ Watchdog_2040.c
 data_structures/string_list.c
 data_structures/hashmap.c
 hardware_drivers/battery.c
+hardware_drivers/joystick.c
 hardware_drivers/ssd1306.c
 hardware_drivers/rtc_time.c
 hardware_drivers/ens160.c

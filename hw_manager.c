@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "hardware_drivers/battery.h"
+#include "hardware_drivers/joystick.h"
 #include "hardware_drivers/config.h"
 #include "hardware_drivers/ens160.h"
 #include "hardware_drivers/rtc_time.h"
@@ -49,6 +50,12 @@ hw_drivers *hardware_drivers_init()
 			MAX_BATTERY_VOLTAGE,
 			BATTERY_PIN,
 			ADC_CHANNEL);
+	hw_man->joystick = joystick_init(
+			JOYSTICK_X_PIN,
+			JOYSTICK_Y_PIN,
+			JOYSTICK_X_CHANNEL,
+			JOYSTICK_Y_CHANNEL,
+			JOYSTICK_BUTTON_PIN);
 	hw_man->sd_card = sdcard_init();
 	sdcard_mount(hw_man->sd_card);
 	hw_man->rtc = rtc_time_init(2025, 1, 1, 3, 0, 0, 0);

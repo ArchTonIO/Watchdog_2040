@@ -54,6 +54,12 @@ void dev_2()
 
 int main()
 {
-  dev_2();
+  // dev_2();
+  setup();
+  while (1)
+  {
+    joystick_print(drivers->joystick);
+    sleep_ms(50);
+  }
   return 0;
 }

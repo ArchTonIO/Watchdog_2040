@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include "hardware_drivers/battery.h"
+#include "hardware_drivers/joystick.h"
 #include "hardware_drivers/config.h"
 #include "hardware_drivers/ens160.h"
 #include "hardware_drivers/rtc_time.h"
@@ -19,6 +20,7 @@ typedef struct
   ssd1306 *oled_screen;
   sx1278 *lora_module;
   battery *battery;
+  joystick *joystick;
   sdcard *sd_card;
   rtc_time *rtc;
 } hw_drivers;
