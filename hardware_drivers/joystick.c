@@ -42,6 +42,7 @@ joystick *joystick_init(pin x_pin, pin y_pin, uint8_t x_channel, uint8_t y_chann
   adc_gpio_init(x_pin);
   adc_gpio_init(y_pin);
   gpio_init(button_pin);
+  gpio_pull_up(button_pin);
   gpio_set_dir(button_pin, GPIO_IN);
   auto_calibrate(new_joystick);
   return new_joystick;
@@ -58,6 +59,7 @@ void joystick_update(joystick *stick)
   stick->x_value = adc_read();
   adc_select_input(stick->y_channel);
   stick->y_value = adc_read();
+  stick->button_pressed = !gpio_get(stick->button_pin);
 }
 
 void auto_calibrate(joystick *stick)
@@ -146,7 +148,7 @@ void joystick_print(joystick *stick)
   joystick_update(stick);
   polar_coords polar = joystick_get_polar(stick);
   char *direction = joystick_get_direction(stick);
-  printf("JOYSTICK -> X: %d  Y: %d  S: %d\n", stick->x_value, stick->y_value, gpio_get(stick->button_pin));
+  printf("JOYSTICK -> X: %d  Y: %d  S: %d\n", stick->x_value, stick->y_value, stick->button_pressed);
   printf("JOYSTICK -> L: %f  THETA: %f\n", polar.l, polar.theta_deg);
   printf("JOYSTICK -> DIRECTION: %s\n", direction);
 }
