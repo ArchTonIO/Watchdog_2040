@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include "hw_manager.h"
 #include "msg_manager.h"
+#include "virtual_keyboard.h"
+#include "hardware_drivers/ssd1306.h"
 
 #define THIS_LORA_ADDR 2
 
@@ -56,10 +58,10 @@ int main()
 {
   // dev_2();
   setup();
-  while (1)
-  {
-    joystick_print(drivers->joystick);
-    sleep_ms(50);
-  }
+  virtual_keyboard *keyboard = virtual_keyboard_init();
+  draw_keyboard(keyboard);
+  char *word = virtual_keyboard_write(keyboard);
+  printf("Word: %s\n", word);
+  free(word);
   return 0;
 }

@@ -31,8 +31,9 @@ typedef struct
 } polar_coords;
 
 joystick *joystick_init(pin x_pin, pin y_pin, uint8_t x_channel, uint8_t y_channel, pin button_pin);
-char *joystick_read_direction(joystick *joystick);
+char *joystick_get_direction(joystick *joystick);
 bool joystick_read_button(joystick *joystick);
 void joystick_print(joystick *joystick);
+void joystick_update(joystick *joystick);
 
 #endif
