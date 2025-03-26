@@ -24,13 +24,13 @@ No matter where you put this buttons, they will always have the same functionali
 */
 char uppercase_layout[ROWS][COLS] = {
     {'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '|', ' ', '_'},
-    {' ', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', ' ', ' ', '<'},
+    {'~', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', ' ', ' ', '<'},
     {' ', ' ', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ' ', ' ', '?', ' ', ' ', '^'},
     {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', ' ', '+', ' ', ' ', '>'}};
 
 char lowercase_layout[ROWS][COLS] = {
     {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', ' ', ' ', '_'},
-    {' ', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', ' ', ' ', '<'},
+    {'~', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', ' ', ' ', '<'},
     {' ', ' ', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', ' ', ' ', '^'},
     {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', ' ', ' ', '>'}};
 
@@ -42,7 +42,8 @@ virtual_keyboard *virtual_keyboard_init()
   virtual_keyboard *new_keyboard = (virtual_keyboard *)malloc(sizeof(virtual_keyboard));
   populate_keys(new_keyboard);
   new_keyboard->show_cursor = true;
-  new_keyboard->uppercase = true;
+  new_keyboard->shift = false;
+  new_keyboard->caps_lock = false;
   return new_keyboard;
 }
 
@@ -70,17 +71,30 @@ void draw_keyboard(virtual_keyboard *keyboard)
   ssd1306_show(drivers->oled_screen);
 }
 
+void draw_uppercase(virtual_keyboard *keyboard)
+{
+  for (uint8_t i = 0; i < ROWS; i++)
+    for (uint8_t j = 0; j < COLS; j++)
+      keyboard->keys[i][j].label = uppercase_layout[i][j];
+}
+
+void draw_lowercase(virtual_keyboard *keyboard)
+{
+  for (uint8_t i = 0; i < ROWS; i++)
+    for (uint8_t j = 0; j < COLS; j++)
+      keyboard->keys[i][j].label = lowercase_layout[i][j];
+}
+
 void toggle_uppercase(virtual_keyboard *keyboard)
 {
-  if (keyboard->uppercase)
-    for (uint8_t i = 0; i < ROWS; i++)
-      for (uint8_t j = 0; j < COLS; j++)
-        keyboard->keys[i][j].label = uppercase_layout[i][j];
-  else
-    for (uint8_t i = 0; i < ROWS; i++)
-      for (uint8_t j = 0; j < COLS; j++)
-        keyboard->keys[i][j].label = lowercase_layout[i][j];
-  keyboard->uppercase = !keyboard->uppercase;
+  if (keyboard->shift && !keyboard->caps_lock)
+    draw_uppercase(keyboard);
+  if (keyboard->shift && keyboard->caps_lock)
+    draw_lowercase(keyboard);
+  if (!keyboard->shift && !keyboard->caps_lock)
+    draw_lowercase(keyboard);
+  if (!keyboard->shift && keyboard->caps_lock)
+    draw_uppercase(keyboard);
   draw_keyboard(keyboard);
 }
 
@@ -223,6 +237,13 @@ char *virtual_keyboard_write(virtual_keyboard *keyboard)
     {
       last_char = last_key->label;
 
+      /*display the lowercase layout if shift was previously enabled*/
+      if (keyboard->shift)
+      {
+        keyboard->shift = false;
+        toggle_uppercase(keyboard);
+      }
+
       /*handle enter*/
       if (last_char == '>')
         break;
@@ -239,9 +260,22 @@ char *virtual_keyboard_write(virtual_keyboard *keyboard)
         continue;
       }
 
-      /*handle case toggling*/
+      /*handle shift*/
       if (last_char == '^')
       {
+        keyboard->shift = true;
+        toggle_uppercase(keyboard);
+        sleep_ms(DEBOUNCE_TIMEOUT);
+        continue;
+      }
+
+      /*handle caps lock*/
+      if (last_char == '~')
+      {
+        if (keyboard->caps_lock)
+          keyboard->caps_lock = false;
+        else
+          keyboard->caps_lock = true;
         toggle_uppercase(keyboard);
         sleep_ms(DEBOUNCE_TIMEOUT);
         continue;

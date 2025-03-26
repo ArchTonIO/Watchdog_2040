@@ -33,7 +33,8 @@ typedef struct
 {
   key keys[ROWS][COLS];
   bool show_cursor;
-  bool uppercase;
+  bool shift;
+  bool caps_lock;
 } virtual_keyboard;
 
 virtual_keyboard *virtual_keyboard_init();
