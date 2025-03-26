@@ -158,6 +158,26 @@ key *select_key(virtual_keyboard *keyboard, char *direction, key *last_key)
     row_adder = -1;
   if (strcmp(direction, "E") == 0)
     col_adder = -1;
+  if (strcmp(direction, "NE") == 0)
+  {
+    row_adder = -1;
+    col_adder = -1;
+  }
+  if (strcmp(direction, "NW") == 0)
+  {
+    row_adder = -1;
+    col_adder = 1;
+  }
+  if (strcmp(direction, "SE") == 0)
+  {
+    row_adder = 1;
+    col_adder = -1;
+  }
+  if (strcmp(direction, "SW") == 0)
+  {
+    row_adder = 1;
+    col_adder = 1;
+  }
   if (is_out_of_bounds(last_key->row + row_adder, last_key->col + col_adder))
     return last_key;
   key *target_key;
@@ -171,7 +191,7 @@ key *select_key(virtual_keyboard *keyboard, char *direction, key *last_key)
   for (uint8_t i = 1; i < 4; i++)
   {
     target_key = &keyboard->keys[last_key->row + row_adder * i][last_key->col + col_adder * i];
-    if (target_key->label != ' ')
+    if (target_key->label != ' ' && !is_out_of_bounds(last_key->row + row_adder * i, last_key->col + col_adder * i))
     {
       highlight_key(keyboard, last_key, false);
       highlight_key(keyboard, target_key, true);
