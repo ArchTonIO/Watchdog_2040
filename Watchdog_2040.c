@@ -59,9 +59,13 @@ int main()
   // dev_2();
   setup();
   virtual_keyboard *keyboard = virtual_keyboard_init();
-  draw_keyboard(keyboard);
-  char *word = virtual_keyboard_write(keyboard);
-  printf("Word: %s\n", word);
-  free(word);
+  while (1)
+  {
+    ssd1306_clear(drivers->oled_screen);
+    draw_keyboard(keyboard);
+    char *word = virtual_keyboard_write(keyboard);
+    printf("Word: %s\n", word);
+    free(word);
+  }
   return 0;
 }
