@@ -16,6 +16,11 @@
 #define COLS 15
 #define LEFT_PADDING (uint16_t)(SSD1306_WIDTH - (COLS * CHAR_WIDTH)) / 2
 #define TOP_PADDING (uint16_t)(SSD1306_HEIGHT - (ROWS * CHAR_HEIGHT))
+#define DEBOUNCE_TIMEOUT 100
+#define INPUT_TIMEOUT 50
+#define MAX_CHARS_PER_ROW 20
+#define MAX_ROWS 4
+#define MAX_INPUT_LENGTH (MAX_CHARS_PER_ROW * MAX_ROWS)
 
 typedef struct
 {
@@ -27,6 +32,8 @@ typedef struct
 typedef struct
 {
   key keys[ROWS][COLS];
+  bool show_cursor;
+  bool uppercase;
 } virtual_keyboard;
 
 virtual_keyboard *virtual_keyboard_init();
