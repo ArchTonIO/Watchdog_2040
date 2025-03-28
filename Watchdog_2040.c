@@ -18,7 +18,6 @@ void mainloop()
   virtual_keyboard *keyboard = virtual_keyboard_init();
   ssd1306_clear(drivers->oled_screen);
   text_editor *editor = text_editor_init(keyboard);
-  getchar();
   while (1)
   {
     draw_keyboard(keyboard);
