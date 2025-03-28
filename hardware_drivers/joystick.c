@@ -114,28 +114,28 @@ polar_coords joystick_get_polar(joystick *stick)
  * @retval `SE`: South-East.
  * @retval `SW`: South-West.
  */
-char *joystick_get_direction(joystick *stick)
+uint8_t joystick_get_direction(joystick *stick)
 {
   polar_coords polar = joystick_get_polar(stick);
   if (polar.l < 0.1f)
-    return "C";
+    return C;
   float angle = polar.theta_deg;
   if (angle >= -22.5f && angle < 22.5f)
-    return "E";
+    return E;
   if (angle >= 22.5f && angle < 67.5f)
-    return "NE";
+    return NE;
   if (angle >= 67.5f && angle < 112.5f)
-    return "N";
+    return N;
   if (angle >= 112.5f && angle < 157.5f)
-    return "NW";
+    return NW;
   if (angle >= 157.5f || angle < -157.5f)
-    return "W";
+    return W;
   if (angle >= -157.5f && angle < -112.5f)
-    return "SW";
+    return SW;
   if (angle >= -112.5f && angle < -67.5f)
-    return "S";
+    return S;
   if (angle >= -67.5f && angle < -22.5f)
-    return "SE";
+    return SE;
 }
 
 /**
@@ -150,5 +150,5 @@ void joystick_print(joystick *stick)
   char *direction = joystick_get_direction(stick);
   printf("JOYSTICK -> X: %d  Y: %d  S: %d\n", stick->x_value, stick->y_value, stick->button_pressed);
   printf("JOYSTICK -> L: %f  THETA: %f\n", polar.l, polar.theta_deg);
-  printf("JOYSTICK -> DIRECTION: %s\n", direction);
+  printf("JOYSTICK -> DIRECTION: %d\n", direction);
 }

@@ -54,6 +54,7 @@ utils.c
 hw_manager.c
 msg_manager.c
 virtual_keyboard.c
+text_editor.c
 )
 
 pico_set_program_name(Watchdog_2040 "Watchdog_2040")

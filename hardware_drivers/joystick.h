@@ -5,6 +5,16 @@
 #include "hardware/adc.h"
 #include "config.h"
 
+#define C 0
+#define N 1
+#define S 2
+#define E 3
+#define W 4
+#define NE 5
+#define NW 6
+#define SE 7
+#define SW 8
+
 typedef struct
 {
   pin x_pin;
@@ -31,7 +41,7 @@ typedef struct
 } polar_coords;
 
 joystick *joystick_init(pin x_pin, pin y_pin, uint8_t x_channel, uint8_t y_channel, pin button_pin);
-char *joystick_get_direction(joystick *joystick);
+uint8_t joystick_get_direction(joystick *joystick);
 bool joystick_read_button(joystick *joystick);
 void joystick_print(joystick *joystick);
 void joystick_update(joystick *joystick);
