@@ -26,8 +26,11 @@ void handle_text_wrapping(text_editor *editor);
 void print_logic_buf(text_editor *editor);
 void populate_video_buffer(text_editor *editor);
 char *stringify_logic_buffer(text_editor *editor);
-void incr_video_buf_row(text_editor *editor);
 
+/**
+ * @brief Initialize a new text editor instance
+ * @returns a new text editor instance
+ */
 text_editor *text_editor_init(virtual_keyboard *keyboard)
 {
   text_editor *editor = (text_editor *)malloc(sizeof(text_editor));
@@ -43,6 +46,15 @@ text_editor *text_editor_init(virtual_keyboard *keyboard)
   return editor;
 }
 
+/**
+ * @brief Start the text editor loop to write a file
+ * using the virtual keyboard and the oled screen
+ * provided by the drivers manager
+ *
+ * @returns The user input buffer as string in
+ * the moment an END is received from keyboard or
+ * MAX_LOGIC_ROWS is reached
+ */
 char *text_editor_start(text_editor *editor)
 {
   char last_input_char = '\0';
@@ -69,11 +81,13 @@ void handle_keyboard_commands(text_editor *editor, char last_char)
   {
     handle_backspace(editor);
     print_logic_buf(editor);
+    printf("VIDEO CURSOR ROW: %d, VIDEO CURSOR COL: %d, SCROLL: %d\n", editor->video_cursor_row, editor->video_cursor_col, editor->scroll);
     return;
   }
   if (last_char == '\n')
   {
     handle_newline(editor);
+    printf("VIDEO CURSOR ROW: %d, VIDEO CURSOR COL: %d, SCROLL: %d\n", editor->video_cursor_row, editor->video_cursor_col, editor->scroll);
     return;
   }
   handle_normal_char(editor, last_char);
@@ -88,7 +102,7 @@ void handle_text_wrapping(text_editor *editor)
   editor->logic_cursor_col = 0;
   editor->video_cursor_col = 0;
   editor->logic_cursor_row++;
-  incr_video_buf_row(editor);
+  editor->video_cursor_row++;
 }
 
 void handle_normal_char(text_editor *editor, char last_char)
@@ -104,7 +118,7 @@ void handle_newline(text_editor *editor)
   editor->logic_cursor_col = 0;
   editor->video_cursor_col = 0;
   editor->logic_cursor_row++;
-  incr_video_buf_row(editor);
+  editor->video_cursor_row++;
 }
 
 void handle_backspace(text_editor *editor)
@@ -136,8 +150,11 @@ void handle_backspace(text_editor *editor)
       if (editor->logic_cursor_col == 0)
       {
         editor->logic_cursor_row--;
+        editor->video_cursor_row--;
         editor->logic_cursor_col = MAX_LOGIC_COLS;
         editor->video_cursor_col = MAX_VIDEO_COLS;
+        if (editor->video_cursor_row >= MAX_VIDEO_ROWS)
+          scroll_view_up(editor);
       }
       else
       {
@@ -146,7 +163,6 @@ void handle_backspace(text_editor *editor)
       }
     }
     editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] = following;
-    scroll_view_up(editor);
   }
 }
 
@@ -185,13 +201,6 @@ char *stringify_logic_buffer(text_editor *editor)
     }
   }
   return res;
-}
-
-void incr_video_buf_row(text_editor *editor)
-{
-  // if (editor->video_cursor_row == MAX_VIDEO_ROWS - 1)
-  //   return;
-  editor->video_cursor_row++;
 }
 
 void populate_video_buffer(text_editor *editor)

@@ -11,19 +11,20 @@
 #include "hw_manager.h"
 #include "virtual_keyboard.h"
 
-/*
+/**
 If you wish to modify the layout of the keyboard, you can do so by changing the values
 of the uppercase_layout and lowercase_layout arrays. Changes will be automatically reflected
 but make sure to keep the ROWS and COLS values consistent with the new layout.
 and keep in mind that there are some special characters:
-- '_' is used to represent a space
-- '^' is used to switch from uppercase to lowercase and vice versa
-- '<' is used to represent the backspace key
-- '>' is used to represent the enter key, that will return the input
-- '~' is used to represent the caps lock key
-- '`' is used to represent the end input key
-- NSK (not shown key) is used to represent a key that will not be displayed
-No matter where you put this buttons, they will always have the same functionality.
+- SPC: space
+- BCK: backspace
+- SHF: shift
+- LFD: line feed (newline)
+- UPP: go to uppercase
+- LOW: go to lowercase
+- NAV: navigate text
+- END: save the buffer and exit
+- NSK: not shown key
 */
 char uppercase_layout[ROWS][COLS] = {
     {'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '|', SPC, LFD},
@@ -55,6 +56,11 @@ void toggle_uppercase(virtual_keyboard *keyboard);
 bool is_out_of_bounds(uint8_t row, uint8_t col);
 key *select_key(virtual_keyboard *keyboard, uint8_t direction, key *last_key);
 
+/**
+ * @brief Initialize a new virtual keyboard instance
+ *
+ * @returns A new virtual keyboard instance
+ */
 virtual_keyboard *virtual_keyboard_init()
 {
   virtual_keyboard *new_keyboard = (virtual_keyboard *)malloc(sizeof(virtual_keyboard));
@@ -66,6 +72,10 @@ virtual_keyboard *virtual_keyboard_init()
   return new_keyboard;
 }
 
+/**
+ * @brief Read the virtual keyboard, note this function MUST be called inside a loop
+ * @returns The character selected by the user
+ */
 char virtual_keyboard_read(virtual_keyboard *keyboard)
 {
   highlight_key(keyboard, keyboard->last_key, true);
@@ -236,6 +246,9 @@ void draw_custom_char(uint8_t row, uint8_t col, char label, bool reversed)
   }
 }
 
+/**
+ * @brief Draws the virtual keyboard on the oled screen provided by the drivers manager
+ */
 void draw_keyboard(virtual_keyboard *keyboard)
 {
   for (uint8_t i = 0; i < ROWS; i++)
