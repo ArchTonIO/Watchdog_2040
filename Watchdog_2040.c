@@ -26,6 +26,27 @@ void mainloop()
     printf("Paragraph: %s\n", paragraph);
     free(paragraph);
   }
+  // ssd1306_draw_bitmap(
+  //     drivers->oled_screen,
+  //     0,
+  //     0,
+  //     NEWLINE_PIXELS,
+  //     8,
+  //     8,
+  //     false);
+  // ssd1306_show(drivers->oled_screen);
+  // sleep_ms(5000);
+  // ssd1306_draw_bitmap(
+  //     drivers->oled_screen,
+  //     0,
+  //     0,
+  //     NEWLINE_PIXELS,
+  //     8,
+  //     8,
+  //     true);
+  // ssd1306_show(drivers->oled_screen);
+  // sleep_ms(5000);
+  // }
 }
 
 int main()

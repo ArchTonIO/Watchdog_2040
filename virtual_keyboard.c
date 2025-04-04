@@ -26,16 +26,25 @@ and keep in mind that there are some special characters:
 No matter where you put this buttons, they will always have the same functionality.
 */
 char uppercase_layout[ROWS][COLS] = {
-    {'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '|', '`', '_'},
-    {'~', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', NSK, NSK, '<'},
-    {NSK, NSK, 'Z', 'X', 'C', 'V', 'B', 'N', 'M', NSK, NSK, '?', NSK, NSK, '^'},
-    {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', NSK, '+', NSK, NSK, '>'}};
+    {'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '|', SPC, LFD},
+    {NSK, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', NSK, NSK, BCK},
+    {NSK, NSK, 'Z', 'X', 'C', 'V', 'B', 'N', 'M', NSK, NSK, '?', NSK, LOW, SHF},
+    {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', NSK, '+', NSK, NAV, END}};
 
 char lowercase_layout[ROWS][COLS] = {
-    {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', NSK, '`', '_'},
-    {'~', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', NSK, NSK, '<'},
-    {NSK, NSK, 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', NSK, NSK, '^'},
-    {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', NSK, NSK, '>'}};
+    {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', NSK, SPC, LFD},
+    {NSK, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', NSK, NSK, BCK},
+    {NSK, NSK, 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', NSK, UPP, SHF},
+    {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', NSK, NAV, END}};
+
+char NEWLINE_PIXELS[] = {0x7c, 0x04, 0x24, 0x64, 0xcc, 0x60, 0x20, 0x00};
+char BACSPACE_PIXELS[] = {0x00, 0x20, 0x60, 0xcc, 0x60, 0x20, 0x00, 0x00};
+char UPPERCASE_PIXELS[] = {0x78, 0x48, 0x78, 0x48, 0x48, 0x00, 0x84, 0xfc};
+char LOWERCASE_PIXELS[] = {0x78, 0x08, 0x78, 0x48, 0x78, 0x00, 0xfc, 0x84};
+char SHIFT_PIXELS[] = {0x20, 0x70, 0xd8, 0x00, 0x20, 0x20, 0x20, 0x20};
+char SPACE_PIXELS[] = {0x00, 0x00, 0x00, 0xfc, 0x84, 0x00, 0x00, 0x00};
+char NAVIGATE_PIXELS[] = {0x00, 0xcc, 0xb4, 0x78, 0x78, 0xb4, 0xcc, 0x00};
+char END_INPUT_PIXELS[] = {0xc0, 0xd0, 0xd8, 0xcc, 0xd8, 0xd0, 0xc0, 0xfc};
 
 void populate_keys(virtual_keyboard *keyboard);
 void highlight_key(virtual_keyboard *keyboard, key *key, bool highlight);
@@ -57,7 +66,7 @@ virtual_keyboard *virtual_keyboard_init()
   return new_keyboard;
 }
 
-char virtual_keyboard_write(virtual_keyboard *keyboard)
+char virtual_keyboard_read(virtual_keyboard *keyboard)
 {
   highlight_key(keyboard, keyboard->last_key, true);
   joystick_update(drivers->joystick);
@@ -67,7 +76,7 @@ char virtual_keyboard_write(virtual_keyboard *keyboard)
   if (!drivers->joystick->button_pressed)
   {
     sleep_ms(INPUT_TIMEOUT);
-    return NO_WRITE_CHAR;
+    return NOW;
   }
   keyboard->last_char = keyboard->last_key->label;
 
@@ -79,23 +88,23 @@ char virtual_keyboard_write(virtual_keyboard *keyboard)
   }
 
   /*handle enter*/
-  if (keyboard->last_char == NEWLINE_CHAR)
+  if (keyboard->last_char == LFD)
   {
     sleep_ms(DEBOUNCE_TIMEOUT);
     return '\n';
   }
 
   /*handle shift*/
-  if (keyboard->last_char == SHIFT_CHAR)
+  if (keyboard->last_char == SHF)
   {
     keyboard->shift = true;
     toggle_uppercase(keyboard);
     sleep_ms(DEBOUNCE_TIMEOUT);
-    return NO_WRITE_CHAR;
+    return NOW;
   }
 
   /*handle caps lock*/
-  if (keyboard->last_char == CAPS_LOCK_CHAR)
+  if (keyboard->last_char == UPP || keyboard->last_char == LOW)
   {
     if (keyboard->caps_lock)
       keyboard->caps_lock = false;
@@ -103,11 +112,11 @@ char virtual_keyboard_write(virtual_keyboard *keyboard)
       keyboard->caps_lock = true;
     toggle_uppercase(keyboard);
     sleep_ms(DEBOUNCE_TIMEOUT);
-    return NO_WRITE_CHAR;
+    return NOW;
   }
 
   /*handle space*/
-  if (keyboard->last_char == SPACE_CHAR)
+  if (keyboard->last_char == SPC)
   {
     sleep_ms(DEBOUNCE_TIMEOUT);
     return ' ';
@@ -127,16 +136,123 @@ void populate_keys(virtual_keyboard *keyboard)
     }
 }
 
+void draw_custom_char(uint8_t row, uint8_t col, char label, bool reversed)
+{
+  if (label == SPC)
+  {
+    ssd1306_draw_bitmap(
+        drivers->oled_screen,
+        col * CHAR_WIDTH + LEFT_PADDING,
+        row * CHAR_HEIGHT + TOP_PADDING,
+        SPACE_PIXELS,
+        CHAR_WIDTH,
+        CHAR_HEIGHT,
+        reversed);
+    return;
+  }
+  if (label == BCK)
+  {
+    ssd1306_draw_bitmap(
+        drivers->oled_screen,
+        col * CHAR_WIDTH + LEFT_PADDING,
+        row * CHAR_HEIGHT + TOP_PADDING,
+        BACSPACE_PIXELS,
+        CHAR_WIDTH,
+        CHAR_HEIGHT,
+        reversed);
+    return;
+  }
+  if (label == SHF)
+  {
+    ssd1306_draw_bitmap(
+        drivers->oled_screen,
+        col * CHAR_WIDTH + LEFT_PADDING,
+        row * CHAR_HEIGHT + TOP_PADDING,
+        SHIFT_PIXELS,
+        CHAR_WIDTH,
+        CHAR_HEIGHT,
+        reversed);
+    return;
+  }
+  if (label == LFD)
+  {
+    ssd1306_draw_bitmap(
+        drivers->oled_screen,
+        col * CHAR_WIDTH + LEFT_PADDING,
+        row * CHAR_HEIGHT + TOP_PADDING,
+        NEWLINE_PIXELS,
+        CHAR_WIDTH,
+        CHAR_HEIGHT,
+        reversed);
+    return;
+  }
+  if (label == UPP)
+  {
+    ssd1306_draw_bitmap(
+        drivers->oled_screen,
+        col * CHAR_WIDTH + LEFT_PADDING,
+        row * CHAR_HEIGHT + TOP_PADDING,
+        UPPERCASE_PIXELS,
+        CHAR_WIDTH,
+        CHAR_HEIGHT,
+        reversed);
+    return;
+  }
+  if (label == LOW)
+  {
+    ssd1306_draw_bitmap(
+        drivers->oled_screen,
+        col * CHAR_WIDTH + LEFT_PADDING,
+        row * CHAR_HEIGHT + TOP_PADDING,
+        LOWERCASE_PIXELS,
+        CHAR_WIDTH,
+        CHAR_HEIGHT,
+        reversed);
+    return;
+  }
+  if (label == NAV)
+  {
+    ssd1306_draw_bitmap(
+        drivers->oled_screen,
+        col * CHAR_WIDTH + LEFT_PADDING,
+        row * CHAR_HEIGHT + TOP_PADDING,
+        NAVIGATE_PIXELS,
+        CHAR_WIDTH,
+        CHAR_HEIGHT,
+        reversed);
+    return;
+  }
+  if (label == END)
+  {
+    ssd1306_draw_bitmap(
+        drivers->oled_screen,
+        col * CHAR_WIDTH + LEFT_PADDING,
+        row * CHAR_HEIGHT + TOP_PADDING,
+        END_INPUT_PIXELS,
+        CHAR_WIDTH,
+        CHAR_HEIGHT,
+        reversed);
+    return;
+  }
+}
+
 void draw_keyboard(virtual_keyboard *keyboard)
 {
   for (uint8_t i = 0; i < ROWS; i++)
     for (uint8_t j = 0; j < COLS; j++)
+    {
+      if (keyboard->keys[i][j].label < ' ' || keyboard->keys[i][j].label > 0x7F)
+      {
+        draw_custom_char(i, j, keyboard->keys[i][j].label, false);
+        continue;
+      }
       ssd1306_draw_letter_at(
           drivers->oled_screen,
           j * CHAR_WIDTH + LEFT_PADDING,
           i * CHAR_HEIGHT + TOP_PADDING,
           keyboard->keys[i][j].label,
           false);
+    }
   ssd1306_show(drivers->oled_screen);
 }
 
@@ -172,6 +288,11 @@ void highlight_key(
     key *key,
     bool highlight)
 {
+  if (key->label < ' ' || key->label > 0x7F)
+  {
+    draw_custom_char(key->row, key->col, key->label, highlight);
+    return;
+  }
   ssd1306_draw_letter_at(
       drivers->oled_screen,
       key->col * CHAR_WIDTH + LEFT_PADDING,

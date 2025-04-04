@@ -266,6 +266,40 @@ void ssd1306_print(ssd1306 *display, const char *str, uint8_t x, uint8_t y, bool
 }
 
 /*
+ * @brief Draw a bitmap at the specified position
+ * The bitmap is a 1bpp monochrome bitmap, the width and height are in pixels
+ *
+ * @param display: the display to draw to
+ * @param x: the x position of the first pixel
+ * @param y: the y position of the first pixel
+ * @param bitmap: the bitmap to draw
+ * @param width: the width of the bitmap in pixels
+ * @param height: the height of the bitmap in pixels
+ * @param color: the color of the bitmap (1 for white, 0 for black)
+ */
+void ssd1306_draw_bitmap(
+		ssd1306 *display,
+		uint8_t x,
+		uint8_t y,
+		const uint8_t bitmap[],
+		int16_t width,
+		int16_t height,
+		bool reversed)
+{
+	int16_t byte_width = (width + 7) / 8;
+	for (int16_t j = 0; j < height; j++, y++)
+	{
+		for (int16_t i = 0; i < width; i++)
+		{
+			uint8_t byte = bitmap[j * byte_width + (i / 8)];
+			if (reversed)
+				byte = ~byte;
+			ssd1306_draw_pixel(display, x + i, y, (byte & (0x80 >> (i % 8))) ? 1 : 0);
+		}
+	}
+}
+
+/*
  * @brief Show the display buffer on the screen,
  * (display buffer is the buffer that holds the pixel data)
  *
