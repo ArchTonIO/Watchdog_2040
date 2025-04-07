@@ -33,10 +33,12 @@ typedef struct
   char video_buf[MAX_VIDEO_ROWS][MAX_VIDEO_COLS];
   char logic_buf[MAX_LOGIC_ROWS][MAX_LOGIC_COLS];
   virtual_keyboard *keyboard;
+  bool debug;
 } text_editor;
 
-text_editor *text_editor_init(virtual_keyboard *keyboard);
+text_editor *text_editor_init(virtual_keyboard *keyboard, bool debug);
 char *text_editor_start(text_editor *editor);
+void reset_state(text_editor *editor);
 void save_buffer_as_file(text_editor *editor, char *filename);
 void load_file_to_buffer(text_editor *editor, char *filename);
 

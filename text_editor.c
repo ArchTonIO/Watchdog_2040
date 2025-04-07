@@ -13,9 +13,9 @@
 void push_video_buf_to_screen(text_editor *editor);
 void write_char(uint8_t col, uint8_t row, char to_write);
 void blink_cursor(text_editor *editor, uint8_t col, uint8_t row);
-// void reset_state(text_editor *editor);
-void show_scroll_cursor(uint8_t lenght, uint16_t y_pos);
-uint8_t calculate_scroll_cursor_height(uint8_t num_extra_lines);
+void reset_state(text_editor *editor);
+void show_scroll_cursor(uint8_t lenght, uint8_t y_pos);
+uint8_t calculate_scroll_cursor_height(int16_t num_extra_lines);
 void scroll_view_up(text_editor *editor);
 void scroll_view_down(text_editor *editor);
 void handle_backspace(text_editor *editor);
@@ -31,7 +31,7 @@ char *stringify_logic_buffer(text_editor *editor);
  * @brief Initialize a new text editor instance
  * @returns a new text editor instance
  */
-text_editor *text_editor_init(virtual_keyboard *keyboard)
+text_editor *text_editor_init(virtual_keyboard *keyboard, bool debug)
 {
   text_editor *editor = (text_editor *)malloc(sizeof(text_editor));
   editor->show_cursor = true;
@@ -43,6 +43,7 @@ text_editor *text_editor_init(virtual_keyboard *keyboard)
   memset(editor->logic_buf, MEMSET_FILL, MAX_LOGIC_ROWS * MAX_LOGIC_COLS);
   memset(editor->video_buf, MEMSET_FILL, MAX_VIDEO_ROWS * MAX_VIDEO_COLS);
   editor->keyboard = keyboard;
+  editor->debug = debug;
   return editor;
 }
 
@@ -69,8 +70,20 @@ char *text_editor_start(text_editor *editor)
     handle_keyboard_commands(editor, last_input_char);
     populate_video_buffer(editor);
     push_video_buf_to_screen(editor);
+    show_scroll_cursor(calculate_scroll_cursor_height((editor->logic_cursor_row - (MAX_VIDEO_ROWS - 1))), 0);
   }
   return stringify_logic_buffer(editor);
+}
+
+void reset_state(text_editor *editor)
+{
+  editor->scroll = 0;
+  editor->video_cursor_col = 0;
+  editor->video_cursor_row = 0;
+  editor->logic_cursor_col = 0;
+  editor->logic_cursor_row = 0;
+  memset(editor->logic_buf, MEMSET_FILL, MAX_LOGIC_ROWS * MAX_LOGIC_COLS);
+  memset(editor->video_buf, MEMSET_FILL, MAX_VIDEO_ROWS * MAX_VIDEO_COLS);
 }
 
 void handle_keyboard_commands(text_editor *editor, char last_char)
@@ -80,19 +93,17 @@ void handle_keyboard_commands(text_editor *editor, char last_char)
   if (last_char == BCK)
   {
     handle_backspace(editor);
-    print_logic_buf(editor);
-    printf("VIDEO CURSOR ROW: %d, VIDEO CURSOR COL: %d, SCROLL: %d\n", editor->video_cursor_row, editor->video_cursor_col, editor->scroll);
+    editor->debug ? print_logic_buf(editor) : NULL;
     return;
   }
   if (last_char == '\n')
   {
     handle_newline(editor);
-    printf("VIDEO CURSOR ROW: %d, VIDEO CURSOR COL: %d, SCROLL: %d\n", editor->video_cursor_row, editor->video_cursor_col, editor->scroll);
+    editor->debug ? print_logic_buf(editor) : NULL;
     return;
   }
   handle_normal_char(editor, last_char);
-  print_logic_buf(editor);
-  printf("VIDEO CURSOR ROW: %d, VIDEO CURSOR COL: %d, SCROLL: %d\n", editor->video_cursor_row, editor->video_cursor_col, editor->scroll);
+  editor->debug ? print_logic_buf(editor) : NULL;
 }
 
 void handle_text_wrapping(text_editor *editor)
@@ -144,17 +155,21 @@ void handle_backspace(text_editor *editor)
     editor->logic_cursor_col = MAX_LOGIC_COLS;
     editor->video_cursor_col = MAX_VIDEO_COLS;
     editor->logic_cursor_row--;
-    editor->video_cursor_row--;
+    if (editor->video_cursor_row > 0)
+      editor->video_cursor_row--;
+    if (editor->logic_cursor_row >= MAX_VIDEO_ROWS - 1)
+      scroll_view_up(editor);
     while (editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] == MEMSET_FILL || editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] == '\n')
     {
       if (editor->logic_cursor_col == 0)
       {
+        if (editor->logic_cursor_row > MAX_VIDEO_ROWS - 1)
+          scroll_view_up(editor);
         editor->logic_cursor_row--;
-        editor->video_cursor_row--;
+        if (editor->video_cursor_row > 0)
+          editor->video_cursor_row--;
         editor->logic_cursor_col = MAX_LOGIC_COLS;
         editor->video_cursor_col = MAX_VIDEO_COLS;
-        if (editor->video_cursor_row >= MAX_VIDEO_ROWS)
-          scroll_view_up(editor);
       }
       else
       {
@@ -182,6 +197,7 @@ void print_logic_buf(text_editor *editor)
     }
     printf("\n");
   }
+  printf("VIDEO CURSOR ROW: %d, VIDEO CURSOR COL: %d\nLOGIC CURSOR ROW: %d, LOGIC CURSOR COL: %d, SCROLL: %d\n", editor->video_cursor_row, editor->video_cursor_col, editor->logic_cursor_row, editor->logic_cursor_col, editor->scroll);
 }
 
 char *stringify_logic_buffer(text_editor *editor)
@@ -213,7 +229,6 @@ void populate_video_buffer(text_editor *editor)
         editor->video_buf[i][j] = ' ';
   if (editor->video_cursor_row > MAX_VIDEO_ROWS - 1)
   {
-    printf("scrolling down, video_cursor_row: %d, logic_cursor_row: %d\n", editor->video_cursor_row, editor->logic_cursor_row);
     scroll_view_down(editor);
     return;
   }
@@ -283,7 +298,7 @@ void blink_cursor(
   editor->show_cursor = !editor->show_cursor;
 }
 
-void show_scroll_cursor(uint8_t lenght, uint16_t y_pos)
+void show_scroll_cursor(uint8_t lenght, uint8_t y_pos)
 {
   for (uint8_t i = 0; i < (MAX_VIDEO_ROWS * CHAR_HEIGHT); i++)
   {
@@ -298,6 +313,8 @@ void show_scroll_cursor(uint8_t lenght, uint16_t y_pos)
         i,
         0);
   }
+  if (lenght == 0)
+    return;
   for (uint8_t i = 0; i < lenght; i++)
   {
     ssd1306_draw_pixel(
@@ -313,118 +330,13 @@ void show_scroll_cursor(uint8_t lenght, uint16_t y_pos)
   }
 }
 
-uint8_t calculate_scroll_cursor_height(uint8_t num_extra_lines)
+uint8_t calculate_scroll_cursor_height(int16_t num_extra_lines)
 {
+  if (num_extra_lines <= 0)
+    return 0;
   float ratio = (float)MAX_VIDEO_ROWS / (MAX_VIDEO_ROWS + num_extra_lines);
   uint8_t height = (uint8_t)(ratio * MAX_VIDEO_ROWS * CHAR_HEIGHT);
   if (height < SCROLL_CURSOR_MIN_HEIGHT)
     return SCROLL_CURSOR_MIN_HEIGHT;
   return height;
 }
-
-// text_editor *text_editor_init(virtual_keyboard *keyboard)
-// {
-//   text_editor *editor = (text_editor *)malloc(sizeof(text_editor));
-//   editor->keyboard = keyboard;
-//   editor->show_cursor = true;
-//   editor->cursor_col = 0;
-//   editor->cursor_row = 0;
-//   editor->buf_counter = 0;
-//   editor->num_extra_lines = 0;
-//   memset(editor->buf, '\0', MAX_INPUT_LENGTH + 1);
-//   memset(editor->video_buf, MEMSET_FILL, MAX_ROWS * MAX_CHARS_PER_ROW);
-//   return editor;
-// }
-
-// char *text_editor_start(text_editor *editor)
-// {
-//   char last_char = '\0';
-//   while (1)
-//   {
-//     ssd1306_show(drivers->oled_screen);
-//     last_char = virtual_keyboard_write(editor->keyboard);
-
-//     /*handle text wrapping*/
-//     if (editor->cursor_col == MAX_CHARS_PER_ROW)
-//     {
-//       editor->cursor_col = 0;
-//       editor->cursor_row++;
-//     }
-
-//     /*handle scrolling down*/
-//     if (editor->cursor_row == MAX_ROWS)
-//     {
-//       for (uint8_t i = 0; i < MAX_ROWS - 1; i++)
-//         for (uint8_t j = 0; j < MAX_CHARS_PER_ROW; j++)
-//           editor->video_buf[i][j] = editor->video_buf[i + 1][j];
-//       for (uint8_t j = 0; j < MAX_CHARS_PER_ROW; j++)
-//         editor->video_buf[MAX_ROWS - 1][j] = MEMSET_FILL;
-//       editor->cursor_row--;
-//       editor->num_extra_lines++;
-//       show_scroll_cursor(calculate_scroll_cursor_height(editor->num_extra_lines), 0);
-//       push_video_buf_to_screen(editor);
-//     }
-
-//     blink_cursor(editor, editor->cursor_col, editor->cursor_row);
-
-//     /*handle end input*/
-//     if (last_char == END_INPUT_CHAR)
-//       break;
-
-//     /*handle keyboard commands*/
-//     if (last_char == NO_WRITE_CHAR)
-//       continue;
-
-//     /*handle backspace*/
-//     if (last_char == BCK)
-//     {
-//       printf("buf_counter: %d, cursor_col: %d, cursor_row: %d\n", editor->buf_counter, editor->cursor_col, editor->cursor_row);
-//       if (editor->cursor_col == 0 && editor->cursor_row == 0 && editor->num_extra_lines == 0)
-//         continue;
-//       if (editor->cursor_col == 0)
-//       {
-//         editor->cursor_col = MAX_CHARS_PER_ROW - 1;
-//         editor->cursor_row--;
-//       }
-//       else
-//       {
-//         editor->cursor_col--;
-//         editor->video_buf[editor->cursor_row][editor->cursor_col] != ' ' ? editor->buf_counter-- : editor->buf_counter;
-//       }
-//       editor->video_buf[editor->cursor_row][editor->cursor_col] = ' ';
-//       editor->buf[editor->buf_counter] = editor->buf[editor->buf_counter + 1];
-//     }
-
-//     /*handle newline character*/
-//     if (last_char == '\n')
-//     {
-//       editor->cursor_col = 0;
-//       editor->cursor_row++;
-//       editor->buf[editor->buf_counter] = '\n';
-//       editor->buf_counter++;
-//     }
-
-//     /*handle normal character*/
-//     if (last_char != BCK && last_char != '\n')
-//     {
-//       editor->buf[editor->buf_counter] = last_char;
-//       editor->video_buf[editor->cursor_row][editor->cursor_col] = last_char;
-//       editor->cursor_col++;
-//       editor->buf_counter++;
-//     }
-//     push_video_buf_to_screen(editor);
-//   }
-//   char *res = (char *)malloc(editor->buf_counter);
-//   strcpy(res, editor->buf);
-//   reset_state(editor);
-//   return res;
-// }
-
-// void reset_state(text_editor *editor)
-// {
-//   editor->cursor_col = 0;
-//   editor->cursor_row = 0;
-//   editor->buf_counter = 0;
-//   memset(editor->buf, 0, MAX_INPUT_LENGTH + 1);
-//   memset(editor->video_buf, MEMSET_FILL, MAX_ROWS * MAX_CHARS_PER_ROW);
-// }
