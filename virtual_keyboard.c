@@ -131,6 +131,15 @@ char virtual_keyboard_read(virtual_keyboard *keyboard)
     sleep_ms(DEBOUNCE_TIMEOUT);
     return ' ';
   }
+
+  /*handle nav button*/
+  if (keyboard->last_char == NAV)
+  {
+    sleep_ms(DEBOUNCE_TIMEOUT);
+    keyboard->target_key = &keyboard->keys[0][0];
+    highlight_key(keyboard, &keyboard->keys[3][13], true);
+    return keyboard->last_char;
+  }
   sleep_ms(DEBOUNCE_TIMEOUT);
   return keyboard->last_char;
 }

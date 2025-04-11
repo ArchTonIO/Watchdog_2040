@@ -26,6 +26,7 @@ void handle_text_wrapping(text_editor *editor);
 void print_logic_buf(text_editor *editor);
 void populate_video_buffer(text_editor *editor);
 char *stringify_logic_buffer(text_editor *editor);
+void navigate_text(text_editor *editor);
 
 /**
  * @brief Initialize a new text editor instance
@@ -75,6 +76,53 @@ char *text_editor_start(text_editor *editor)
   return stringify_logic_buffer(editor);
 }
 
+void navigate_text(text_editor *editor)
+{
+  while (1)
+  {
+    if (joystick_check_long_press(drivers->joystick, 500))
+    {
+      sleep_ms(1000);
+      break;
+    }
+    blink_cursor(editor, editor->video_cursor_col, editor->video_cursor_row);
+    ssd1306_show(drivers->oled_screen);
+    joystick_update(drivers->joystick);
+    if (joystick_get_direction(drivers->joystick) == N)
+    {
+      if (editor->video_cursor_row > 0)
+        editor->video_cursor_row--;
+      if (editor->logic_cursor_row > 0)
+        editor->logic_cursor_row--;
+      if (editor->video_cursor_row == 0 && editor->logic_cursor_row > editor->video_cursor_row + 1)
+        scroll_view_up(editor);
+    }
+    if (joystick_get_direction(drivers->joystick) == S)
+    {
+      if (editor->video_cursor_row < MAX_VIDEO_ROWS - 1)
+        editor->video_cursor_row++;
+      if (editor->logic_cursor_row < MAX_LOGIC_ROWS - 1)
+        editor->logic_cursor_row++;
+      if (editor->video_cursor_row == MAX_VIDEO_ROWS - 1 && editor->logic_cursor_row > editor->video_cursor_row)
+        scroll_view_down(editor);
+    }
+    if (joystick_get_direction(drivers->joystick) == E && editor->video_cursor_col > 0)
+    {
+      editor->video_cursor_col--;
+      editor->logic_cursor_col--;
+    }
+    if (joystick_get_direction(drivers->joystick) == W && editor->video_cursor_col < MAX_VIDEO_COLS)
+    {
+      editor->video_cursor_col++;
+      editor->logic_cursor_col++;
+    }
+    sleep_ms(INPUT_TIMEOUT);
+    populate_video_buffer(editor);
+    push_video_buf_to_screen(editor);
+    show_scroll_cursor(calculate_scroll_cursor_height((editor->logic_cursor_row - (MAX_VIDEO_ROWS - 1))), 0);
+  }
+}
+
 void reset_state(text_editor *editor)
 {
   editor->scroll = 0;
@@ -90,6 +138,11 @@ void handle_keyboard_commands(text_editor *editor, char last_char)
 {
   if (last_char == NOW)
     return;
+  if (last_char == NAV)
+  {
+    navigate_text(editor);
+    return;
+  }
   if (last_char == BCK)
   {
     handle_backspace(editor);

@@ -59,6 +59,7 @@ If you wish to change the pins go to lib/no-Os-FatFS-SD-SPI-RPi-Pico/FatFs_SPI/s
 #define JOYSTICK_DEFAULT_MAX_L 2800
 #define JOYSTICK_AUTO_CALIBRATION_SAMPLES 150
 #define JOYSTICK_AUTO_CALIBRATION_INTERVAL_MS 10
+#define JOYSTICK_SENSITIVITY 0.5f
 
 /*battery settings*/
 #define VOLTAGE_DIVIDER_RATIO 3.125

@@ -20,7 +20,7 @@ void auto_calibrate(joystick *stick);
  * @param button_pin The pin where the button of the joystick is connected.
  * @return joystick* A pointer to the joystick instance.
  */
-joystick *joystick_init(pin x_pin, pin y_pin, uint8_t x_channel, uint8_t y_channel, pin button_pin)
+joystick *joystick_init(pin x_pin, pin y_pin, uint8_t x_channel, uint8_t y_channel, pin button_pin, float sensitivity)
 {
   joystick *new_joystick = (joystick *)malloc(sizeof(joystick));
   new_joystick->x_pin = x_pin;
@@ -38,6 +38,7 @@ joystick *joystick_init(pin x_pin, pin y_pin, uint8_t x_channel, uint8_t y_chann
   new_joystick->x_value = JOYSTICK_DEFAULT_CENTER;
   new_joystick->y_value = JOYSTICK_DEFAULT_CENTER;
   new_joystick->button_pressed = false;
+  new_joystick->sensitivity = sensitivity;
   adc_init();
   adc_gpio_init(x_pin);
   adc_gpio_init(y_pin);
@@ -117,7 +118,7 @@ polar_coords joystick_get_polar(joystick *stick)
 uint8_t joystick_get_direction(joystick *stick)
 {
   polar_coords polar = joystick_get_polar(stick);
-  if (polar.l < 0.1f)
+  if (polar.l < stick->sensitivity)
     return C;
   float angle = polar.theta_deg;
   if (angle >= -22.5f && angle < 22.5f)
@@ -139,6 +140,27 @@ uint8_t joystick_get_direction(joystick *stick)
 }
 
 /**
+ * @brief: Check if a long press is being performed by the user.
+ *
+ * @param stick The joystick instance.
+ * @param interval_ms The interval to wait to newly check if the joystick is pressed, in milliseconds.
+ * @retval true if the long press was performed.
+ * @retval flase if the long press was not performed.
+ */
+bool joystick_check_long_press(joystick *stick, uint16_t interval_ms)
+{
+  joystick_update(stick);
+  if (stick->button_pressed)
+  {
+    sleep_ms(interval_ms);
+    joystick_update(stick);
+    if (stick->button_pressed)
+      return true;
+  }
+  return false;
+}
+
+/**
  * @brief Prints the joytick status.
  *
  * @param stick The joystick instance.
@@ -147,7 +169,7 @@ void joystick_print(joystick *stick)
 {
   joystick_update(stick);
   polar_coords polar = joystick_get_polar(stick);
-  char *direction = joystick_get_direction(stick);
+  uint8_t direction = joystick_get_direction(stick);
   printf("JOYSTICK -> X: %d  Y: %d  S: %d\n", stick->x_value, stick->y_value, stick->button_pressed);
   printf("JOYSTICK -> L: %f  THETA: %f\n", polar.l, polar.theta_deg);
   printf("JOYSTICK -> DIRECTION: %d\n", direction);
