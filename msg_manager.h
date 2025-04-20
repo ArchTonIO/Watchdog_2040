@@ -4,11 +4,22 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define MAX_CONTACT_NAME_LENGTH 30
+#define MAX_CONTACTS 50
+
+typedef struct
+{
+  char name[MAX_CONTACT_NAME_LENGTH];
+  uint16_t addr;
+} contact;
+
 typedef struct
 {
   bool new_msg_arrived;
   bool should_notify;
+  contact contacts[MAX_CONTACTS];
   uint16_t received_msgs_count;
+  uint8_t contacts_count;
 } msg_manager;
 
 msg_manager *msg_manager_init(uint16_t my_addr);

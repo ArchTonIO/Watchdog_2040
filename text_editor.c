@@ -27,6 +27,33 @@ void print_logic_buf(text_editor *editor);
 void populate_video_buffer(text_editor *editor);
 char *stringify_logic_buffer(text_editor *editor);
 void navigate_text(text_editor *editor);
+void insert_placeholder_text(text_editor *editor, char *placeholder_text);
+
+/**
+ * @brief Launch a new instance of the text editor so that it appears
+ * on the oled screen with all needed components loaded
+ */
+text_editor *text_editor_launch(char *placeholder_text)
+{
+  virtual_keyboard *keyboard = virtual_keyboard_init();
+  ssd1306_clear(drivers->oled_screen);
+  text_editor *editor = text_editor_init(keyboard, false);
+  draw_keyboard(keyboard);
+  if (strcmp(placeholder_text, "") != 0)
+  {
+    insert_placeholder_text(editor, placeholder_text);
+    editor->placeholder_text_present = true;
+  }
+  return editor;
+}
+
+void text_editor_kill(text_editor *editor)
+{
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_show(drivers->oled_screen);
+  free(editor->keyboard);
+  free(editor);
+}
 
 /**
  * @brief Initialize a new text editor instance
@@ -41,11 +68,29 @@ text_editor *text_editor_init(virtual_keyboard *keyboard, bool debug)
   editor->video_cursor_row = 0;
   editor->logic_cursor_col = 0;
   editor->logic_cursor_row = 0;
+  editor->placeholder_text_present = false;
   memset(editor->logic_buf, MEMSET_FILL, MAX_LOGIC_ROWS * MAX_LOGIC_COLS);
   memset(editor->video_buf, MEMSET_FILL, MAX_VIDEO_ROWS * MAX_VIDEO_COLS);
   editor->keyboard = keyboard;
   editor->debug = debug;
   return editor;
+}
+
+void insert_placeholder_text(text_editor *editor, char *placeholder_text)
+{
+  for (uint8_t i = 0; i < strlen(placeholder_text); i++)
+  {
+    editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] = placeholder_text[i];
+    editor->logic_cursor_col++;
+    editor->video_cursor_col++;
+  }
+  editor->logic_cursor_row++;
+  editor->video_cursor_row++;
+  handle_text_wrapping(editor);
+  editor->video_cursor_col = 0;
+  editor->logic_cursor_col = 0;
+  editor->video_cursor_row = 0;
+  editor->logic_cursor_row = 0;
 }
 
 /**
@@ -57,7 +102,7 @@ text_editor *text_editor_init(virtual_keyboard *keyboard, bool debug)
  * the moment an END is received from keyboard or
  * MAX_LOGIC_ROWS is reached
  */
-char *text_editor_start(text_editor *editor)
+char *text_editor_get_buf(text_editor *editor)
 {
   char last_input_char = '\0';
   while (1)
@@ -138,6 +183,11 @@ void handle_keyboard_commands(text_editor *editor, char last_char)
 {
   if (last_char == NOW)
     return;
+  if (editor->placeholder_text_present)
+  {
+    reset_state(editor);
+    editor->placeholder_text_present = false;
+  }
   if (last_char == NAV)
   {
     navigate_text(editor);
@@ -257,7 +307,7 @@ char *stringify_logic_buffer(text_editor *editor)
 {
   char *res = (char *)malloc(sizeof(char));
   res[0] = '\0';
-  for (uint8_t i = 0; i < MAX_LOGIC_ROWS; i++)
+  for (uint16_t i = 0; i < MAX_LOGIC_ROWS; i++)
   {
     for (uint8_t j = 0; j < MAX_LOGIC_COLS; j++)
     {

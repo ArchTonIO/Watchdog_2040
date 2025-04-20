@@ -30,6 +30,7 @@ typedef struct
   uint8_t video_cursor_row;
   uint8_t logic_cursor_col;
   uint8_t logic_cursor_row;
+  bool placeholder_text_present;
   char video_buf[MAX_VIDEO_ROWS][MAX_VIDEO_COLS];
   char logic_buf[MAX_LOGIC_ROWS][MAX_LOGIC_COLS];
   virtual_keyboard *keyboard;
@@ -37,7 +38,9 @@ typedef struct
 } text_editor;
 
 text_editor *text_editor_init(virtual_keyboard *keyboard, bool debug);
-char *text_editor_start(text_editor *editor);
+text_editor *text_editor_launch(char *placeholder_text);
+void text_editor_kill(text_editor *editor);
+char *text_editor_get_buf(text_editor *editor);
 void reset_state(text_editor *editor);
 void save_buffer_as_file(text_editor *editor, char *filename);
 void load_file_to_buffer(text_editor *editor, char *filename);

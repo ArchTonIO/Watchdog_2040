@@ -141,20 +141,6 @@ void test_sd_card()
 	free(sd);
 }
 
-void wait_for_user_input()
-{
-	printf("Waiting for user to input 'a'\n");
-	char buf[100];
-	while (true)
-	{
-		buf[0] = getchar();
-		if ((buf[0] == 'a'))
-		{
-			break;
-		}
-	}
-}
-
 void test_all_hardware()
 {
 	wait_for_user_input();

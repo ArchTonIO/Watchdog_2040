@@ -257,11 +257,11 @@ void ssd1306_print(ssd1306 *display, const char *str, uint8_t x, uint8_t y, bool
 		if (c == '\n')
 		{
 			display->cursorx = 0;
-			display->cursory += 8;
+			display->cursory += CHAR_HEIGHT;
 			continue;
 		}
 		ssd1306_draw_letter_at(display, display->cursorx, display->cursory, c, reversed);
-		display->cursorx += 8;
+		display->cursorx += CHAR_WIDTH - 2;
 	}
 }
 

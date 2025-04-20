@@ -1,5 +1,5 @@
-#ifndef TESTS_H
-#define TESTS_H
+#ifndef HW_TESTS_H
+#define HW_TESTS_H
 
 void test_ens160();
 void test_rtc();
