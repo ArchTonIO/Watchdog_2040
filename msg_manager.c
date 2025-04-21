@@ -16,11 +16,10 @@
 
 msg_manager *msg_man_inst;
 
-// void eventually_save_received_msg();
-// void eventually_save_sent_msg(uint16_t dest_addr, char *message);
 void notify(uint16_t src_address);
 char *compose_message();
 uint16_t select_contact();
+void delete_contact(uint16_t addr);
 char *ask_for_contact_name();
 uint16_t ask_for_contact_addr();
 void display_sent_message_status(uint8_t result, uint16_t dest_addr);
@@ -29,6 +28,12 @@ uint16_t find_contact_addr_by_name(char *name);
 char *find_contact_name_by_addr(uint16_t addr);
 void display_received_message(uint16_t src_address);
 
+/**
+ * @brief Initializes the message manager with the given address.
+ *
+ * @param my_addr The address of the device.
+ * @return A pointer to the initialized message manager.
+ */
 msg_manager *msg_manager_init(uint16_t my_addr)
 {
   if (my_addr == 0)
@@ -46,6 +51,9 @@ msg_manager *msg_manager_init(uint16_t my_addr)
   return msg_man;
 }
 
+/**
+ * @brief Processes incoming messages and sends acknowledgments if necessary.
+ */
 void process_messages()
 {
   lora_eventually_send_ack();
@@ -57,6 +65,9 @@ void read_messages()
   //! TODO implement
 }
 
+/**
+ * @brief Sends a message to a selected contact.
+ */
 void send_message()
 {
   uint16_t dest_addr = select_contact();
@@ -64,10 +75,11 @@ void send_message()
   printf("message: %s, will be sent to %u\n", msg, dest_addr);
   uint8_t result = lora_send_msg(dest_addr, msg);
   display_sent_message_status(result, dest_addr);
-  // if (result == 0)
-  //   eventually_save_sent_msg(dest_addr, msg);
 }
 
+/**
+ * @brief Add a new contact to the contact list.
+ */
 void add_contact()
 {
   char *name = ask_for_contact_name();
@@ -87,9 +99,21 @@ void add_contact()
   ssd1306_show(drivers->oled_screen);
 }
 
+/**
+ * @brief Removes a contact from the contact list.
+ */
 void remove_contact()
 {
-  //! TODO implement
+  uint16_t to_remove = select_contact();
+  str_list *options = list();
+  lstappend(options, "Yes");
+  lstappend(options, "No");
+  options_page *yesno_page = options_page_init("You sure?", options);
+  char *sure = options_page_launch(yesno_page);
+  free(options);
+  free(yesno_page);
+  if (strcmp(sure, "Yes") == 0)
+    delete_contact(to_remove);
 }
 
 void notify(uint16_t src_address)
@@ -107,11 +131,11 @@ void save_contact(char *name, uint16_t addr)
   msg_man_inst->contacts_count++;
 }
 
-void delete_contact(char *name, uint16_t addr)
+void delete_contact(uint16_t addr)
 {
   for (uint16_t i = 0; i < msg_man_inst->contacts_count; i++)
   {
-    if (strcmp(msg_man_inst->contacts[i].name, name) == 0 && msg_man_inst->contacts[i].addr == addr)
+    if (msg_man_inst->contacts[i].addr == addr)
     {
       for (uint16_t j = i; j < msg_man_inst->contacts_count - 1; j++)
       {
@@ -163,8 +187,11 @@ char *compose_message()
 
 uint16_t select_contact()
 {
-  options_page *page = options_page_init(get_all_contacts());
+  str_list *contacts = get_all_contacts();
+  options_page *page = options_page_init("Select a contact", contacts);
   char *name = options_page_launch(page);
+  free(contacts);
+  free(page);
   return find_contact_addr_by_name(name);
 }
 
@@ -234,74 +261,3 @@ void disable_message_notifications()
 {
   msg_man_inst->should_notify = false;
 }
-
-// void dump_contact_to_sd(char *name, uint16_t addr)
-// {
-//   char addr_str[8];
-//   sprintf(addr_str, "%u", addr);
-//   size_t total_len = strlen(name) + strlen(addr_str) + 3; // name~addr\n\0
-//   char *to_write = malloc(total_len);
-//   if (!to_write)
-//     return;
-//   snprintf(to_write, total_len, "%s~%s\n", name, addr_str);
-//   sdcard_write_file(drivers->sd_card, "contacts.txt", to_write, 'a');
-//   free(to_write);
-// }
-
-// uint16_t find_contact_addr_by_name(char *name)
-// {
-//   str_list *contacts_file_content = sdcard_read_file(drivers->sd_card, "contacts.txt");
-//   for (uint16_t i = 0; i < contacts_file_content->len; i++)
-//   {
-//     char *line = lstget(contacts_file_content, i);
-//     char *delimiter = strchr(line, '~');
-//     *delimiter = '\0';
-//     uint16_t addr;
-//     if (strcmp(line, name) == 0)
-//       if (sscanf(delimiter + 1, "%hu", &addr) == 1)
-//         return addr;
-//   }
-//   return 0;
-// }
-
-// char *find_contact_name_by_addr(uint16_t addr)
-// {
-//   char *name = (char *)malloc(10);
-//   str_list *contacts_file_content = sdcard_read_file(drivers->sd_card, "contacts.txt");
-//   for (uint16_t i = 0; i < contacts_file_content->len; i++)
-//   {
-//     char *line = lstget(contacts_file_content, i);
-//     char *delimiter = strchr(line, '~');
-//     *delimiter = '\0';
-//     uint16_t line_addr;
-//     if (sscanf(delimiter + 1, "%hu", &line_addr) == 1)
-//       if (line_addr == addr)
-//         return line;
-//   }
-//   return NULL;
-// }
-
-// void eventually_save_received_msg()
-// {
-//   if (!msg_man_inst->new_msg_arrived)
-//     return;
-//   char addr[6];
-//   sprintf(addr, "%u", this_lora->rx->must_send_ack_dest);
-//   char *to_write = string_add(rtc_time_now(drivers->rtc), " - new message received from: ");
-//   to_write = string_add(to_write, addr);
-//   to_write = string_add(to_write, "\n");
-//   to_write = string_add(to_write, this_lora->rx->recv_payloads_buf);
-//   sdcard_write_file(drivers->sd_card, "messages.txt", to_write, 'a');
-//   msg_man_inst->new_msg_arrived = false;
-// }
-
-// void eventually_save_sent_msg(uint16_t dest_addr, char *message)
-// {
-//   char addr[6];
-//   sprintf(addr, "%u", dest_addr);
-//   char *to_write = string_add(rtc_time_now(drivers->rtc), " - message sent to: ");
-//   to_write = string_add(to_write, addr);
-//   to_write = string_add(to_write, "\n");
-//   to_write = string_add(to_write, message);
-//   sdcard_write_file(drivers->sd_card, "messages.txt", to_write, 'a');
-// }

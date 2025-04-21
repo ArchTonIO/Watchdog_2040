@@ -28,7 +28,7 @@ extern const uint8_t ssd1306_font6x8[];
 #define CHAR_WIDTH 8  // char width in pixels
 #define I2C_PORT i2c1
 
-#define MAX_X_CHARS 16
+#define MAX_X_CHARS 21
 #define MAX_Y_CHARS 8
 
 typedef struct

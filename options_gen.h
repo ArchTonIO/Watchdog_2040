@@ -26,9 +26,10 @@ typedef struct
   option options[MAX_OPTIONS];
   uint8_t num_options;
   uint8_t selected_option;
+  char *title;
 } options_page;
 
-options_page *options_page_init(str_list *options);
+options_page *options_page_init(char *title, str_list *options);
 void attach_callback_to_option(
     options_page *page,
     uint8_t option_index,

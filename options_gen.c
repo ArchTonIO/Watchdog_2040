@@ -10,11 +10,19 @@
 #include "hardware_drivers/joystick.h"
 #include "options_gen.h"
 
-options_page *options_page_init(str_list *options)
+/**
+ * @brief Initializes an options page with a list of options.
+ *
+ * @param title The title of the options page.
+ * @param options The list of options to initialize the page with.
+ * @returns A pointer to the initialized options page.
+ */
+options_page *options_page_init(char *title, str_list *options)
 {
   options_page *page = (options_page *)malloc(sizeof(options_page));
   page->num_options = options->len;
   page->selected_option = 0;
+  page->title = title;
   for (uint8_t i = 0; i < options->len; i++)
   {
     page->options[i].name = lstget(options, i);
@@ -24,6 +32,13 @@ options_page *options_page_init(str_list *options)
   return page;
 }
 
+/**
+ * @brief Attaches a callback function to an option in the options page.
+ *
+ * @param page The options page to attach the callback to.
+ * @param option_index The index of the option to attach the callback to.
+ * @param callback The callback function to attach.
+ */
 void attach_callback_to_option(
     options_page *page,
     uint8_t option_index,
@@ -35,22 +50,36 @@ void attach_callback_to_option(
   }
 }
 
+/**
+ * @brief Launches an options page with a list of options and allows the user to select one.
+ *        The selected option is returned as a string, or, if a callback was previously
+ *        attached to the option, the callback is executed instead.
+ * @param page The options page to launch.
+ * @returns The name of the selected option as a string.
+ */
 char *options_page_launch(options_page *page)
 {
   ssd1306_clear(drivers->oled_screen);
   uint8_t h_displacement = 0;
+  h_displacement = (uint8_t)((MAX_X_CHARS - strlen(page->title)) / 2);
+  ssd1306_print(
+      drivers->oled_screen,
+      page->title,
+      h_displacement,
+      0,
+      false);
   while (1)
   {
     for (uint8_t i = 0; i < page->num_options; i++)
     {
-      h_displacement = (uint8_t)((16 - strlen(page->options[i].name)) / 2) - !(strlen(page->options[i].name) % 2);
+      h_displacement = (uint8_t)((MAX_X_CHARS - strlen(page->options[i].name)) / 2);
       if (i == page->selected_option)
       {
         ssd1306_print(
             drivers->oled_screen,
             page->options[i].name,
             h_displacement,
-            i,
+            i + 1,
             true);
       }
       else
@@ -59,7 +88,7 @@ char *options_page_launch(options_page *page)
             drivers->oled_screen,
             page->options[i].name,
             h_displacement,
-            i,
+            i + 1,
             false);
       }
     }
