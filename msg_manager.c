@@ -163,10 +163,6 @@ char *compose_message()
 
 uint16_t select_contact()
 {
-  // text_editor *editor = text_editor_launch("# Type in the contact name");
-  // char *name = text_editor_get_buf(editor);
-  // text_editor_kill(editor);
-  printf("in select contact\n");
   options_page *page = options_page_init(get_all_contacts());
   char *name = options_page_launch(page);
   return find_contact_addr_by_name(name);

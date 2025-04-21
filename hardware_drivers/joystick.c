@@ -20,7 +20,7 @@ void auto_calibrate(joystick *stick);
  * @param button_pin The pin where the button of the joystick is connected.
  * @return joystick* A pointer to the joystick instance.
  */
-joystick *joystick_init(pin x_pin, pin y_pin, uint8_t x_channel, uint8_t y_channel, pin button_pin, float sensitivity)
+joystick *joystick_init(pin x_pin, pin y_pin, uint8_t x_channel, uint8_t y_channel, pin button_pin, float sensitivity, int16_t axis_rotation)
 {
   joystick *new_joystick = (joystick *)malloc(sizeof(joystick));
   new_joystick->x_pin = x_pin;
@@ -39,6 +39,7 @@ joystick *joystick_init(pin x_pin, pin y_pin, uint8_t x_channel, uint8_t y_chann
   new_joystick->y_value = JOYSTICK_DEFAULT_CENTER;
   new_joystick->button_pressed = false;
   new_joystick->sensitivity = sensitivity;
+  new_joystick->axis_rotation = axis_rotation;
   adc_init();
   adc_gpio_init(x_pin);
   adc_gpio_init(y_pin);
@@ -120,23 +121,23 @@ uint8_t joystick_get_direction(joystick *stick)
   polar_coords polar = joystick_get_polar(stick);
   if (polar.l < stick->sensitivity)
     return C;
-  float angle = polar.theta_deg;
-  if (angle >= -22.5f && angle < 22.5f)
-    return E;
-  if (angle >= 22.5f && angle < 67.5f)
-    return NE;
-  if (angle >= 67.5f && angle < 112.5f)
+  float angle = polar.theta_deg + stick->axis_rotation;
+  if (angle >= N_MIN && angle < N_MAX)
     return N;
-  if (angle >= 112.5f && angle < 157.5f)
-    return NW;
-  if (angle >= 157.5f || angle < -157.5f)
-    return W;
-  if (angle >= -157.5f && angle < -112.5f)
-    return SW;
-  if (angle >= -112.5f && angle < -67.5f)
+  if (angle >= S_MIN && angle < S_MAX)
     return S;
-  if (angle >= -67.5f && angle < -22.5f)
+  if (angle >= E_MIN && angle < E_MAX)
+    return E;
+  if (angle >= W_MIN || angle < W_MAX)
+    return W;
+  if (angle >= NE_MIN && angle < NE_MAX)
+    return NE;
+  if (angle >= NW_MIN && angle < NW_MAX)
+    return NW;
+  if (angle >= SE_MIN && angle < SE_MAX)
     return SE;
+  if (angle >= SW_MIN && angle < SW_MIN)
+    return SW;
 }
 
 /**
@@ -171,6 +172,6 @@ void joystick_print(joystick *stick)
   polar_coords polar = joystick_get_polar(stick);
   uint8_t direction = joystick_get_direction(stick);
   printf("JOYSTICK -> X: %d  Y: %d  S: %d\n", stick->x_value, stick->y_value, stick->button_pressed);
-  printf("JOYSTICK -> L: %f  THETA: %f\n", polar.l, polar.theta_deg);
+  printf("JOYSTICK -> L: %f  THETA: %f, ORIENTED: %f\n", polar.l, polar.theta_deg, polar.theta_deg + stick->axis_rotation);
   printf("JOYSTICK -> DIRECTION: %d\n", direction);
 }

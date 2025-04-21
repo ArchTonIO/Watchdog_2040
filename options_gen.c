@@ -37,18 +37,20 @@ void attach_callback_to_option(
 
 char *options_page_launch(options_page *page)
 {
+  ssd1306_clear(drivers->oled_screen);
+  uint8_t h_displacement = 0;
   while (1)
   {
-    ssd1306_clear(drivers->oled_screen);
     for (uint8_t i = 0; i < page->num_options; i++)
     {
+      h_displacement = (uint8_t)((16 - strlen(page->options[i].name)) / 2) - !(strlen(page->options[i].name) % 2);
       if (i == page->selected_option)
       {
         ssd1306_print(
             drivers->oled_screen,
             page->options[i].name,
-            (uint8_t)(SSD1306_WIDTH - (strlen(page->options[i].name) * CHAR_WIDTH) / 2),
-            i * CHAR_HEIGHT,
+            h_displacement,
+            i,
             true);
       }
       else
@@ -56,8 +58,8 @@ char *options_page_launch(options_page *page)
         ssd1306_print(
             drivers->oled_screen,
             page->options[i].name,
-            (uint8_t)(SSD1306_WIDTH - (strlen(page->options[i].name) * CHAR_WIDTH) / 2),
-            i * CHAR_HEIGHT,
+            h_displacement,
+            i,
             false);
       }
     }

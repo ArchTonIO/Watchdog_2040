@@ -56,7 +56,8 @@ hw_drivers *hardware_drivers_init()
 			JOYSTICK_X_CHANNEL,
 			JOYSTICK_Y_CHANNEL,
 			JOYSTICK_BUTTON_PIN,
-			JOYSTICK_SENSITIVITY);
+			JOYSTICK_SENSITIVITY,
+			-90);
 	hw_man->sd_card = sdcard_init();
 	sdcard_mount(hw_man->sd_card);
 	hw_man->rtc = rtc_time_init(2025, 1, 1, 3, 0, 0, 0);
