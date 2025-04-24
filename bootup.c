@@ -16,6 +16,7 @@
 #include "options_gen.h"
 #include "bootup.h"
 #include "pico/multicore.h"
+#include "malloc_mascot.h"
 
 void display_boot_animation()
 {
@@ -30,7 +31,7 @@ void display_splash_screen()
 {
   ssd1306_clear(drivers->oled_screen);
   ssd1306_print(drivers->oled_screen, "WATCHDOG_2040", 0, 4, 0);
-  for (uint8_t t = 0; t < 3; t++)
+  for (uint8_t t = 0; t < 2; t++)
     for (uint8_t i = 0; i < 16; i++)
     {
       ssd1306_draw_bitmap(drivers->oled_screen, ANIMATION_X, ANIMATION_Y, startup_animation[i], ANIMATION_WIDTH, ANIMATION_HEIGHT, 0);
@@ -38,16 +39,6 @@ void display_splash_screen()
     }
   ssd1306_clear(drivers->oled_screen);
   ssd1306_show(drivers->oled_screen);
-}
-
-void malloc_greets_you()
-{
-  ssd1306_draw_bitmap(drivers->oled_screen, 0, 19, malloc_saying_hi, 26, 28, 0);
-  ssd1306_print_gradually(drivers->oled_screen, "Ciao!", 4, 2, 0, 0);
-  sleep_ms(50);
-  ssd1306_print_gradually(drivers->oled_screen, "Io sono Malloc e", 4, 3, 0, 0);
-  ssd1306_print_gradually(drivers->oled_screen, "mi occupo di", 4, 4, 0, 0);
-  ssd1306_print_gradually(drivers->oled_screen, "tutto qui dentro.", 4, 5, 0, 0);
 }
 
 void display_running_checks(uint32_t fifo_data)
@@ -79,5 +70,5 @@ void display_bootup_screen()
     display_running_checks(fifo_data);
   }
   display_splash_screen();
-  malloc_greets_you();
+  start_malloc_mascot_tutorial();
 }
