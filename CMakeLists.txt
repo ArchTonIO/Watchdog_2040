@@ -58,6 +58,8 @@ text_editor.c
 test.c
 bitmaps.c
 options_gen.c
+home_page.c
+bootup.c
 )
 
 pico_set_program_name(Watchdog_2040 "Watchdog_2040")
@@ -69,7 +71,7 @@ pico_enable_stdio_usb(Watchdog_2040 1)
 
 # Add the standard library to the build
 target_link_libraries(Watchdog_2040
-        pico_stdlib hardware_i2c hardware_rtc hardware_spi hardware_adc FatFs_SPI pico_rand)
+        pico_stdlib hardware_i2c hardware_rtc hardware_spi hardware_adc FatFs_SPI pico_rand pico_multicore)
 
 # Add the standard include files to the build
 target_include_directories(Watchdog_2040 PRIVATE

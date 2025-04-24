@@ -265,6 +265,27 @@ void ssd1306_print(ssd1306 *display, const char *str, uint8_t x, uint8_t y, bool
 	}
 }
 
+void ssd1306_print_gradually(ssd1306 *display, const char *str, uint8_t x, uint8_t y, bool reversed, uint8_t delay_ms)
+{
+	display->cursorx = x * CHAR_WIDTH;
+	display->cursory = y * CHAR_HEIGHT;
+	char c;
+	while (c = *str)
+	{
+		str++;
+		if (c == '\n')
+		{
+			display->cursorx = 0;
+			display->cursory += CHAR_HEIGHT;
+			continue;
+		}
+		ssd1306_draw_letter_at(display, display->cursorx, display->cursory, c, reversed);
+		display->cursorx += CHAR_WIDTH - 2;
+		sleep_ms(delay_ms);
+		ssd1306_show(display);
+	}
+}
+
 /*
  * @brief Draw a bitmap at the specified position
  * The bitmap is a 1bpp monochrome bitmap, the width and height are in pixels

@@ -11,18 +11,14 @@
 #include "hw_manager.h"
 #include "data_structures/string_list.h"
 #include <stdint.h>
+#include "pico/multicore.h"
+#include "bootup.h"
 
 hw_drivers *drivers;
 
 hw_drivers *hardware_drivers_init()
 {
 	hw_drivers *hw_man = (hw_drivers *)malloc(sizeof(hw_drivers));
-	hw_man->air_quality_sensor = ens160_init(
-			ENS160_SDA,
-			ENS160_SCK,
-			ENS160_I2C_PORT,
-			ENS160_BAUDRATE,
-			ENS160_ADDR);
 	hw_man->oled_screen = ssd1306_init(
 			SSD1306_SDA,
 			SSD1306_SCK,
@@ -31,6 +27,15 @@ hw_drivers *hardware_drivers_init()
 			SSD1306_WIDTH,
 			SSD1306_HEIGHT,
 			SSD1306_ADDR);
+	drivers = hw_man;
+	multicore_launch_core1(display_bootup_screen);
+	hw_man->air_quality_sensor = ens160_init(
+			ENS160_SDA,
+			ENS160_SCK,
+			ENS160_I2C_PORT,
+			ENS160_BAUDRATE,
+			ENS160_ADDR);
+	multicore_fifo_push_blocking(ENS160_OK);
 	hw_man->lora_module = sx1278_init(
 			SX1278_MOSI,
 			SX1278_MISO,
@@ -41,6 +46,7 @@ hw_drivers *hardware_drivers_init()
 			SX1278_SPI_BAUDRATE,
 			SX1278_TX_POWER,
 			NULL);
+	multicore_fifo_push_blocking(SX1278_OK);
 	hw_man->battery = battery_init(
 			VOLTAGE_DIVIDER_RATIO,
 			ADC_MAX_VALUE,
@@ -50,6 +56,7 @@ hw_drivers *hardware_drivers_init()
 			MAX_BATTERY_VOLTAGE,
 			BATTERY_PIN,
 			ADC_CHANNEL);
+	multicore_fifo_push_blocking(BATTERY_OK);
 	hw_man->joystick = joystick_init(
 			JOYSTICK_X_PIN,
 			JOYSTICK_Y_PIN,
@@ -58,9 +65,12 @@ hw_drivers *hardware_drivers_init()
 			JOYSTICK_BUTTON_PIN,
 			JOYSTICK_SENSITIVITY,
 			-90);
+	multicore_fifo_push_blocking(JOYSTICK_OK);
 	hw_man->sd_card = sdcard_init();
 	sdcard_mount(hw_man->sd_card);
-	hw_man->rtc = rtc_time_init(2025, 1, 1, 3, 0, 0, 0);
-	drivers = hw_man;
+	multicore_fifo_push_blocking(SDCARD_OK);
+	hw_man->rtc = rtc_time_init(2025, 1, 1, 1, 0, 0, 0);
+	multicore_fifo_push_blocking(RTC_OK);
+	multicore_fifo_push_blocking(CHECKS_END);
 	return hw_man;
 }
