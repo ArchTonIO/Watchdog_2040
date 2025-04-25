@@ -281,7 +281,6 @@ void ssd1306_print_gradually(ssd1306 *display, const char *str, uint8_t x, uint8
 		}
 		ssd1306_draw_letter_at(display, display->cursorx, display->cursory, c, reversed);
 		display->cursorx += CHAR_WIDTH - 2;
-		sleep_ms(delay_ms);
 		ssd1306_show(display);
 	}
 }

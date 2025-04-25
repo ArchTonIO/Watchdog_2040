@@ -24,8 +24,6 @@ void malloc_explains_you_menu();
 void malloc_explains_you_text_editor();
 void malloc_asks_your_name();
 void malloc_explains_you_home_screen();
-void malloc_generates_your_ulcp_address();
-void malloc_explains_you_interface_working();
-void malloc_explains_you_messages();
-
+void malloc_generates_ulcp_address();
+void malloc_says_goodbye();
 #endif
