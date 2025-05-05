@@ -450,3 +450,42 @@ void malloc_says_goodbye()
   press_to_continue();
   ssd1306_clear(drivers->oled_screen);
 }
+
+void dump_malloc_memories_to_sd()
+{
+  sdcard_write_key_value_to_file(
+      drivers->sd_card,
+      ".malloc_memories",
+      'w',
+      "username",
+      malloc_memories_inst->username);
+  char addr_str[6];
+  sprintf(addr_str, "%u", malloc_memories_inst->ulcp_addr);
+  sdcard_write_key_value_to_file(
+      drivers->sd_card,
+      ".malloc_memories",
+      'w',
+      "ulmp_addr",
+      addr_str);
+}
+
+malloc_memories *load_malloc_memories_from_sd()
+{
+  malloc_memories *memories = malloc(sizeof(malloc_memories));
+  char *username = sdcard_read_key_value_from_file(
+      drivers->sd_card,
+      ".malloc_memories",
+      "username");
+  strcpy(memories->username, username);
+  free(username);
+  char *ulmp_addr = sdcard_read_key_value_from_file(
+      drivers->sd_card,
+      ".malloc_memories",
+      "ulmp_addr");
+  uint16_t addr;
+  sscanf(ulmp_addr, "%u", &addr);
+  free(ulmp_addr);
+  memories->ulcp_addr = addr;
+  malloc_memories_inst = memories;
+  return memories;
+}

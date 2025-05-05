@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "config.h"
 #include "hardware/i2c.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 typedef struct
 {
@@ -12,6 +14,7 @@ typedef struct
   i2c_inst_t *i2c_port;
   uint32_t baudrate;
   uint32_t address;
+  bool is_working;
 } ens160;
 
 ens160 *ens160_init(pin sda, pin sck, i2c_inst_t *i2c_port, uint32_t baudrate, uint32_t address);

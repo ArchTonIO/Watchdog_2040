@@ -4,6 +4,7 @@
 #include "hardware/irq.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 sx1278 *instance = NULL;
 
@@ -40,6 +41,7 @@ sx1278 *sx1278_init(
 	new_radio->irq_flags = NULL;
 	new_radio->packet_sent_timeout_ms = 200;
 	new_radio->message_received_callback = message_received_callback;
+	new_radio->is_working = true;
 
 	// interrupt set up
 	gpio_init(interrupt);
@@ -70,6 +72,7 @@ sx1278 *sx1278_init(
 				"SX1278 initialization error, reading on REG_01_OP_MODE resulted in: %d, expecting: %d\n",
 				reg_01_op_mode_content,
 				MODE_SLEEP | LONG_RANGE_MODE);
+		new_radio->is_working = false;
 		return new_radio;
 	}
 

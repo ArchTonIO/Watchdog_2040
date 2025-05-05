@@ -4,6 +4,7 @@
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
 #include "config.h"
+#include <stdbool.h>
 
 #define C 0
 #define N 1
@@ -51,6 +52,7 @@ typedef struct
   bool button_pressed;
   float sensitivity;
   int16_t axis_rotation;
+  bool is_working;
 } joystick;
 
 typedef struct

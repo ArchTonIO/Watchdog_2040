@@ -5,8 +5,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 int16_t translate_pair(uint8_t msb, uint8_t lsb);
+bool ens160_is_working(ens160 *sensor);
 
 ens160 *ens160_init(pin sda, pin sck, i2c_inst_t *i2c_port, uint32_t baudrate, uint32_t address)
 {
@@ -21,6 +23,7 @@ ens160 *ens160_init(pin sda, pin sck, i2c_inst_t *i2c_port, uint32_t baudrate, u
 	gpio_set_function(sck, GPIO_FUNC_I2C);
 	gpio_pull_up(sda);
 	gpio_pull_up(sck);
+	new_sensor->is_working = ens160_is_working(new_sensor);
 	return new_sensor;
 }
 
@@ -79,6 +82,14 @@ void ens160_reset(ens160 *sensor)
 	sleep_ms(350);
 	ens160_set_op_mode(sensor, 2);
 	sleep_ms(500);
+}
+
+bool ens160_is_working(ens160 *sensor)
+{
+	uint8_t aqi = ens160_read_aqi(sensor);
+	if (aqi < 1 || aqi > 5)
+		return false;
+	return true;
 }
 
 int16_t translate_pair(uint8_t msb, uint8_t lsb)

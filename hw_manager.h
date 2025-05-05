@@ -28,5 +28,6 @@ typedef struct
 extern hw_drivers *drivers;
 
 hw_drivers *hardware_drivers_init();
+uint32_t get_free_heap();
 
 #endif

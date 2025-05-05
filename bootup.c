@@ -45,14 +45,24 @@ void display_running_checks(uint32_t fifo_data)
 {
   if (fifo_data == ENS160_OK)
     ssd1306_print(drivers->oled_screen, "[OK] ENS160", 0, 2, 0);
+  else if (fifo_data == ENS160_ERR)
+    ssd1306_print(drivers->oled_screen, "[ERR] ENS160", 0, 2, 0);
   if (fifo_data == SX1278_OK)
     ssd1306_print(drivers->oled_screen, "[OK] SX1278", 0, 3, 0);
+  else if (fifo_data == SX1278_ERR)
+    ssd1306_print(drivers->oled_screen, "[ERR] SX1278", 0, 3, 0);
   if (fifo_data == BATTERY_OK)
     ssd1306_print(drivers->oled_screen, "[OK] BATTERY", 0, 4, 0);
+  if (fifo_data == BATTERY_ERR)
+    ssd1306_print(drivers->oled_screen, "[ERR] BATTERY", 0, 4, 0);
   if (fifo_data == JOYSTICK_OK)
     ssd1306_print(drivers->oled_screen, "[OK] JOYSTICK", 0, 5, 0);
+  if (fifo_data == JOYSTICK_ERR)
+    ssd1306_print(drivers->oled_screen, "[ERR] JOYSTICK", 0, 5, 0);
   if (fifo_data == SDCARD_OK)
     ssd1306_print(drivers->oled_screen, "[OK] SD CARD", 0, 6, 0);
+  else if (fifo_data == SDCARD_ERR)
+    ssd1306_print(drivers->oled_screen, "[ERR] SD CARD", 0, 6, 0);
   if (fifo_data == RTC_OK)
     ssd1306_print(drivers->oled_screen, "[OK] RTC", 0, 7, 0);
   ssd1306_show(drivers->oled_screen);
@@ -70,5 +80,5 @@ void display_bootup_screen()
     display_running_checks(fifo_data);
   }
   display_splash_screen();
-  start_malloc_mascot_tutorial();
+  multicore_fifo_push_blocking(CORE_1_OP_DONE);
 }

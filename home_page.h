@@ -1,9 +1,11 @@
-#ifndef HOME_SCREEN_H
-#define HOME_SCREEN_H
+#ifndef HOME_PAGE_H
+#define HOME_PAGE_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include "pico/stdlib.h"
 #include "hardware_drivers/sdcard.h"
 #include "hardware_drivers/ssd1306.h"
@@ -20,24 +22,33 @@
 
 typedef struct
 {
+  uint8_t *hour_tens_bitmap;
+  uint8_t *hour_units_bitmap;
+  uint8_t *minute_tens_bitmap;
+  uint8_t *minute_units_bitmap;
+  uint8_t *second_tens_bitmap;
+  uint8_t *second_units_bitmap;
+} clock_bitmaps;
+
+typedef struct
+{
   char *timedate;
   uint8_t battery_level;
-  uint8_t sd_status;
-  uint8_t sx1278_status;
-  uint8_t en160_status;
+  bool sd_status;
+  bool sx1278_status;
+  bool en160_status;
   bool alarm_set;
   uint8_t alarm_time;
   uint8_t aqi;
   uint8_t bpm;
   uint8_t spo2;
-  uint8_t notifications;
-  uint16_t your_ulcp_address;
+  uint16_t notifications;
+  uint16_t ulmp_address;
 } home_page;
 
-home_page *home_page_init();
+home_page *home_page_init(uint16_t ulmp_address);
 void check_pheripherals();
-void process_peripherals();
-void display_main_page();
-void update_main_page();
+void process_system_state();
+void display_home_page();
 
 #endif

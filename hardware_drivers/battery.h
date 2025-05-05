@@ -2,6 +2,7 @@
 #define BATTERY_H
 
 #include <stdio.h>
+#include <stdbool.h>
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
 #include "config.h"
@@ -18,6 +19,8 @@ typedef struct
 	uint8_t adc_channel;
 	char *battery_percentage_str;
 	char *battery_voltage_str;
+	bool is_working;
+
 } battery;
 
 battery *battery_init(

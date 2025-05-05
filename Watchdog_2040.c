@@ -1,30 +1,52 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include <stdlib.h>
+#include <stdbool.h>
 #include "hw_manager.h"
 #include "msg_manager.h"
-#include "virtual_keyboard.h"
+#include "hardware_drivers/battery.h"
 #include "hardware_drivers/ssd1306.h"
-#include "options_gen.h"
-#include "text_editor.h"
-#include "hardware_drivers/tests.h"
+#include "hardware_drivers/joystick.h"
 #include "test.h"
-#include "data_structures/string_list.h"
 #include "home_page.h"
+#include "bootup.h"
+#include "malloc_mascot.h"
 
-void setup()
+void sys_setup()
 {
   stdio_init_all();
   hardware_drivers_init();
+  msg_manager_init(23097);
+  home_page_init(23097);
 }
 
-void mainloop()
+void sys_mainloop()
 {
-  display_bootup_screen();
+  while (true)
+  {
+    joystick_update(drivers->joystick);
+    check_pheripherals();
+    process_system_state();
+    if (drivers->joystick->button_pressed)
+    {
+      uint8_t screen_up_seconds = 10;
+      uint32_t screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
+      while (true)
+      {
+        check_pheripherals();
+        process_system_state();
+        display_home_page();
+        if ((to_us_since_boot(get_absolute_time()) / 1000000) - screen_up_start > screen_up_seconds)
+          break;
+      }
+      ssd1306_clear(drivers->oled_screen);
+      ssd1306_show(drivers->oled_screen);
+    }
+  }
 }
 
 int main()
 {
-  setup();
-  mainloop();
+  sys_setup();
+  sys_mainloop();
 }

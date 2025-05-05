@@ -1,9 +1,12 @@
 #include "battery.h"
 #include <stdio.h>
+#include <stdbool.h>
 #include "hardware/adc.h"
 #include "config.h"
 #include "pico/stdlib.h"
 #include <stdlib.h>
+
+bool battery_is_working(battery *bat);
 
 battery *battery_init(
 		float voltage_divider_ratio,
@@ -28,6 +31,7 @@ battery *battery_init(
 	new_battery->battery_voltage_str = (char *)malloc(sizeof(char) * 10);
 	adc_init();
 	adc_gpio_init(battery_control_pin);
+	new_battery->is_working = battery_is_working(new_battery);
 	return new_battery;
 }
 
@@ -58,4 +62,11 @@ char *battery_get_voltage_str(battery *bat)
 {
 	sprintf(bat->battery_voltage_str, "%.2fV", battery_get_voltage(bat));
 	return bat->battery_voltage_str;
+}
+
+bool battery_is_working(battery *bat)
+{
+	if ((battery_get_voltage(bat) < bat->min_battery_voltage) || battery_get_voltage(bat) > bat->max_battery_voltage)
+		return false;
+	return true;
 }

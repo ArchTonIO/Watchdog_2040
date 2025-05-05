@@ -33,4 +33,6 @@ str_list *get_all_contacts();
 void enable_message_notifications();
 void disable_message_notifications();
 
+extern msg_manager *msg_man_inst;
+
 #endif

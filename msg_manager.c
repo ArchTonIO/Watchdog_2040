@@ -45,6 +45,7 @@ msg_manager *msg_manager_init(uint16_t my_addr)
   msg_man->new_msg_arrived = false;
   msg_man->should_notify = true;
   msg_man->contacts_count = 0;
+  msg_man->received_msgs_count = 0;
   lora_init(my_addr, drivers->lora_module, notify);
   lora_receive();
   msg_man_inst = msg_man;

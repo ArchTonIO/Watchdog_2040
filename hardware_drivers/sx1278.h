@@ -44,6 +44,7 @@
 #include "config.h"
 #include "hardware/spi.h"
 #include "stdio.h"
+#include <stdbool.h>
 
 typedef struct
 {
@@ -60,6 +61,8 @@ typedef struct
   uint8_t packet_sent_timeout_ms;
   uint8_t irq_flags;
   void (*message_received_callback)(char *msg);
+  bool is_working;
+
 } sx1278;
 
 sx1278 *sx1278_init(

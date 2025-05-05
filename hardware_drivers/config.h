@@ -65,8 +65,8 @@ If you wish to change the pins go to lib/no-Os-FatFS-SD-SPI-RPi-Pico/FatFs_SPI/s
 #define VOLTAGE_DIVIDER_RATIO 3.125
 #define ADC_MAX_VALUE 4095.0
 #define RP_2040_VCC_MEASURED_VOLTAGE 3.34
-#define BATTERY_PIN 28
-#define ADC_CHANNEL 2
+#define BATTERY_PIN 29
+#define ADC_CHANNEL 3
 #define BATTERY_SLOPE 111.1
 #define MIN_BATTERY_VOLTAGE 3.3
 #define MAX_BATTERY_VOLTAGE 4.2

@@ -5,10 +5,12 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
 #include "utils.h"
 
 void auto_calibrate(joystick *stick);
+bool joystick_is_working(joystick *stick);
 
 /**
  * @brief Initializes a joystick instance.
@@ -47,6 +49,7 @@ joystick *joystick_init(pin x_pin, pin y_pin, uint8_t x_channel, uint8_t y_chann
   gpio_pull_up(button_pin);
   gpio_set_dir(button_pin, GPIO_IN);
   auto_calibrate(new_joystick);
+  new_joystick->is_working = joystick_is_working(new_joystick);
   return new_joystick;
 }
 
@@ -174,4 +177,14 @@ void joystick_print(joystick *stick)
   printf("JOYSTICK -> X: %d  Y: %d  S: %d\n", stick->x_value, stick->y_value, stick->button_pressed);
   printf("JOYSTICK -> L: %f  THETA: %f, ORIENTED: %f\n", polar.l, polar.theta_deg, polar.theta_deg + stick->axis_rotation);
   printf("JOYSTICK -> DIRECTION: %d\n", direction);
+}
+
+bool joystick_is_working(joystick *stick)
+{
+  bool x_ok = (stick->x_value >= stick->x_deadzone_min && stick->x_value <= stick->x_deadzone_max);
+  bool y_ok = (stick->y_value >= stick->y_deadzone_min && stick->y_value <= stick->y_deadzone_max);
+  bool button_ok = (stick->button_pressed == false);
+  if (x_ok && y_ok && button_ok)
+    return true;
+  return false;
 }

@@ -13,8 +13,10 @@
 #include <stdint.h>
 #include "pico/multicore.h"
 #include "bootup.h"
+#include <malloc.h>
 
 hw_drivers *drivers;
+void wait_for_core1();
 
 hw_drivers *hardware_drivers_init()
 {
@@ -35,7 +37,10 @@ hw_drivers *hardware_drivers_init()
 			ENS160_I2C_PORT,
 			ENS160_BAUDRATE,
 			ENS160_ADDR);
-	multicore_fifo_push_blocking(ENS160_OK);
+	if (hw_man->air_quality_sensor->is_working)
+		multicore_fifo_push_blocking(ENS160_OK);
+	else
+		multicore_fifo_push_blocking(ENS160_ERR);
 	hw_man->lora_module = sx1278_init(
 			SX1278_MOSI,
 			SX1278_MISO,
@@ -46,7 +51,10 @@ hw_drivers *hardware_drivers_init()
 			SX1278_SPI_BAUDRATE,
 			SX1278_TX_POWER,
 			NULL);
-	multicore_fifo_push_blocking(SX1278_OK);
+	if (hw_man->lora_module->is_working)
+		multicore_fifo_push_blocking(SX1278_OK);
+	else
+		multicore_fifo_push_blocking(SX1278_ERR);
 	hw_man->battery = battery_init(
 			VOLTAGE_DIVIDER_RATIO,
 			ADC_MAX_VALUE,
@@ -56,7 +64,10 @@ hw_drivers *hardware_drivers_init()
 			MAX_BATTERY_VOLTAGE,
 			BATTERY_PIN,
 			ADC_CHANNEL);
-	multicore_fifo_push_blocking(BATTERY_OK);
+	if (hw_man->battery->is_working)
+		multicore_fifo_push_blocking(BATTERY_OK);
+	else
+		multicore_fifo_push_blocking(BATTERY_ERR);
 	hw_man->joystick = joystick_init(
 			JOYSTICK_X_PIN,
 			JOYSTICK_Y_PIN,
@@ -65,12 +76,38 @@ hw_drivers *hardware_drivers_init()
 			JOYSTICK_BUTTON_PIN,
 			JOYSTICK_SENSITIVITY,
 			-90);
-	multicore_fifo_push_blocking(JOYSTICK_OK);
+	if (hw_man->joystick->is_working)
+		multicore_fifo_push_blocking(JOYSTICK_OK);
+	else
+		multicore_fifo_push_blocking(JOYSTICK_ERR);
 	hw_man->sd_card = sdcard_init();
 	sdcard_mount(hw_man->sd_card);
-	multicore_fifo_push_blocking(SDCARD_OK);
-	hw_man->rtc = rtc_time_init(2025, 1, 1, 1, 0, 0, 0);
+	if (hw_man->sd_card->is_working)
+		multicore_fifo_push_blocking(SDCARD_OK);
+	else
+		multicore_fifo_push_blocking(SDCARD_ERR);
+	hw_man->rtc = rtc_time_init(2025, 5, 4, 6, 12, 46, 00);
 	multicore_fifo_push_blocking(RTC_OK);
 	multicore_fifo_push_blocking(CHECKS_END);
+	wait_for_core1();
+	multicore_reset_core1();
 	return hw_man;
+}
+
+void wait_for_core1()
+{
+	while (multicore_fifo_pop_blocking() != CORE_1_OP_DONE)
+		;
+}
+
+uint32_t get_total_heap(void)
+{
+	extern char __StackLimit, __bss_end__;
+	return &__StackLimit - &__bss_end__;
+}
+
+uint32_t get_free_heap(void)
+{
+	struct mallinfo m = mallinfo();
+	return get_total_heap() - m.uordblks;
 }

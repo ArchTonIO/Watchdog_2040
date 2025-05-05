@@ -26,4 +26,6 @@ void malloc_asks_your_name();
 void malloc_explains_you_home_screen();
 void malloc_generates_ulcp_address();
 void malloc_says_goodbye();
+void dump_malloc_memories_to_sd();
+malloc_memories *load_malloc_memories_from_sd();
 #endif

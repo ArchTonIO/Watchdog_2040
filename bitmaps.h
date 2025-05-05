@@ -26,4 +26,12 @@ extern uint8_t malloc_with_glasses[];
 extern uint8_t malloc_with_pointy_eyes[];
 extern uint8_t malloc_with_both_eyes[];
 
+#define TOP_BAR_BITMAPS_H 16
+#define TOP_BAR_BITMAPS_W 21
+#
+#define CLOCK_DIGIT_BITMAPS_H 17
+#define CLOCK_DIGIT_BITMAPS_W 8
+#define CLOCK_DOTS_BITMAPS_H 17
+#define CLOCK_DOTS_BITMAPS_W 4
+
 #endif
