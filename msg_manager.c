@@ -191,8 +191,7 @@ uint16_t select_contact()
   str_list *contacts = get_all_contacts();
   options_page *page = options_page_init("Select a contact", contacts);
   char *name = options_page_launch(page);
-  free(contacts);
-  free(page);
+  options_page_free(page);
   return find_contact_addr_by_name(name);
 }
 
@@ -251,6 +250,11 @@ void display_received_message(uint16_t src_address)
   ssd1306_print(drivers->oled_screen, "New message from", 16, 0, false);
   ssd1306_draw_bitmap(drivers->oled_screen, 50, 22, message_received, 28, 20, 0);
   ssd1306_show(drivers->oled_screen);
+}
+
+void scan_online_contacts()
+{
+  // todo implement
 }
 
 void enable_message_notifications()

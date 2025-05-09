@@ -13,7 +13,8 @@
 typedef struct
 {
   char username[15];
-  uint32_t ulcp_addr;
+  uint32_t ulmp_addr;
+  char ulmp_addr_str[6];
 } malloc_memories;
 
 void start_malloc_mascot_tutorial();
@@ -28,4 +29,7 @@ void malloc_generates_ulcp_address();
 void malloc_says_goodbye();
 void dump_malloc_memories_to_sd();
 malloc_memories *load_malloc_memories_from_sd();
+
+extern malloc_memories *malloc_memories_inst;
+
 #endif

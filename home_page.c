@@ -19,10 +19,11 @@
 #include "options_gen.h"
 #include "home_page.h"
 #include "pico/multicore.h"
+#include "malloc_mascot.h"
 
 home_page *home_page_inst;
 
-home_page *home_page_init(uint16_t ulmp_address)
+home_page *home_page_init()
 {
   home_page *new_home_page = (home_page *)malloc(sizeof(home_page));
   new_home_page->timedate = (char *)malloc(sizeof(char) * 20);
@@ -31,12 +32,12 @@ home_page *home_page_init(uint16_t ulmp_address)
   new_home_page->sx1278_status = 0;
   new_home_page->en160_status = 0;
   new_home_page->alarm_set = false;
+  new_home_page->clock_bmp = (clock_bitmaps *)malloc(sizeof(clock_bitmaps));
   new_home_page->alarm_time = 0;
   new_home_page->aqi = 0;
   new_home_page->bpm = 0;
   new_home_page->spo2 = 0;
   new_home_page->notifications = 0;
-  new_home_page->ulmp_address = ulmp_address;
   home_page_inst = new_home_page;
   return new_home_page;
 }
@@ -129,7 +130,7 @@ uint8_t *get_alarm_status_bitmap()
     return alarm_disabled;
 }
 
-clock_bitmaps *get_clock_bitmaps()
+void update_clock_bitmaps()
 {
   update_time(drivers->rtc);
   int8_t hour = drivers->rtc->internal_datetime.hour;
@@ -141,14 +142,12 @@ clock_bitmaps *get_clock_bitmaps()
   int8_t minute_units = minute % 10;
   int8_t second_tens = second / 10;
   int8_t second_units = second % 10;
-  clock_bitmaps *clock_bmp = (clock_bitmaps *)malloc(sizeof(clock_bitmaps));
-  clock_bmp->hour_tens_bitmap = clock_digits[hour_tens];
-  clock_bmp->hour_units_bitmap = clock_digits[hour_units];
-  clock_bmp->minute_tens_bitmap = clock_digits[minute_tens];
-  clock_bmp->minute_units_bitmap = clock_digits[minute_units];
-  clock_bmp->second_tens_bitmap = clock_digits[second_tens];
-  clock_bmp->second_units_bitmap = clock_digits[second_units];
-  return clock_bmp;
+  home_page_inst->clock_bmp->hour_tens_bitmap = clock_digits[hour_tens];
+  home_page_inst->clock_bmp->hour_units_bitmap = clock_digits[hour_units];
+  home_page_inst->clock_bmp->minute_tens_bitmap = clock_digits[minute_tens];
+  home_page_inst->clock_bmp->minute_units_bitmap = clock_digits[minute_units];
+  home_page_inst->clock_bmp->second_tens_bitmap = clock_digits[second_tens];
+  home_page_inst->clock_bmp->second_units_bitmap = clock_digits[second_units];
 }
 
 void display_home_page()
@@ -159,15 +158,15 @@ void display_home_page()
   ssd1306_draw_bitmap(drivers->oled_screen, TOP_BAR_BITMAPS_W * 3, 0, get_en160_status_bitmap(), TOP_BAR_BITMAPS_W, TOP_BAR_BITMAPS_H, false);
   ssd1306_draw_bitmap(drivers->oled_screen, TOP_BAR_BITMAPS_W * 4, 0, get_notifications_bitmap(), TOP_BAR_BITMAPS_W, TOP_BAR_BITMAPS_H, false);
   ssd1306_draw_bitmap(drivers->oled_screen, TOP_BAR_BITMAPS_W * 5, 0, get_alarm_status_bitmap(), TOP_BAR_BITMAPS_W, TOP_BAR_BITMAPS_H, false);
-  clock_bitmaps *clock_bmp = get_clock_bitmaps();
-  uint8_t start_pix_w = 31;
-  uint8_t start_pix_h = 20;
+  update_clock_bitmaps();
+  uint8_t start_pix_w = 28;
+  uint8_t start_pix_h = 23;
   uint8_t spacing = 2;
   ssd1306_draw_bitmap(
       drivers->oled_screen,
       start_pix_w,
       start_pix_h,
-      clock_bmp->hour_tens_bitmap,
+      home_page_inst->clock_bmp->hour_tens_bitmap,
       CLOCK_DIGIT_BITMAPS_W,
       CLOCK_DIGIT_BITMAPS_H,
       false);
@@ -176,34 +175,7 @@ void display_home_page()
       drivers->oled_screen,
       start_pix_w,
       start_pix_h,
-      clock_bmp->hour_units_bitmap,
-      CLOCK_DIGIT_BITMAPS_W,
-      CLOCK_DIGIT_BITMAPS_H,
-      false);
-  start_pix_w += CLOCK_DIGIT_BITMAPS_W + spacing;
-  ssd1306_draw_bitmap(
-      drivers->oled_screen,
-      start_pix_w,
-      start_pix_h,
-      clock_dots,
-      CLOCK_DOTS_BITMAPS_W,
-      CLOCK_DOTS_BITMAPS_H,
-      false);
-  start_pix_w += CLOCK_DOTS_BITMAPS_W + spacing;
-  ssd1306_draw_bitmap(
-      drivers->oled_screen,
-      start_pix_w,
-      start_pix_h,
-      clock_bmp->minute_tens_bitmap,
-      CLOCK_DIGIT_BITMAPS_W,
-      CLOCK_DIGIT_BITMAPS_H,
-      false);
-  start_pix_w += CLOCK_DIGIT_BITMAPS_W + spacing;
-  ssd1306_draw_bitmap(
-      drivers->oled_screen,
-      start_pix_w,
-      start_pix_h,
-      clock_bmp->minute_units_bitmap,
+      home_page_inst->clock_bmp->hour_units_bitmap,
       CLOCK_DIGIT_BITMAPS_W,
       CLOCK_DIGIT_BITMAPS_H,
       false);
@@ -221,7 +193,7 @@ void display_home_page()
       drivers->oled_screen,
       start_pix_w,
       start_pix_h,
-      clock_bmp->second_tens_bitmap,
+      home_page_inst->clock_bmp->minute_tens_bitmap,
       CLOCK_DIGIT_BITMAPS_W,
       CLOCK_DIGIT_BITMAPS_H,
       false);
@@ -230,10 +202,53 @@ void display_home_page()
       drivers->oled_screen,
       start_pix_w,
       start_pix_h,
-      clock_bmp->second_units_bitmap,
+      home_page_inst->clock_bmp->minute_units_bitmap,
       CLOCK_DIGIT_BITMAPS_W,
       CLOCK_DIGIT_BITMAPS_H,
       false);
-  free(clock_bmp);
+  start_pix_w += CLOCK_DIGIT_BITMAPS_W + spacing;
+  ssd1306_draw_bitmap(
+      drivers->oled_screen,
+      start_pix_w,
+      start_pix_h,
+      clock_dots,
+      CLOCK_DOTS_BITMAPS_W,
+      CLOCK_DOTS_BITMAPS_H,
+      false);
+  start_pix_w += CLOCK_DOTS_BITMAPS_W + spacing;
+  ssd1306_draw_bitmap(
+      drivers->oled_screen,
+      start_pix_w,
+      start_pix_h,
+      home_page_inst->clock_bmp->second_tens_bitmap,
+      CLOCK_DIGIT_BITMAPS_W,
+      CLOCK_DIGIT_BITMAPS_H,
+      false);
+  start_pix_w += CLOCK_DIGIT_BITMAPS_W + spacing;
+  ssd1306_draw_bitmap(
+      drivers->oled_screen,
+      start_pix_w,
+      start_pix_h,
+      home_page_inst->clock_bmp->second_units_bitmap,
+      CLOCK_DIGIT_BITMAPS_W,
+      CLOCK_DIGIT_BITMAPS_H,
+      false);
+  ssd1306_print(drivers->oled_screen, "BPM", 0, 3, false);
+  ssd1306_print(drivers->oled_screen, " 70", 0, 4, false);  // todo: change with real value
+  ssd1306_print(drivers->oled_screen, "AQI", 13, 3, false); // todo: change with real value
+  ssd1306_print(drivers->oled_screen, " 1 ", 13, 4, false);
+  uint8_t line_padding = 4;
+  for (uint8_t h_incr = 0; h_incr < SSD1306_WIDTH; h_incr++)
+    ssd1306_draw_pixel(drivers->oled_screen, h_incr, start_pix_h - line_padding, 1);
+  for (uint8_t h_incr = 0; h_incr < SSD1306_WIDTH; h_incr++)
+    ssd1306_draw_pixel(drivers->oled_screen, h_incr, start_pix_h + CLOCK_DOTS_BITMAPS_H + line_padding, 1);
+  uint32_t used_ram = get_free_heap();
+  uint32_t used_ram_kb = used_ram * 0.009765625;
+  char used_ram_str[11];
+  sprintf(used_ram_str, "%u", used_ram_kb);
+  ssd1306_print(drivers->oled_screen, "ULMP", 0, 6, false);
+  ssd1306_print(drivers->oled_screen, malloc_memories_inst->ulmp_addr_str, 0, 7, false);
+  ssd1306_print(drivers->oled_screen, "SRAM", 12, 6, false);
+  ssd1306_print(drivers->oled_screen, used_ram_str, 12, 7, false); // todo: change with real value
   ssd1306_show(drivers->oled_screen);
 }

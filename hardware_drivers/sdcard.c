@@ -168,5 +168,6 @@ char *sdcard_read_value_from_file(sdcard *sd, char *filename, char *key)
 		}
 	}
 	lstdel(lines);
+	free(lines);
 	return NULL;
 }

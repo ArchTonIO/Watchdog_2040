@@ -19,11 +19,11 @@ void start_malloc_mascot_tutorial()
 {
   malloc_memories *memories = malloc_memories_init();
   malloc_greets_you();
-  malloc_explains_you_joystick();
-  malloc_explains_you_menu();
-  malloc_explains_you_text_editor();
-  malloc_asks_your_name();
-  malloc_explains_you_home_screen();
+  // malloc_explains_you_joystick();
+  // malloc_explains_you_menu();
+  // malloc_explains_you_text_editor();
+  // malloc_asks_your_name();
+  // malloc_explains_you_home_screen();
   malloc_generates_ulcp_address();
   malloc_says_goodbye();
 }
@@ -31,7 +31,7 @@ void start_malloc_mascot_tutorial()
 malloc_memories *malloc_memories_init()
 {
   malloc_memories *memories = (malloc_memories *)malloc(sizeof(malloc_memories));
-  memories->ulcp_addr = 0;
+  memories->ulmp_addr = 0;
   malloc_memories_inst = memories;
   return memories;
 }
@@ -332,13 +332,13 @@ void malloc_explains_you_home_screen()
 
 uint16_t malloc_get_ulcp_address()
 {
-  if (malloc_memories_inst->ulcp_addr == 0)
+  if (malloc_memories_inst->ulmp_addr == 0)
   {
-    malloc_memories_inst->ulcp_addr = get_rand_32() % 65536;
-    return malloc_memories_inst->ulcp_addr;
+    malloc_memories_inst->ulmp_addr = get_rand_32() % 65536;
+    return malloc_memories_inst->ulmp_addr;
   }
   else
-    return malloc_memories_inst->ulcp_addr;
+    return malloc_memories_inst->ulmp_addr;
 }
 
 void malloc_generates_ulcp_address()
@@ -449,6 +449,7 @@ void malloc_says_goodbye()
   ssd1306_print_gradually(drivers->oled_screen, "Ciao! :)", 4, 4, 0, 0);
   press_to_continue();
   ssd1306_clear(drivers->oled_screen);
+  ssd1306_show(drivers->oled_screen);
 }
 
 void dump_malloc_memories_to_sd()
@@ -460,7 +461,7 @@ void dump_malloc_memories_to_sd()
       "username",
       malloc_memories_inst->username);
   char addr_str[6];
-  sprintf(addr_str, "%u", malloc_memories_inst->ulcp_addr);
+  sprintf(addr_str, "%u", malloc_memories_inst->ulmp_addr);
   sdcard_write_key_value_to_file(
       drivers->sd_card,
       ".malloc_memories",
@@ -472,20 +473,21 @@ void dump_malloc_memories_to_sd()
 malloc_memories *load_malloc_memories_from_sd()
 {
   malloc_memories *memories = malloc(sizeof(malloc_memories));
-  char *username = sdcard_read_key_value_from_file(
+  char *username = sdcard_read_value_from_file(
       drivers->sd_card,
       ".malloc_memories",
       "username");
   strcpy(memories->username, username);
   free(username);
-  char *ulmp_addr = sdcard_read_key_value_from_file(
+  char *ulmp_addr = sdcard_read_value_from_file(
       drivers->sd_card,
       ".malloc_memories",
       "ulmp_addr");
-  uint16_t addr;
+  strcpy(memories->ulmp_addr_str, ulmp_addr);
+  uint32_t addr;
   sscanf(ulmp_addr, "%u", &addr);
   free(ulmp_addr);
-  memories->ulcp_addr = addr;
+  memories->ulmp_addr = (uint16_t)addr;
   malloc_memories_inst = memories;
   return memories;
 }

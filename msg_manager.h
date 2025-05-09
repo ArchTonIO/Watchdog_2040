@@ -29,6 +29,7 @@ void send_message();
 void add_contact();
 void save_contact(char *name, uint16_t addr);
 void remove_contact();
+void scan_online_contacts();
 str_list *get_all_contacts();
 void enable_message_notifications();
 void disable_message_notifications();

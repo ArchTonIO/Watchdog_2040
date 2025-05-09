@@ -38,15 +38,15 @@ typedef struct
   bool sx1278_status;
   bool en160_status;
   bool alarm_set;
+  clock_bitmaps *clock_bmp;
   uint8_t alarm_time;
   uint8_t aqi;
   uint8_t bpm;
   uint8_t spo2;
   uint16_t notifications;
-  uint16_t ulmp_address;
 } home_page;
 
-home_page *home_page_init(uint16_t ulmp_address);
+home_page *home_page_init();
 void check_pheripherals();
 void process_system_state();
 void display_home_page();

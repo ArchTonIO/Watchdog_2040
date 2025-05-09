@@ -61,6 +61,7 @@ options_gen.c
 home_page.c
 bootup.c
 malloc_mascot.c
+menus.c
 )
 
 pico_set_program_name(Watchdog_2040 "Watchdog_2040")

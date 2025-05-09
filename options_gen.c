@@ -20,12 +20,23 @@
 options_page *options_page_init(char *title, str_list *options)
 {
   options_page *page = (options_page *)malloc(sizeof(options_page));
+  page->options_list = options;
   page->num_options = options->len;
   page->selected_option = 0;
   page->title = title;
   for (uint8_t i = 0; i < options->len; i++)
   {
-    page->options[i].name = lstget(options, i);
+    char *original = lstget(options, i);
+    size_t len = strlen(original);
+    char *formatted = (char *)malloc(MAX_X_CHARS + 1);
+    size_t copy_len = len > (MAX_X_CHARS - 2) ? (MAX_X_CHARS - 2) : len;
+    strncpy(formatted, original, copy_len);
+    for (size_t j = copy_len; j < (MAX_X_CHARS - 2); j++)
+      formatted[j] = ' ';
+    formatted[MAX_X_CHARS - 2] = '-';
+    formatted[MAX_X_CHARS - 1] = '>';
+    formatted[MAX_X_CHARS] = '\0';
+    page->options[i].name = formatted;
     page->options[i].selected = false;
     page->options[i].callback = NULL;
   }
@@ -59,27 +70,25 @@ void attach_callback_to_option(
  */
 char *options_page_launch(options_page *page)
 {
+  sleep_ms(INTERAC_TIMEOUT);
   ssd1306_clear(drivers->oled_screen);
-  uint8_t h_displacement = 0;
-  h_displacement = (uint8_t)((MAX_X_CHARS - strlen(page->title)) / 2);
   ssd1306_print(
       drivers->oled_screen,
       page->title,
-      h_displacement,
+      (uint8_t)((MAX_X_CHARS - strlen(page->title)) / 2),
       0,
       false);
   while (1)
   {
     for (uint8_t i = 0; i < page->num_options; i++)
     {
-      h_displacement = (uint8_t)((MAX_X_CHARS - strlen(page->options[i].name)) / 2);
       if (i == page->selected_option)
       {
         ssd1306_print(
             drivers->oled_screen,
             page->options[i].name,
-            h_displacement,
-            i + 1,
+            0,
+            i + 2,
             true);
       }
       else
@@ -87,8 +96,8 @@ char *options_page_launch(options_page *page)
         ssd1306_print(
             drivers->oled_screen,
             page->options[i].name,
-            h_displacement,
-            i + 1,
+            0,
+            i + 2,
             false);
       }
     }
@@ -107,7 +116,7 @@ char *options_page_launch(options_page *page)
       if (page->selected_option >= page->num_options)
         page->selected_option = 0;
     }
-    else if (drivers->joystick->button_pressed)
+    else if (joystick_dir == W)
     {
       if (page->options[page->selected_option].callback != NULL)
         page->options[page->selected_option].callback();
@@ -116,5 +125,19 @@ char *options_page_launch(options_page *page)
       ssd1306_clear(drivers->oled_screen);
       ssd1306_show(drivers->oled_screen);
     }
+    else if (joystick_dir == E)
+    {
+      return "";
+    }
   }
+}
+
+void options_page_free(options_page *page)
+{
+  for (uint8_t i = 0; i < page->num_options; i++)
+  {
+    free(page->options[i].name);
+  }
+  lstdel(page->options_list);
+  free(page);
 }
