@@ -111,7 +111,7 @@ void attempt_single_transaction(uint16_t dest_address, char *payload)
  * @retval `1`: The message was sent successfully but no ACK was received.
  * @retval `2`: The message transmission failed.
  */
-uint8_t lora_send_msg(uint16_t dest_address, char *payload)
+uint8_t lora_send_msg(uint16_t dest_address, char *payload, void (*status_update_callback)(uint8_t progress))
 {
   if (strlen(payload) > MAX_PAYLOAD_FOR_TRANSACTION)
     return 2;
@@ -119,6 +119,7 @@ uint8_t lora_send_msg(uint16_t dest_address, char *payload)
   {
     this_lora->tx->transac_sending_attempts++;
     attempt_single_transaction(dest_address, payload);
+    status_update_callback(this_lora->tx->transac_sending_attempts);
     lora_receive();
     sleep_ms(TRANSAC_TIMEOUT - 200);
   }

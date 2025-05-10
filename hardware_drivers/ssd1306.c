@@ -265,7 +265,7 @@ void ssd1306_print(ssd1306 *display, const char *str, uint8_t x, uint8_t y, bool
 	}
 }
 
-void ssd1306_print_gradually(ssd1306 *display, const char *str, uint8_t x, uint8_t y, bool reversed, uint8_t delay_ms)
+void ssd1306_print_gradually(ssd1306 *display, const char *str, uint8_t x, uint8_t y, bool reversed)
 {
 	display->cursorx = x * CHAR_WIDTH;
 	display->cursory = y * CHAR_HEIGHT;

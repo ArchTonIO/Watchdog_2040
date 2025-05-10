@@ -1,35 +1,30 @@
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include "pico/stdlib.h"
-#include "hw_manager.h"
-#include "msg_manager.h"
-#include "hardware_drivers/battery.h"
+#include "data_structures/string_list.h"
 #include "hardware_drivers/ssd1306.h"
 #include "hardware_drivers/joystick.h"
-#include "home_page.h"
-#include "malloc_mascot.h"
 #include "hardware_drivers/sdcard.h"
-#include "data_structures/string_list.h"
-#include "test.h"
+#include "home_page.h"
+#include "hw_manager.h"
+#include "msg_manager.h"
+#include "malloc_mascot.h"
 #include "options_gen.h"
+#include "test.h"
 #include "menus.h"
 
 #define FIRST_TIME_FILE ".booted"
 
 bool is_first_startup()
 {
-  str_list *sd_files = sdcard_list_files(drivers->sd_card);
-  bool first_time = false;
-  if (list_index_of(sd_files, FIRST_TIME_FILE) == -1)
-  {
-    sdcard_write_file(drivers->sd_card, FIRST_TIME_FILE, "", 'w');
-    first_time = true;
-  }
-  else
-    first_time = false;
-  list_free(sd_files);
-  return first_time;
+  return !sdcard_file_exists(drivers->sd_card, FIRST_TIME_FILE);
+}
+
+void write_first_startup_file()
+{
+  sdcard_write_file(drivers->sd_card, FIRST_TIME_FILE, "", 'w');
 }
 
 void sys_setup()
@@ -39,6 +34,7 @@ void sys_setup()
   // wait_for_user_input();
   if (is_first_startup())
   {
+    write_first_startup_file();
     start_malloc_mascot_tutorial();
     dump_malloc_memories_to_sd();
   }
@@ -68,7 +64,7 @@ void sys_mainloop()
         if (joystick_get_direction(drivers->joystick) == W)
         {
           display_main_menu();
-          break;
+          screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
         }
         if ((to_us_since_boot(get_absolute_time()) / 1000000) - screen_up_start > screen_up_seconds)
           break;

@@ -170,3 +170,15 @@ char *sdcard_read_value_from_file(sdcard *sd, char *filename, char *key)
 	list_free(lines);
 	return NULL;
 }
+
+bool sdcard_file_exists(sdcard *sd, char *filename)
+{
+	str_list *files = sdcard_list_files(sd);
+	bool found = false;
+	if (list_index_of(files, filename) == -1)
+		found = false;
+	else
+		found = true;
+	list_free(files);
+	return found;
+}

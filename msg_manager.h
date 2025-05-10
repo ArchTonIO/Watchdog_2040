@@ -7,6 +7,10 @@
 #define MAX_CONTACT_NAME_LENGTH 30
 #define MAX_CONTACTS 50
 
+#define CONTACTS_ADDR_FILE ".contacts"
+#define CONTACTS_NAMES_FILE ".contact-names"
+#define INFO_PAGES_TIMEOUT 3000
+
 typedef struct
 {
   char name[MAX_CONTACT_NAME_LENGTH];
@@ -29,6 +33,7 @@ void send_message();
 void add_contact();
 void save_contact(char *name, uint16_t addr);
 void remove_contact();
+void dump_contacts_to_sd();
 void scan_online_contacts();
 str_list *get_all_contacts();
 void enable_message_notifications();

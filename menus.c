@@ -38,6 +38,19 @@ void display_main_menu()
   attach_callback_to_option(main_menu, 5, display_malloc_menu);
   options_page_launch(main_menu);
   options_page_free(main_menu);
+  ssd1306_clear(drivers->oled_screen);
+}
+
+void display_notifications_menu()
+{
+  str_list *options = list_init();
+  list_append(options, "Enable notifications");
+  list_append(options, "Disable notifications");
+  options_page *notifications_menu = options_page_init("Notifications", options);
+  attach_callback_to_option(notifications_menu, 0, enable_message_notifications);
+  attach_callback_to_option(notifications_menu, 1, disable_message_notifications);
+  options_page_launch(notifications_menu);
+  options_page_free(notifications_menu);
 }
 
 void display_ulmp_menu()
@@ -47,13 +60,16 @@ void display_ulmp_menu()
   list_append(options, "Read messages");
   list_append(options, "Add contact");
   list_append(options, "Remove contact");
+  list_append(options, "Dump to MicroSD");
   list_append(options, "Scan online contacts");
+  list_append(options, "Notifications");
   options_page *ulmp_menu = options_page_init("ULMP", options);
   attach_callback_to_option(ulmp_menu, 0, send_message);
   attach_callback_to_option(ulmp_menu, 1, read_messages);
   attach_callback_to_option(ulmp_menu, 2, add_contact);
   attach_callback_to_option(ulmp_menu, 3, remove_contact);
-  attach_callback_to_option(ulmp_menu, 4, scan_online_contacts);
+  attach_callback_to_option(ulmp_menu, 4, dump_contacts_to_sd);
+  attach_callback_to_option(ulmp_menu, 5, scan_online_contacts);
   options_page_launch(ulmp_menu);
   options_page_free(ulmp_menu);
 }

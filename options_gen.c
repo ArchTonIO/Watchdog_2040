@@ -36,7 +36,8 @@ options_page *options_page_init(char *title, str_list *options)
     formatted[MAX_X_CHARS - 2] = '-';
     formatted[MAX_X_CHARS - 1] = '>';
     formatted[MAX_X_CHARS] = '\0';
-    page->options[i].name = formatted;
+    page->options[i].display_name = formatted;
+    page->options[i].name = original;
     page->options[i].selected = false;
     page->options[i].callback = NULL;
   }
@@ -72,21 +73,21 @@ char *options_page_launch(options_page *page)
 {
   sleep_ms(INTERAC_TIMEOUT);
   ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(
-      drivers->oled_screen,
-      page->title,
-      (uint8_t)((MAX_X_CHARS - strlen(page->title)) / 2),
-      0,
-      false);
   while (1)
   {
+    ssd1306_print(
+        drivers->oled_screen,
+        page->title,
+        (uint8_t)((MAX_X_CHARS - strlen(page->title)) / 2),
+        0,
+        false);
     for (uint8_t i = 0; i < page->num_options; i++)
     {
       if (i == page->selected_option)
       {
         ssd1306_print(
             drivers->oled_screen,
-            page->options[i].name,
+            page->options[i].display_name,
             0,
             i + 2,
             true);
@@ -95,7 +96,7 @@ char *options_page_launch(options_page *page)
       {
         ssd1306_print(
             drivers->oled_screen,
-            page->options[i].name,
+            page->options[i].display_name,
             0,
             i + 2,
             false);
@@ -136,7 +137,7 @@ void options_page_free(options_page *page)
 {
   for (uint8_t i = 0; i < page->num_options; i++)
   {
-    free(page->options[i].name);
+    free(page->options[i].display_name);
   }
   list_free(page->options_list);
   free(page);

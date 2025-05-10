@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 char *string_add(char *str1, char *str2)
 {
@@ -31,4 +32,28 @@ uint16_t array_find_min(uint16_t *array, size_t len)
     if (array[i] < min)
       min = array[i];
   return min;
+}
+
+bool is_string_numeric(char *str)
+{
+  for (uint8_t i = 0; i < strlen(str); i++)
+    if (str[i] < '0' || str[i] > '9')
+      return false;
+  return true;
+}
+
+bool is_string_alphanumeric(char *str)
+{
+  for (uint8_t i = 0; i < strlen(str); i++)
+    if ((str[i] < '0' || str[i] > '9') && (str[i] < 'A' || str[i] > 'Z') && (str[i] < 'a' || str[i] > 'z'))
+      return false;
+  return true;
+}
+
+bool is_string_alpha(char *str)
+{
+  for (uint8_t i = 0; i < strlen(str); i++)
+    if ((str[i] < 'A' || str[i] > 'Z') && (str[i] < 'a' || str[i] > 'z'))
+      return false;
+  return true;
 }

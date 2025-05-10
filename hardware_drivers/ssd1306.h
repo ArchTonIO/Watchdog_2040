@@ -50,7 +50,7 @@ ssd1306 *ssd1306_init(pin sda, pin sck, i2c_inst_t *i2c_port, uint32_t baudrate,
 void ssd1306_draw_pixel(ssd1306 *screen, int16_t x, int16_t y, int color);
 void ssd1306_draw_letter_at(ssd1306 *screen, uint8_t x, uint8_t y, char c, bool reversed);
 void ssd1306_print(ssd1306 *screen, const char *str, uint8_t x, uint8_t y, bool reversed);
-void ssd1306_print_gradually(ssd1306 *screen, const char *str, uint8_t x, uint8_t y, bool reversed, uint8_t delay_ms);
+void ssd1306_print_gradually(ssd1306 *screen, const char *str, uint8_t x, uint8_t y, bool reversed);
 void ssd1306_draw_bitmap(ssd1306 *display, uint8_t x, uint8_t y, const uint8_t bitmap[], int16_t width, int16_t height, bool reversed);
 void ssd1306_set_cursor(ssd1306 *screen, uint8_t x, uint8_t y);
 void ssd1306_invert(ssd1306 *display, uint8_t invert);

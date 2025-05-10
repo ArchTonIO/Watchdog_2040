@@ -18,6 +18,7 @@
 typedef struct
 {
   char *name;
+  char *display_name;
   bool selected;
   void (*callback)(void);
 } option;
