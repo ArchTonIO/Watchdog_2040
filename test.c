@@ -9,6 +9,7 @@
 #include "text_editor.h"
 #include "test.h"
 #include "pico/stdio_usb.h"
+#include "data_structures/string_list.h"
 
 void wait_for_user_input()
 {
@@ -65,7 +66,7 @@ void test_message_manager()
     else if (action == 3)
     {
       str_list *contacts = get_all_contacts();
-      lstprint(contacts);
+      list_print(contacts);
       free(contacts);
     }
     else if (action == 4)

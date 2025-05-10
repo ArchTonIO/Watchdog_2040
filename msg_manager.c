@@ -106,9 +106,9 @@ void add_contact()
 void remove_contact()
 {
   uint16_t to_remove = select_contact();
-  str_list *options = list();
-  lstappend(options, "Yes");
-  lstappend(options, "No");
+  str_list *options = list_init();
+  list_append(options, "Yes");
+  list_append(options, "No");
   options_page *yesno_page = options_page_init("You sure?", options);
   char *sure = options_page_launch(yesno_page);
   free(options);
@@ -150,10 +150,10 @@ void delete_contact(uint16_t addr)
 
 str_list *get_all_contacts()
 {
-  str_list *contacts = list();
+  str_list *contacts = list_init();
   for (uint16_t i = 0; i < msg_man_inst->contacts_count; i++)
   {
-    lstappend(contacts, msg_man_inst->contacts[i].name);
+    list_append(contacts, msg_man_inst->contacts[i].name);
   }
   return contacts;
 }

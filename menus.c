@@ -18,16 +18,17 @@ void display_bpm_menu();
 void display_time_menu();
 void display_system_menu();
 void display_malloc_menu();
+void display_tutorial_page();
 
 void display_main_menu()
 {
-  str_list *options = list();
-  lstappend(options, "ULMP");
-  lstappend(options, "Air quality indexes");
-  lstappend(options, "BPM and blood oxygen");
-  lstappend(options, "Time");
-  lstappend(options, "System");
-  lstappend(options, "Malloc");
+  str_list *options = list_init();
+  list_append(options, "ULMP");
+  list_append(options, "Air quality indexes");
+  list_append(options, "BPM and blood oxygen");
+  list_append(options, "Time");
+  list_append(options, "System");
+  list_append(options, "Malloc");
   options_page *main_menu = options_page_init("Main menu", options);
   attach_callback_to_option(main_menu, 0, display_ulmp_menu);
   attach_callback_to_option(main_menu, 1, display_air_quality_menu);
@@ -41,12 +42,12 @@ void display_main_menu()
 
 void display_ulmp_menu()
 {
-  str_list *options = list();
-  lstappend(options, "Send message");
-  lstappend(options, "Read messages");
-  lstappend(options, "Add contact");
-  lstappend(options, "Remove contact");
-  lstappend(options, "Scan online contacts");
+  str_list *options = list_init();
+  list_append(options, "Send message");
+  list_append(options, "Read messages");
+  list_append(options, "Add contact");
+  list_append(options, "Remove contact");
+  list_append(options, "Scan online contacts");
   options_page *ulmp_menu = options_page_init("ULMP", options);
   attach_callback_to_option(ulmp_menu, 0, send_message);
   attach_callback_to_option(ulmp_menu, 1, read_messages);
@@ -59,10 +60,10 @@ void display_ulmp_menu()
 
 void display_air_quality_menu()
 {
-  str_list *options = list();
-  lstappend(options, "AQI");
-  lstappend(options, "TVOC");
-  lstappend(options, "eCO2");
+  str_list *options = list_init();
+  list_append(options, "AQI");
+  list_append(options, "TVOC");
+  list_append(options, "eCO2");
   options_page *air_quality_menu = options_page_init("Air quality indexes", options);
   options_page_launch(air_quality_menu);
   options_page_free(air_quality_menu);
@@ -70,9 +71,9 @@ void display_air_quality_menu()
 
 void display_bpm_menu()
 {
-  str_list *options = list();
-  lstappend(options, "BPM");
-  lstappend(options, "SPO2");
+  str_list *options = list_init();
+  list_append(options, "BPM");
+  list_append(options, "SPO2");
   options_page *bpm_menu = options_page_init("BPM and blood oxygen", options);
   options_page_launch(bpm_menu);
   options_page_free(bpm_menu);
@@ -80,9 +81,9 @@ void display_bpm_menu()
 
 void display_time_menu()
 {
-  str_list *options = list();
-  lstappend(options, "Set time");
-  lstappend(options, "Set alarm");
+  str_list *options = list_init();
+  list_append(options, "Set time");
+  list_append(options, "Set alarm");
   options_page *time_menu = options_page_init("Time", options);
   options_page_launch(time_menu);
   options_page_free(time_menu);
@@ -90,11 +91,11 @@ void display_time_menu()
 
 void display_system_menu()
 {
-  str_list *options = list();
-  lstappend(options, "System info");
-  lstappend(options, "System reset");
-  lstappend(options, "Battery status");
-  lstappend(options, "Check joystick");
+  str_list *options = list_init();
+  list_append(options, "System info");
+  list_append(options, "System reset");
+  list_append(options, "Battery status");
+  list_append(options, "Check joystick");
   options_page *system_menu = options_page_init("System", options);
   options_page_launch(system_menu);
   options_page_free(system_menu);
@@ -102,10 +103,32 @@ void display_system_menu()
 
 void display_malloc_menu()
 {
-  str_list *options = list();
-  lstappend(options, "Talk with Malloc");
-  lstappend(options, "See Malloc memories");
+  str_list *options = list_init();
+  list_append(options, "Talk with Malloc");
+  list_append(options, "See Malloc memories");
   options_page *malloc_menu = options_page_init("Malloc", options);
   options_page_launch(malloc_menu);
   options_page_free(malloc_menu);
+}
+
+void display_tutorial_menu()
+{
+  str_list *options = list_init();
+  list_append(options, "Page 0");
+  list_append(options, "Page 1");
+  list_append(options, "Page 2");
+  list_append(options, "Page 3");
+  list_append(options, "Page 4");
+  options_page *tutorial = options_page_init("Tutorial", options);
+  options_page_launch(tutorial);
+  options_page_free(tutorial);
+}
+
+void display_tutorial_page()
+{
+  str_list *options = list_init();
+  list_append(options, "...");
+  options_page *tutorial_page = options_page_init("Tutorial Page", options);
+  options_page_launch(tutorial_page);
+  options_page_free(tutorial_page);
 }

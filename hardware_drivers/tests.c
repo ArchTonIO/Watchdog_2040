@@ -130,12 +130,12 @@ void test_sd_card()
 	sdcard_write_file(sd, "test.txt", "Hello\nThis is a test file to see if micro sd works\nBye!", 'w');
 	printf("Retrieving lines list from file test.txt:\n");
 	str_list *lines = sdcard_read_file(sd, "test.txt");
-	lstprint(lines);
+	list_print(lines);
 	printf("Listing all files in the sd card:\n");
 	str_list *files = sdcard_list_files(sd);
-	lstprint(files);
-	lstdel(lines);
-	lstdel(files);
+	list_print(files);
+	list_free(lines);
+	list_free(files);
 	sdcard_unmount(sd);
 	printf("Card unmounted\n");
 	free(sd);

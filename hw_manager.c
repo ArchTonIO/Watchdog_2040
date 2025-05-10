@@ -86,7 +86,7 @@ hw_drivers *hardware_drivers_init()
 		multicore_fifo_push_blocking(SDCARD_OK);
 	else
 		multicore_fifo_push_blocking(SDCARD_ERR);
-	hw_man->rtc = rtc_time_init(2025, 5, 9, 4, 20, 14, 00);
+	hw_man->rtc = rtc_time_init(2025, 5, 9, 4, 20, 37, 00);
 	multicore_fifo_push_blocking(RTC_OK);
 	multicore_fifo_push_blocking(CHECKS_END);
 	wait_for_core1();

@@ -12,6 +12,7 @@
 #include "pico/rand.h"
 #include "virtual_keyboard.h"
 #include "malloc_mascot.h"
+#include "menus.h"
 
 malloc_memories *malloc_memories_inst = NULL;
 
@@ -19,11 +20,11 @@ void start_malloc_mascot_tutorial()
 {
   malloc_memories *memories = malloc_memories_init();
   malloc_greets_you();
-  // malloc_explains_you_joystick();
-  // malloc_explains_you_menu();
-  // malloc_explains_you_text_editor();
-  // malloc_asks_your_name();
-  // malloc_explains_you_home_screen();
+  malloc_explains_you_joystick();
+  malloc_explains_you_menu();
+  malloc_explains_you_text_editor();
+  malloc_asks_your_name();
+  malloc_explains_you_home_screen();
   malloc_generates_ulcp_address();
   malloc_says_goodbye();
 }
@@ -38,10 +39,10 @@ malloc_memories *malloc_memories_init()
 
 void press_to_continue()
 {
-  ssd1306_print(drivers->oled_screen, "Press to continue ->", 0, 7, 0);
+  ssd1306_print(drivers->oled_screen, "Right to continue ->", 0, 7, 0);
   ssd1306_show(drivers->oled_screen);
   joystick_update(drivers->joystick);
-  while (drivers->joystick->button_pressed == false)
+  while (joystick_get_direction(drivers->joystick) != W)
   {
     joystick_update(drivers->joystick);
     sleep_ms(10);
@@ -97,22 +98,19 @@ void malloc_explains_you_menu()
   ssd1306_print_gradually(drivers->oled_screen, "lista, basta", 4, 2, 0, 0);
   ssd1306_print_gradually(drivers->oled_screen, "andare su e giu", 4, 3, 0, 0);
   ssd1306_print_gradually(drivers->oled_screen, "con la levetta.", 4, 4, 0, 0);
-  ssd1306_print_gradually(drivers->oled_screen, "Premi il tasto", 4, 5, 0, 0);
+  ssd1306_print_gradually(drivers->oled_screen, "vai a destra per", 4, 5, 0, 0);
   ssd1306_print_gradually(drivers->oled_screen, "per selezionare.", 4, 6, 0, 0);
   press_to_continue();
   clear_text_area();
+  ssd1306_print_gradually(drivers->oled_screen, "Oppure vai a", 4, 0, 0, 0);
+  ssd1306_print_gradually(drivers->oled_screen, "sinistra per", 4, 1, 0, 0);
+  ssd1306_print_gradually(drivers->oled_screen, "tornare alla", 4, 2, 0, 0);
+  ssd1306_print_gradually(drivers->oled_screen, "pagina", 4, 3, 0, 0);
+  ssd1306_print_gradually(drivers->oled_screen, "precedente.", 4, 4, 0, 0);
+  press_to_continue();
+  clear_text_area();
   sleep_ms(200);
-  str_list *options = list();
-  lstappend(options, "option_0");
-  lstappend(options, "option_1");
-  lstappend(options, "option_2");
-  lstappend(options, "option_3");
-  lstappend(options, "option_4");
-  lstappend(options, "Ho capito!");
-  options_page *tutorial = options_page_init("Tutorial", options);
-  options_page_launch(tutorial);
-  lstdel(options);
-  free(tutorial);
+  display_tutorial_menu();
   clear_text_area();
   ssd1306_draw_bitmap(drivers->oled_screen, 0, 19, malloc_with_both_eyes, 26, 28, 0);
   ssd1306_print_gradually(drivers->oled_screen, "Bene vedo che", 4, 0, 0, 0);
@@ -181,7 +179,7 @@ void malloc_explains_you_text_editor()
   clear_text_area();
 }
 
-void malloc_asks_your_name()
+void malloc_asks_your_name() // TODO: fix this
 {
   ssd1306_draw_bitmap(drivers->oled_screen, 0, 19, malloc_with_pointy_eyes, 26, 28, 0);
   ssd1306_print_gradually(drivers->oled_screen, "Ma veniamo al", 4, 0, 0, 0);

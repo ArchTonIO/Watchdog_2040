@@ -64,7 +64,7 @@ bool sdcard_write_file(sdcard *sd, char *filename, char *content, char mode)
 
 str_list *sdcard_read_file(sdcard *sd, char *filename)
 {
-	str_list *lines = list();
+	str_list *lines = list_init();
 	sd->fr = f_open(&sd->fil, filename, FA_READ);
 	if (sd->fr != FR_OK)
 	{
@@ -75,7 +75,7 @@ str_list *sdcard_read_file(sdcard *sd, char *filename)
 	{
 		char *line = (char *)malloc(strlen(sd->buf) + 1);
 		strcpy(line, sd->buf);
-		lstappend(lines, line);
+		list_append(lines, line);
 		free(line);
 	}
 	sd->fr = f_close(&sd->fil);
@@ -89,7 +89,7 @@ str_list *sdcard_read_file(sdcard *sd, char *filename)
 
 str_list *sdcard_list_files(sdcard *sd)
 {
-	str_list *files = list();
+	str_list *files = list_init();
 	DIR dir;
 	FILINFO fno;
 	sd->fr = f_opendir(&dir, "/");
@@ -105,7 +105,7 @@ str_list *sdcard_list_files(sdcard *sd)
 			break;
 		char *file = (char *)malloc(strlen(fno.fname) + 1);
 		strcpy(file, fno.fname);
-		lstappend(files, file);
+		list_append(files, file);
 		free(file);
 	}
 	sd->fr = f_closedir(&dir);
@@ -122,7 +122,7 @@ str_list *sdcard_list_files(sdcard *sd)
  *
  * @param sd The sdcard instance
  * @param filename The name of the file to write to
- * @param mode The mode to open the file in ('w' for write, 'a' for append)
+ * @param mode The mode to open the file in ('w' for write, 'a' for list_append)
  * @param key The key to write
  * @param value The value to write
  * @return true if the write was successful, false otherwise
@@ -156,18 +156,17 @@ char *sdcard_read_value_from_file(sdcard *sd, char *filename, char *key)
 	str_list *lines = sdcard_read_file(sd, filename);
 	for (uint16_t i = 0; i < lines->len; i++)
 	{
-		char *line = lstget(lines, i);
+		char *line = get(lines, i);
 		char *delimiter = strchr(line, sep);
 		*delimiter = '\0';
 		if (strcmp(line, key) == 0)
 		{
 			char *value = (char *)malloc(strlen(delimiter + 1) + 1);
 			strcpy(value, delimiter + 1);
-			lstdel(lines);
+			list_free(lines);
 			return value;
 		}
 	}
-	lstdel(lines);
-	free(lines);
+	list_free(lines);
 	return NULL;
 }

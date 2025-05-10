@@ -26,7 +26,7 @@ options_page *options_page_init(char *title, str_list *options)
   page->title = title;
   for (uint8_t i = 0; i < options->len; i++)
   {
-    char *original = lstget(options, i);
+    char *original = get(options, i);
     size_t len = strlen(original);
     char *formatted = (char *)malloc(MAX_X_CHARS + 1);
     size_t copy_len = len > (MAX_X_CHARS - 2) ? (MAX_X_CHARS - 2) : len;
@@ -138,6 +138,6 @@ void options_page_free(options_page *page)
   {
     free(page->options[i].name);
   }
-  lstdel(page->options_list);
+  list_free(page->options_list);
   free(page);
 }

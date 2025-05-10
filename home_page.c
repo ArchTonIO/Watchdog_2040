@@ -249,6 +249,6 @@ void display_home_page()
   ssd1306_print(drivers->oled_screen, "ULMP", 0, 6, false);
   ssd1306_print(drivers->oled_screen, malloc_memories_inst->ulmp_addr_str, 0, 7, false);
   ssd1306_print(drivers->oled_screen, "SRAM", 12, 6, false);
-  ssd1306_print(drivers->oled_screen, used_ram_str, 12, 7, false); // todo: change with real value
+  ssd1306_print(drivers->oled_screen, used_ram_str, 12, 7, false);
   ssd1306_show(drivers->oled_screen);
 }

@@ -16,5 +16,6 @@
 #include "options_gen.h"
 
 void display_main_menu();
+void display_tutorial_menu();
 
 #endif

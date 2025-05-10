@@ -3,17 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-/*
-A straigtforward implementation of a list of strings.
-Supports basic happend(), pop(), get(), index_of() and has some
-useful features such as:
-- yells at you when trying to use a index > lenght of the list.
-- supports negative indexing (I like it).
-- print_list() prints you the whole list info and content.
- */
-
-#define index_err_str "[INDEX_ERROR]"
-#define max_len_reached_str "[MAX_LEN_REACHED_ERROR]"
 
 struct lnode
 {
@@ -27,7 +16,7 @@ struct lnode
  *
  * @return str_list * A pointer to the doubly linked list.
  */
-str_list *list()
+str_list *list_init()
 {
   str_list *newlist = (str_list *)malloc(sizeof(str_list));
   newlist->len = 0;
@@ -37,21 +26,21 @@ str_list *list()
 }
 
 /*
- * @brief Appends a string constant to the list.
+ * @brief list_appends a string constant to the list.
  *
- * @param *list The list to append to.
- * @param *value The value to append.
+ * @param *list The list to list_append to.
+ * @param *value The value to list_append.
  */
-void lstappend(str_list *list, char *value)
+void list_append(str_list *list, char *value)
 {
   if (list->len >= MAX_LIST_LEN)
   {
-    printf("%s\n", max_len_reached_str);
+    printf("%s\n", MAX_LEN_REACHED_STR);
     return;
   }
   if (strlen(value) > MAX_STR_LEN)
   {
-    printf("[MAX_STR_LEN_REACHED]\n");
+    printf("%s\n", MAX_STRLEN_REACHED_STR);
     return;
   }
   list->len++;
@@ -63,7 +52,7 @@ void lstappend(str_list *list, char *value)
   char *valuecp = (char *)malloc(strlen(value) + 1);
   if (valuecp == NULL)
   {
-    printf("[MEMORY ERROR]\n");
+    printf("%s\n", MEMORY_ERR_STR);
     return;
   }
   strcpy(valuecp, value);
@@ -85,7 +74,7 @@ void lstappend(str_list *list, char *value)
  * @param *value The value you are looking the index for.
  * @return integer The index of that value in the list.
  */
-integer index_of(str_list *list, char *value)
+integer list_index_of(str_list *list, char *value)
 {
   struct lnode *cursor = list->head;
   uinteger index = 0;
@@ -108,7 +97,7 @@ integer index_of(str_list *list, char *value)
  * @param index The index of the element, supports negative indexing.
  * @return char * The string at that index.
  */
-char *lstget(str_list *list, integer index)
+char *get(str_list *list, integer index)
 {
   struct lnode *cursor = list->head;
   if (index < 0)
@@ -117,8 +106,8 @@ char *lstget(str_list *list, integer index)
   }
   if (index >= list->len)
   {
-    printf("%s: %d\n", index_err_str, index);
-    return index_err_str;
+    printf("%s: %d\n", INDEX_ERR_STR, index);
+    return INDEX_ERR_STR;
   }
   for (uinteger i = 0; i < index && cursor != NULL; i++)
   {
@@ -134,9 +123,9 @@ char *lstget(str_list *list, integer index)
  * @param index The index of the element.
  * @return the value that was removed
  */
-char *lstpop(str_list *list, integer index)
+char *pop(str_list *list, integer index)
 {
-  char *value = lstget(list, index);
+  char *value = get(list, index);
   struct lnode *cursor = list->head;
   while (cursor != NULL)
   {
@@ -183,7 +172,7 @@ char *lstpop(str_list *list, integer index)
  *
  * @param *list The list to print.
  */
-void lstprint(str_list *list)
+void list_print(str_list *list)
 {
   struct lnode *cursor = list->head;
   uinteger i = 0;
@@ -201,12 +190,12 @@ void lstprint(str_list *list)
  *
  * @param *list The list to clear.
  */
-void lstclear(str_list *list)
+void clear(str_list *list)
 {
   uinteger len = list->len;
   for (integer i = len - 1; i > -1; i--)
   {
-    lstpop(list, i);
+    pop(list, i);
   }
 }
 
@@ -215,7 +204,7 @@ void lstclear(str_list *list)
  *
  * @param *list The list.
  */
-uinteger lstlen(str_list *list) { return list->len; }
+uinteger list_len(str_list *list) { return list->len; }
 
 /*
  * @brief compare two lists of strings.
@@ -224,7 +213,7 @@ uinteger lstlen(str_list *list) { return list->len; }
  * @param *list2, the second list of strings.
  * @return 0 if the list are identical, 1 otherwise
  */
-uinteger lstcmp(str_list *list1, str_list *list2)
+uinteger list_compare(str_list *list1, str_list *list2)
 {
   if (list1->len != list2->len)
   {
@@ -235,7 +224,7 @@ uinteger lstcmp(str_list *list1, str_list *list2)
   {
     for (uinteger j = 0; j < list2->len; j++)
     {
-      if (strcmp(lstget(list1, i), lstget(list2, j)) == 0)
+      if (strcmp(get(list1, i), get(list2, j)) == 0)
       {
         matches++;
       }
@@ -254,7 +243,7 @@ uinteger lstcmp(str_list *list1, str_list *list2)
  * @param *list The list to concatenate.
  * @return char * The concatenated string.
  */
-char *lstconcat(str_list *list)
+char *list_concat(str_list *list)
 {
   if (list->len == 0)
   {
@@ -267,7 +256,7 @@ char *lstconcat(str_list *list)
   size_t total_length = 0;
   for (int i = 0; i < list->len; i++)
   {
-    total_length += strlen(lstget(list, i));
+    total_length += strlen(get(list, i));
   }
   total_length += 1;
   char *total_payload = (char *)malloc(total_length);
@@ -276,7 +265,7 @@ char *lstconcat(str_list *list)
   char *ptr = total_payload;
   for (int i = 0; i < list->len; i++)
   {
-    char *payload = lstget(list, i);
+    char *payload = get(list, i);
     strcpy(ptr, payload);
     ptr += strlen(payload);
   }
@@ -290,16 +279,16 @@ char *lstconcat(str_list *list)
  * @param *list2 The second list.
  * @return str_list * The new list.
  */
-str_list *lstextend(str_list *list1, str_list *list2)
+str_list *list_extend(str_list *list1, str_list *list2)
 {
-  str_list *newlist = list();
+  str_list *newlist = list_init();
   for (uinteger i = 0; i < list1->len; i++)
   {
-    lstappend(newlist, lstget(list1, i));
+    list_append(newlist, get(list1, i));
   }
   for (uinteger i = 0; i < list2->len; i++)
   {
-    lstappend(newlist, lstget(list2, i));
+    list_append(newlist, get(list2, i));
   }
   return newlist;
 }
@@ -310,12 +299,12 @@ str_list *lstextend(str_list *list1, str_list *list2)
  * @param *to_copy The list to copy.
  * @return str_list * The new list.
  */
-str_list *lstcopy(str_list *to_copy)
+str_list *list_copy(str_list *to_copy)
 {
-  str_list *newlist = list();
+  str_list *newlist = list_init();
   for (uinteger i = 0; i < to_copy->len; i++)
   {
-    lstappend(newlist, lstget(to_copy, i));
+    list_append(newlist, get(to_copy, i));
   }
   return newlist;
 }
@@ -325,7 +314,7 @@ str_list *lstcopy(str_list *to_copy)
  *
  * @param *list The list to delete.
  */
-void lstdel(str_list *list)
+void list_free(str_list *list)
 {
   struct lnode *cursor = list->head;
   while (cursor != NULL)
