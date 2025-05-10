@@ -330,16 +330,10 @@ void lstdel(str_list *list)
   struct lnode *cursor = list->head;
   while (cursor != NULL)
   {
-    if (cursor != list->head)
-    {
-      free(cursor->prev);
-    }
-    if (cursor == list->tail)
-    {
-      free(cursor);
-      return;
-    }
-    cursor = cursor->next;
+    struct lnode *next = cursor->next;
+    free(cursor->value);
+    free(cursor);
+    cursor = next;
   }
   free(list);
 }
