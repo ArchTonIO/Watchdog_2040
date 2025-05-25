@@ -1,0 +1,4 @@
+- [unsolved] - bug00 - when adding a new contact 2 bytes of sram randomly leak
+- [unsolved] - bug01 - after some time the device just crashes out of nothing, probabily due to and hardfault
+- [unsolved] - bug02 - malloc can't spell your name properly
+- [unsolved] - bug03 - 

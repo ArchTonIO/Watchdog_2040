@@ -51,6 +51,8 @@ ulcp/lora_send.c
 ulcp/ulcp.c
 bitmaps.c
 bootup.c
+graphic_primitives.c
+graphs.c
 home_page.c
 hw_manager.c
 malloc_mascot.c

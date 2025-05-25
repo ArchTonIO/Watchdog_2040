@@ -11,9 +11,10 @@
 #include "hardware_drivers/sdcard.h"
 #include "data_structures/string_list.h"
 #include "options_gen.h"
+#include "graphs.h"
 
 void display_ulmp_menu();
-void display_air_quality_menu();
+void display_air_quality_indexes();
 void display_bpm_menu();
 void display_time_menu();
 void display_system_menu();
@@ -31,7 +32,7 @@ void display_main_menu()
   list_append(options, "Malloc");
   options_page *main_menu = options_page_init("Main menu", options);
   attach_callback_to_option(main_menu, 0, display_ulmp_menu);
-  attach_callback_to_option(main_menu, 1, display_air_quality_menu);
+  attach_callback_to_option(main_menu, 1, display_air_quality_indexes);
   attach_callback_to_option(main_menu, 2, display_bpm_menu);
   attach_callback_to_option(main_menu, 3, display_time_menu);
   attach_callback_to_option(main_menu, 4, display_system_menu);
@@ -74,15 +75,27 @@ void display_ulmp_menu()
   options_page_free(ulmp_menu);
 }
 
-void display_air_quality_menu()
+void display_air_quality_indexes()
 {
-  str_list *options = list_init();
-  list_append(options, "AQI");
-  list_append(options, "TVOC");
-  list_append(options, "eCO2");
-  options_page *air_quality_menu = options_page_init("Air quality indexes", options);
-  options_page_launch(air_quality_menu);
-  options_page_free(air_quality_menu);
+  graph *g_aqi = graph_init("AQI", 48, 40, 0, 16, 0, 5);
+  graph *g_co2 = graph_init("eCO2", 48, 40, 43, 16, 400, 2000);
+  graph *g_tvoc = graph_init("TVOC", 48, 40, 86, 16, 0, 600);
+  while (joystick_get_direction(drivers->joystick) != E)
+  {
+    joystick_update(drivers->joystick);
+    graph_push_value(g_aqi, ens160_read_aqi(drivers->air_quality_sensor));
+    graph_push_value(g_co2, ens160_read_co2(drivers->air_quality_sensor));
+    graph_push_value(g_tvoc, ens160_read_tvoc(drivers->air_quality_sensor));
+    ssd1306_clear(drivers->oled_screen);
+    graph_update(g_aqi);
+    graph_update(g_co2);
+    graph_update(g_tvoc);
+    ssd1306_show(drivers->oled_screen);
+    sleep_ms(500);
+  }
+  graph_free(g_aqi);
+  graph_free(g_co2);
+  graph_free(g_tvoc);
 }
 
 void display_bpm_menu()

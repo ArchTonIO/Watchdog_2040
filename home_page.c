@@ -20,6 +20,7 @@
 #include "home_page.h"
 #include "pico/multicore.h"
 #include "malloc_mascot.h"
+#include "graphic_primitives.h"
 
 home_page *home_page_inst;
 
@@ -238,10 +239,10 @@ void display_home_page()
   ssd1306_print(drivers->oled_screen, "AQI", 13, 3, false); // todo: change with real value
   ssd1306_print(drivers->oled_screen, " 1 ", 13, 4, false);
   uint8_t line_padding = 4;
-  for (uint8_t h_incr = 0; h_incr < SSD1306_WIDTH; h_incr++)
-    ssd1306_draw_pixel(drivers->oled_screen, h_incr, start_pix_h - line_padding, 1);
-  for (uint8_t h_incr = 0; h_incr < SSD1306_WIDTH; h_incr++)
-    ssd1306_draw_pixel(drivers->oled_screen, h_incr, start_pix_h + CLOCK_DOTS_BITMAPS_H + line_padding, 1);
+  line l = create_line(create_point(0, start_pix_h - line_padding), create_point(SSD1306_WIDTH - 1, start_pix_h - line_padding));
+  draw_line(l);
+  line l1 = create_line(create_point(0, start_pix_h + CLOCK_DOTS_BITMAPS_H + line_padding), create_point(SSD1306_WIDTH - 1, start_pix_h + CLOCK_DOTS_BITMAPS_H + line_padding));
+  draw_line(l1);
   uint32_t used_ram = get_free_heap();
   uint32_t used_ram_kb = used_ram * 0.009765625;
   char used_ram_str[11];
