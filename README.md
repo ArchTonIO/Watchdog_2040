@@ -3,7 +3,7 @@
 
 ## The Transport Layer
 
-The LoRa transport layer I built for this project was named **`ULCP`**: **Uncomplicated LoRa Communication Protocol.**
+The LoRa transport layer I built for this project was named **`ULMP`**: **Uncomplicated LoRa Messaging Protocol.**
 
 This communication protocol is built upon this project sx1278.c driver, a port of the micropython driver ulora.py.
 

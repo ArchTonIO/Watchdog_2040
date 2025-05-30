@@ -121,7 +121,7 @@ char *options_page_launch(options_page *page)
       if (page->selected_option >= page->num_options)
         page->selected_option = 0;
     }
-    else if (joystick_dir == W)
+    else if (joystick_dir == E)
     {
       if (page->options[page->selected_option].callback != NULL)
         page->options[page->selected_option].callback();
@@ -130,7 +130,7 @@ char *options_page_launch(options_page *page)
       ssd1306_clear(drivers->oled_screen);
       ssd1306_show(drivers->oled_screen);
     }
-    else if (joystick_dir == E)
+    else if (joystick_dir == W)
     {
       return "";
     }

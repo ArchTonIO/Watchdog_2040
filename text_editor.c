@@ -151,12 +151,12 @@ void navigate_text(text_editor *editor)
       if (editor->video_cursor_row == MAX_VIDEO_ROWS - 1 && editor->logic_cursor_row > editor->video_cursor_row)
         scroll_view_down(editor);
     }
-    if (joystick_get_direction(drivers->joystick) == E && editor->video_cursor_col > 0)
+    if (joystick_get_direction(drivers->joystick) == W && editor->video_cursor_col > 0)
     {
       editor->video_cursor_col--;
       editor->logic_cursor_col--;
     }
-    if (joystick_get_direction(drivers->joystick) == W && editor->video_cursor_col < MAX_VIDEO_COLS)
+    if (joystick_get_direction(drivers->joystick) == E && editor->video_cursor_col < MAX_VIDEO_COLS)
     {
       editor->video_cursor_col++;
       editor->logic_cursor_col++;

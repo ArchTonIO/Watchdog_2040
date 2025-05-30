@@ -179,27 +179,3 @@ void clear_polyline(polyline pl)
     clear_line(l);
   }
 }
-
-void test_primitives()
-{
-  sys_setup();
-  rectangle r = create_rectangle(create_point(0, 0), create_point(60, 60), 20);
-  draw_rectangle(r);
-  ssd1306_show(drivers->oled_screen);
-  sleep_ms(5000);
-  clear_rectangle(r);
-  circle c = create_circle(create_point(30, 30), 20);
-  draw_circle(c);
-  ssd1306_show(drivers->oled_screen);
-  sleep_ms(5000);
-  clear_circle(c);
-  polyline pl = create_polyline((point[]){{10, 10}, {20, 30}, {40, 20}, {50, 50}});
-  draw_polyline(pl);
-  ssd1306_show(drivers->oled_screen);
-  sleep_ms(5000);
-  clear_polyline(pl);
-  line ln = create_line(create_point(0, 0), create_point(60, 60));
-  draw_line(ln);
-  ssd1306_show(drivers->oled_screen);
-  sleep_ms(5000);
-}

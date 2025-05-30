@@ -331,30 +331,30 @@ key *select_key(virtual_keyboard *keyboard, uint8_t direction, key *last_key)
 {
   int8_t row_adder = 0;
   int8_t col_adder = 0;
-  if (direction == W)
+  if (direction == E)
     col_adder = 1;
   if (direction == S)
     row_adder = 1;
   if (direction == N)
     row_adder = -1;
-  if (direction == E)
+  if (direction == W)
     col_adder = -1;
-  if (direction == NE)
+  if (direction == NW)
   {
     row_adder = -1;
     col_adder = -1;
   }
-  if (direction == NW)
+  if (direction == NE)
   {
     row_adder = -1;
     col_adder = 1;
   }
-  if (direction == SE)
+  if (direction == SW)
   {
     row_adder = 1;
     col_adder = -1;
   }
-  if (direction == SW)
+  if (direction == SE)
   {
     row_adder = 1;
     col_adder = 1;

@@ -56,6 +56,4 @@ polyline create_polyline(point *points);
 void clear_polyline(polyline pl);
 void draw_polyline(polyline pl);
 
-void test_primitives();
-
 #endif

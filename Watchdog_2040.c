@@ -60,7 +60,7 @@ void sys_mainloop()
         process_system_state();
         display_home_page();
         joystick_update(drivers->joystick);
-        if (joystick_get_direction(drivers->joystick) == W)
+        if (joystick_get_direction(drivers->joystick) == E)
         {
           display_main_menu();
           screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
