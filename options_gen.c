@@ -10,6 +10,8 @@
 #include "hardware_drivers/joystick.h"
 #include "options_gen.h"
 
+void handle_scroll(options_page *page);
+
 /**
  * @brief Initializes an options page with a list of options.
  *
@@ -40,6 +42,7 @@ options_page *options_page_init(char *title, str_list *options)
     page->options[i].name = original;
     page->options[i].selected = false;
     page->options[i].callback = NULL;
+    page->scroll = 0;
   }
   return page;
 }
@@ -83,13 +86,15 @@ char *options_page_launch(options_page *page)
         false);
     for (uint8_t i = 0; i < page->num_options; i++)
     {
+      if (i < abs(page->scroll))
+        continue;
       if (i == page->selected_option)
       {
         ssd1306_print(
             drivers->oled_screen,
             page->options[i].display_name,
             0,
-            i + 2,
+            (i + 2) + page->scroll,
             true);
       }
       else
@@ -98,7 +103,7 @@ char *options_page_launch(options_page *page)
             drivers->oled_screen,
             page->options[i].display_name,
             0,
-            i + 2,
+            (i + 2) + page->scroll,
             false);
       }
     }
@@ -107,9 +112,8 @@ char *options_page_launch(options_page *page)
     uint8_t joystick_dir = joystick_get_direction(drivers->joystick);
     if (joystick_dir == N)
     {
-      page->selected_option--;
-      if (page->selected_option < 0)
-        page->selected_option = page->num_options - 1;
+      if (page->selected_option > 0)
+        page->selected_option--;
     }
     else if (joystick_dir == S)
     {
@@ -130,6 +134,21 @@ char *options_page_launch(options_page *page)
     {
       return "";
     }
+    handle_scroll(page);
+  }
+}
+
+void handle_scroll(options_page *page)
+{
+  if (page->selected_option + page->scroll > MAX_OPTIONS_ON_SCREEN - 1)
+  {
+    page->scroll--;
+    return;
+  }
+  if (page->selected_option + page->scroll < MAX_OPTIONS_ON_SCREEN - 1 && page->scroll < 0)
+  {
+    page->scroll++;
+    return;
   }
 }
 

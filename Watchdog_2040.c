@@ -14,10 +14,7 @@
 #include "options_gen.h"
 #include "test.h"
 #include "menus.h"
-#include "graphs.h"
-#include <math.h>
-
-#define FIRST_TIME_FILE ".booted"
+#include "device.h"
 
 bool is_first_startup()
 {

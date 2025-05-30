@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 #include "pico/stdlib.h"
 #include "hw_manager.h"
 #include "msg_manager.h"
@@ -11,7 +12,10 @@
 #include "hardware_drivers/sdcard.h"
 #include "data_structures/string_list.h"
 #include "options_gen.h"
+#include "utils.h"
 #include "graphs.h"
+#include "graphic_primitives.h"
+#include "device.h"
 
 void display_ulmp_menu();
 void display_air_quality_indexes();
@@ -118,14 +122,137 @@ void display_time_menu()
   options_page_free(time_menu);
 }
 
+void display_system_info()
+{
+  str_list *options = list_init();
+  uint64_t us_since_boot = to_us_since_boot(get_absolute_time());
+  us_since_boot /= 1000000;
+  char uptime_str[20];
+  uint32_t free_heap = get_free_heap();
+  char free_heap_str[20];
+  uint32_t clock_freq_khz = get_clock_freq_khz();
+  char clock_freq_khz_str[20];
+  uint used_flash = get_used_flash_bytes();
+  char used_flash_str[20];
+  float cpu_temp = get_cpu_temp();
+  char cpu_temp_str[20];
+  snprintf(free_heap_str, sizeof(free_heap_str), "%u bytes", free_heap);
+  snprintf(used_flash_str, sizeof(used_flash_str), "%u bytes", used_flash);
+  snprintf(uptime_str, sizeof(uptime_str), "%llu seconds", us_since_boot);
+  snprintf(clock_freq_khz_str, sizeof(clock_freq_khz_str), "%u kHz", clock_freq_khz);
+  snprintf(cpu_temp_str, sizeof(cpu_temp_str), "%.2f C", cpu_temp);
+  list_append(options, "Device:");
+  list_append(options, DEVICE_NAME);
+  list_append(options, "Hardware version:");
+  list_append(options, HARDWARE_VERSION);
+  list_append(options, "Firmware version:");
+  list_append(options, FIRMWARE_VERSION);
+  list_append(options, "Free heap memory: ");
+  list_append(options, free_heap_str);
+  list_append(options, "Used flash memory: ");
+  list_append(options, used_flash_str);
+  list_append(options, "System uptime: ");
+  list_append(options, uptime_str);
+  list_append(options, "Clock frequency: ");
+  list_append(options, clock_freq_khz_str);
+  list_append(options, "CPU temperature: ");
+  list_append(options, cpu_temp_str);
+  options_page *system_info_page = options_page_init("System info", options);
+  options_page_launch(system_info_page);
+  options_page_free(system_info_page);
+}
+
+void reset_system()
+{
+  str_list *options = list_init();
+  list_append(options, "Yes");
+  list_append(options, "No");
+  options_page *yesno_page = options_page_init("Are you sure?", options);
+  char *answer = options_page_launch(yesno_page);
+  if (strcmp(answer, "Yes") == 0)
+  {
+    ssd1306_clear(drivers->oled_screen);
+    ssd1306_print(drivers->oled_screen, "Resetting system", 0, 0, false);
+    ssd1306_print(drivers->oled_screen, "right now can", 0, 1, false);
+    ssd1306_print(drivers->oled_screen, "only be done", 0, 2, false);
+    ssd1306_print(drivers->oled_screen, "by unplugging", 0, 3, false);
+    ssd1306_print(drivers->oled_screen, "the sd card", 0, 4, false);
+    ssd1306_print(drivers->oled_screen, "and wiping", 0, 5, false);
+    ssd1306_print(drivers->oled_screen, "its content", 0, 6, false);
+    ssd1306_show(drivers->oled_screen);
+    sleep_ms(3000);
+  }
+  free(answer);
+  options_page_free(yesno_page);
+}
+
+void display_battery_status()
+{
+  uint8_t battery_level = battery_get_percentage(drivers->battery);
+  char battery_str[20];
+  snprintf(battery_str, sizeof(battery_str), "Battery: %u%%", battery_level);
+  str_list *options = list_init();
+  list_append(options, battery_str);
+  options_page *battery_status = options_page_init("Battery status", options);
+  options_page_launch(battery_status);
+  options_page_free(battery_status);
+}
+
+void display_joystick_check()
+{
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_print(drivers->oled_screen, "Joystick test", 0, 0, false);
+  ssd1306_print(drivers->oled_screen, "Long press to exit", 0, 1, false);
+  ssd1306_print(drivers->oled_screen, "X:", 0, 4, false);
+  ssd1306_print(drivers->oled_screen, "Y:", 0, 5, false);
+  ssd1306_print(drivers->oled_screen, "Theta:", 11, 3, false);
+  ssd1306_print(drivers->oled_screen, "Rho:", 11, 5, false);
+  char x_str[10];
+  char y_str[10];
+  char theta_str[10];
+  char rho_str[10];
+  circle c = create_circle(create_point(64, 40), 20);
+  circle c1 = create_circle(create_point(64, 40), 5);
+  draw_circle(c);
+  draw_circle(c1);
+  while (!joystick_check_long_press(drivers->joystick, 2000))
+  {
+    joystick_update(drivers->joystick);
+    clear_circle(c1);
+    polar_coords polar = joystick_get_polar(drivers->joystick);
+    float theta_rad = polar.theta_deg * (M_PI / 180.0f);
+    c1 = create_circle(
+        create_point(
+            64 + polar.l * 10 * cosf(theta_rad),
+            40 - polar.l * 10 * sinf(theta_rad)),
+        7);
+    draw_circle(c1);
+    snprintf(x_str, sizeof(x_str), "%u", drivers->joystick->x_value);
+    snprintf(y_str, sizeof(y_str), "%u", drivers->joystick->y_value);
+    snprintf(theta_str, sizeof(theta_str), "%.2f", polar.theta_deg);
+    snprintf(rho_str, sizeof(rho_str), "%.2f", polar.l);
+    ssd1306_print(drivers->oled_screen, x_str, 2, 4, false);
+    ssd1306_print(drivers->oled_screen, y_str, 2, 5, false);
+    ssd1306_print(drivers->oled_screen, theta_str, 11, 4, false);
+    ssd1306_print(drivers->oled_screen, rho_str, 11, 6, false);
+    ssd1306_show(drivers->oled_screen);
+  }
+}
+
 void display_system_menu()
 {
   str_list *options = list_init();
+  list_append(options, "Notifications");
   list_append(options, "System info");
   list_append(options, "System reset");
   list_append(options, "Battery status");
   list_append(options, "Check joystick");
   options_page *system_menu = options_page_init("System", options);
+  attach_callback_to_option(system_menu, 0, display_notifications_menu);
+  attach_callback_to_option(system_menu, 1, display_system_info);
+  attach_callback_to_option(system_menu, 2, reset_system);
+  attach_callback_to_option(system_menu, 3, display_battery_status);
+  attach_callback_to_option(system_menu, 4, display_joystick_check);
   options_page_launch(system_menu);
   options_page_free(system_menu);
 }

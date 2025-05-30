@@ -25,7 +25,9 @@ str_list *sdcard_list_files(sdcard *sd);
 bool sdcard_write_key_value_to_file(sdcard *sd, char *filename, char mode, char *key, char *value);
 char *sdcard_read_value_from_file(sdcard *sd, char *filename, char *key);
 bool sdcard_file_exists(sdcard *sd, char *filename);
-// void sdcard_delete_file(sdcard *sd, char *filename);
+bool sdcard_delete_file(sdcard *sd, char *filename);
+bool sdcard_mkdir(sdcard *sd, char *dirname);
+bool sdcard_rmdir(sdcard *sd, char *dirname);
 // void sdcard_format(sdcard *sd);
 
 #endif

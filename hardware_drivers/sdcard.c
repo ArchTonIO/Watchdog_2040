@@ -182,3 +182,39 @@ bool sdcard_file_exists(sdcard *sd, char *filename)
 	list_free(files);
 	return found;
 }
+
+bool sdcard_delete_file(sdcard *sd, char *filename)
+{
+	sd->fr = f_unlink(filename);
+	if (sd->fr != FR_OK)
+	{
+		printf("ERROR: Could not delete file (%d)\r\n", sd->fr);
+		return false;
+	}
+	printf("File '%s' deleted successfully.\r\n", filename);
+	return true;
+}
+
+bool sdcard_mkdir(sdcard *sd, char *dirname)
+{
+	sd->fr = f_mkdir(dirname);
+	if (sd->fr != FR_OK)
+	{
+		printf("ERROR: Could not create directory (%d)\r\n", sd->fr);
+		return false;
+	}
+	printf("Directory '%s' created successfully.\r\n", dirname);
+	return true;
+}
+
+bool sdcard_rmdir(sdcard *sd, char *dirname)
+{
+	sd->fr = f_unlink(dirname);
+	if (sd->fr != FR_OK)
+	{
+		printf("ERROR: Could not remove directory (%d)\r\n", sd->fr);
+		return false;
+	}
+	printf("Directory '%s' removed successfully.\r\n", dirname);
+	return true;
+}

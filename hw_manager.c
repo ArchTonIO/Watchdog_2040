@@ -1,4 +1,7 @@
 #include <stdlib.h>
+#include "hardware/adc.h"
+#include "hardware/clocks.h"
+#include "hardware/flash.h"
 #include "hardware_drivers/battery.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/config.h"
@@ -110,4 +113,25 @@ uint32_t get_free_heap(void)
 {
 	struct mallinfo m = mallinfo();
 	return get_total_heap() - m.uordblks;
+}
+
+uint get_clock_freq_khz(void)
+{
+	return clock_get_hz(clk_sys) / 1000;
+}
+
+float get_cpu_temp()
+{
+	adc_init();
+	adc_set_temp_sensor_enabled(true);
+	adc_select_input(4);
+	uint16_t raw = adc_read();
+	const float conversion_factor = 3.3f / (1 << 12);
+	float voltage = raw * conversion_factor;
+	return 27.0f - (voltage - 0.706f) / 0.001721f;
+}
+
+uint32_t get_used_flash_bytes()
+{
+	return (uint32_t)(&__flash_binary_end) - XIP_BASE;
 }

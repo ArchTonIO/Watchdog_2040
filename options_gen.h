@@ -13,6 +13,7 @@
 #include "hardware_drivers/joystick.h"
 
 #define MAX_OPTIONS 20
+#define MAX_OPTIONS_ON_SCREEN 6
 #define INTERAC_TIMEOUT 200
 
 typedef struct
@@ -30,6 +31,7 @@ typedef struct
   uint8_t num_options;
   uint8_t selected_option;
   char *title;
+  int8_t scroll;
 } options_page;
 
 options_page *options_page_init(char *title, str_list *options);

@@ -101,7 +101,14 @@ polar_coords joystick_get_polar(joystick *stick)
   float y = (raw_y >= stick->y_deadzone_min && raw_y <= stick->y_deadzone_max) ? 0.0f : raw_y - stick->y_center;
   polar_coords result;
   result.l = sqrtf(x * x + y * y) / stick->max_l;
-  result.theta_deg = atan2f(y, x) * (180.0f / M_PI);
+  float angle = -atan2f(y, x) * (180.0f / M_PI);
+  if (angle < 0.0f)
+    angle += 360.0f;
+  result.theta_deg = angle + stick->axis_rotation;
+  if (result.theta_deg >= 360.0f)
+    result.theta_deg -= 360.0f;
+  if (result.theta_deg < 0.0f)
+    result.theta_deg += 360.0f;
   return result;
 }
 
@@ -124,22 +131,21 @@ uint8_t joystick_get_direction(joystick *stick)
   polar_coords polar = joystick_get_polar(stick);
   if (polar.l < stick->sensitivity)
     return C;
-  float angle = polar.theta_deg + stick->axis_rotation;
-  if (angle >= N_MIN && angle < N_MAX)
+  if (polar.theta_deg >= N_DEG - ZONE_SIZE && polar.theta_deg < N_DEG + ZONE_SIZE)
     return N;
-  if (angle >= S_MIN && angle < S_MAX)
+  if (polar.theta_deg >= S_DEG - ZONE_SIZE && polar.theta_deg < S_DEG + ZONE_SIZE)
     return S;
-  if (angle >= E_MIN && angle < E_MAX)
+  if (polar.theta_deg >= E_DEG - ZONE_SIZE && polar.theta_deg < E_DEG + ZONE_SIZE)
     return E;
-  if (angle >= W_MIN || angle < W_MAX)
+  if (polar.theta_deg >= W_DEG - ZONE_SIZE && polar.theta_deg < W_DEG + ZONE_SIZE)
     return W;
-  if (angle >= NE_MIN && angle < NE_MAX)
+  if (polar.theta_deg >= NE_DEG - ZONE_SIZE && polar.theta_deg < NE_DEG + ZONE_SIZE)
     return NE;
-  if (angle >= NW_MIN && angle < NW_MAX)
+  if (polar.theta_deg >= NW_DEG - ZONE_SIZE && polar.theta_deg < NW_DEG + ZONE_SIZE)
     return NW;
-  if (angle >= SE_MIN && angle < SE_MAX)
+  if (polar.theta_deg >= SE_DEG - ZONE_SIZE && polar.theta_deg < SE_DEG + ZONE_SIZE)
     return SE;
-  if (angle >= SW_MIN && angle < SW_MIN)
+  if (polar.theta_deg >= SW_DEG - ZONE_SIZE && polar.theta_deg < SW_DEG + ZONE_SIZE)
     return SW;
 }
 
@@ -175,7 +181,7 @@ void joystick_print(joystick *stick)
   polar_coords polar = joystick_get_polar(stick);
   uint8_t direction = joystick_get_direction(stick);
   printf("JOYSTICK -> X: %d  Y: %d  S: %d\n", stick->x_value, stick->y_value, stick->button_pressed);
-  printf("JOYSTICK -> L: %f  THETA: %f, ORIENTED: %f\n", polar.l, polar.theta_deg, polar.theta_deg + stick->axis_rotation);
+  printf("JOYSTICK -> L: %f  THETA: %f\n", polar.l, polar.theta_deg);
   printf("JOYSTICK -> DIRECTION: %d\n", direction);
 }
 

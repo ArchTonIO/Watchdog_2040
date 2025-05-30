@@ -7,12 +7,14 @@ char *string_add(char *str1, char *str2)
 {
   size_t len1 = strlen(str1);
   size_t len2 = strlen(str2);
-  char *result = (char *)malloc(len1 + len2 + 1);
-  if (result == NULL)
+  char *result = malloc(len1 + len2 + 1);
+  if (!result)
     return NULL;
-  strcpy(result, str1);
-  strcpy(result, str2);
-  free(str1);
+  for (size_t i = 0; i < len1; ++i)
+    result[i] = str1[i];
+  for (size_t i = 0; i < len2; ++i)
+    result[len1 + i] = str2[i];
+  result[len1 + len2] = '\0';
   return result;
 }
 

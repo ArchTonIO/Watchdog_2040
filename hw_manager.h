@@ -13,6 +13,8 @@
 #include "data_structures/string_list.h"
 #include <stdint.h>
 
+#define FLASH_TARGET_OFFSET 0
+
 /*hw_driver just contains instances of all connected hardware modules drivers.*/
 typedef struct
 {
@@ -26,8 +28,12 @@ typedef struct
 } hw_drivers;
 
 extern hw_drivers *drivers;
+extern uint8_t __flash_binary_end;
 
 hw_drivers *hardware_drivers_init();
 uint32_t get_free_heap();
+uint get_clock_freq_khz();
+float get_cpu_temp();
+uint32_t get_used_flash_bytes();
 
 #endif
