@@ -16,10 +16,12 @@
 #include "graphs.h"
 #include "graphic_primitives.h"
 #include "device.h"
+#include "text_editor.h"
 
 void display_ulmp_menu();
 void display_air_quality_indexes();
 void display_bpm_menu();
+void display_tools_menu();
 void display_time_menu();
 void display_system_menu();
 void display_malloc_menu();
@@ -31,6 +33,7 @@ void display_main_menu()
   list_append(options, "ULMP");
   list_append(options, "Air quality indexes");
   list_append(options, "BPM and blood oxygen");
+  list_append(options, "tools");
   list_append(options, "Time");
   list_append(options, "System");
   list_append(options, "Malloc");
@@ -38,9 +41,10 @@ void display_main_menu()
   attach_callback_to_option(main_menu, 0, display_ulmp_menu);
   attach_callback_to_option(main_menu, 1, display_air_quality_indexes);
   attach_callback_to_option(main_menu, 2, display_bpm_menu);
-  attach_callback_to_option(main_menu, 3, display_time_menu);
-  attach_callback_to_option(main_menu, 4, display_system_menu);
-  attach_callback_to_option(main_menu, 5, display_malloc_menu);
+  attach_callback_to_option(main_menu, 3, display_tools_menu);
+  attach_callback_to_option(main_menu, 4, display_time_menu);
+  attach_callback_to_option(main_menu, 5, display_system_menu);
+  attach_callback_to_option(main_menu, 6, display_malloc_menu);
   options_page_launch(main_menu);
   options_page_free(main_menu);
   ssd1306_clear(drivers->oled_screen);
@@ -110,6 +114,54 @@ void display_bpm_menu()
   options_page *bpm_menu = options_page_init("BPM and blood oxygen", options);
   options_page_launch(bpm_menu);
   options_page_free(bpm_menu);
+}
+
+void take_note()
+{
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_print(drivers->oled_screen, "Taking note...", 0, 0, false);
+  ssd1306_show(drivers->oled_screen);
+  text_editor *name_editor = text_editor_launch("# Name of your note...");
+  char *name = text_editor_get_buf(name_editor);
+  text_editor_kill(name_editor);
+  text_editor *note_editor = text_editor_launch("# Write your note here...");
+  char *note = text_editor_get_buf(name_editor);
+  if (note != NULL)
+  {
+    sdcard_write_file(drivers->sd_card, name, note, 'w');
+    free(note);
+  }
+  text_editor_kill(name_editor);
+}
+
+void read_notes() // todo: implement
+{
+}
+
+void enable_data_logging() // todo: implement
+{
+}
+
+void display_games_menu() // todo: implement
+{
+}
+
+void display_tools_menu()
+{
+  str_list *options = list_init();
+  list_append(options, "terminal");
+  list_append(options, "take note");
+  list_append(options, "read notes");
+  list_append(options, "enable data logging");
+  list_append(options, "games");
+  options_page *tools_menu = options_page_init("Tools", options);
+  // attach_callback_to_option(tools_menu, 0, terminal_launch);
+  attach_callback_to_option(tools_menu, 1, take_note);
+  attach_callback_to_option(tools_menu, 2, read_notes);
+  attach_callback_to_option(tools_menu, 3, enable_data_logging);
+  attach_callback_to_option(tools_menu, 4, display_games_menu);
+  options_page_launch(tools_menu);
+  options_page_free(tools_menu);
 }
 
 void display_time_menu()

@@ -97,6 +97,7 @@ void send_message()
   }
   char *msg = compose_message();
   uint8_t result = lora_send_msg(dest_addr, msg, send_message_status_update_callback);
+  free(msg);
   display_sent_message_status(result, dest_addr);
 }
 
@@ -111,6 +112,7 @@ bool name_exists(char *name)
       return true;
     }
   }
+  list_free(contacts);
   return false;
 }
 
@@ -135,7 +137,6 @@ void add_contact()
   if (addr == 0)
   {
     ssd1306_clear(drivers->oled_screen);
-    ssd1306_show(drivers->oled_screen);
     ssd1306_print(drivers->oled_screen, "[ERR] invalid addr", 0, 0, false);
     ssd1306_show(drivers->oled_screen);
     sleep_ms(INFO_PAGES_TIMEOUT);
@@ -148,8 +149,8 @@ void add_contact()
   sprintf(addr_str, "%u", addr);
   ssd1306_print(drivers->oled_screen, "Contact saved !", 2, 0, false);
   ssd1306_print(drivers->oled_screen, name, 0, 7, false);
-  ssd1306_print(drivers->oled_screen, ":", strlen(name), 7, false);
-  ssd1306_print(drivers->oled_screen, addr_str, strlen(name) + 1, 7, false);
+  ssd1306_print(drivers->oled_screen, ":", strlen(name) - 1, 7, false);
+  ssd1306_print(drivers->oled_screen, addr_str, strlen(name), 7, false);
   ssd1306_draw_bitmap(drivers->oled_screen, 50, 22, contact_saved, 28, 20, 0);
   ssd1306_show(drivers->oled_screen);
   free(name);
@@ -284,7 +285,10 @@ uint16_t ask_for_contact_addr()
     return 0;
   uint16_t addr = 0;
   if (sscanf(temp, "%hu", &addr) == 1)
+  {
+    free(temp);
     return addr;
+  }
 }
 
 void display_sent_message_status(uint8_t status, uint16_t dest_addr)

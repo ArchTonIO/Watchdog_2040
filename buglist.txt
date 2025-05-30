@@ -1,5 +1,5 @@
-- [unsolved] - bug00 - when adding a new contact 1 bytes of sram randomly leaks
+- [solved]   - bug00 - when adding a new contact 1 bytes of sram randomly leaks (was the contact list not being freed after being populated in get_all_contacts function)
 - [unsolved] - bug01 - after some time the device just crashes out of nothing, probabily due to and hardfault
 - [unsolved] - bug02 - malloc can't spell your name properly
-- [solved]   - bug03 - joystick east and west are flipped all around the code
-- [unsolved] - bug04 - when messagging a contact 1 bytes of sram randomly leaks
+- [solved]   - bug03 - joystick east and west are flipped all around the code (just swapped E and W)
+- [solved]   - bug04 - when messagging a contact 1 bytes of sram randomly leaks (was the transaction_uid of the attempt_single_transaction function not being freed)

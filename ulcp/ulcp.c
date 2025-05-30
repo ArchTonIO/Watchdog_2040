@@ -93,6 +93,7 @@ void attempt_single_transaction(uint16_t dest_address, char *payload)
     free(packet_payload);
   }
   send_end_packet(dest_address, transaction_uid);
+  free(transaction_uid);
   printf("TRANSAC ENDED\n");
 }
 
