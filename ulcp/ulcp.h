@@ -56,7 +56,6 @@ typedef struct
 
 typedef struct
 {
-  void (*on_transac_ended_callback)(uint16_t src_address);
   char *recv_transac_uid;
   char *must_send_ack_transac_uid;
   uint16_t must_send_ack_dest;
@@ -89,10 +88,10 @@ typedef struct
 
 extern lora_instance *this_lora;
 
-lora_instance *lora_init(uint16_t this_addr, sx1278 *sx1278_radio, void (*on_transac_ended_callback)(uint16_t src_address));
+lora_instance *lora_init(uint16_t this_addr, sx1278 *sx1278_radio);
 void lora_receive();
 uint8_t lora_send_msg(uint16_t dest_address, char *payload, void (*status_update_callback)(uint8_t progress));
 uint8_t lora_ping(uint16_t dest_address);
-void lora_eventually_send_ack();
+void lora_send_ack(void (*notify)(uint16_t src_address));
 
 #endif

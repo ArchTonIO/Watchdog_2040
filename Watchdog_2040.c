@@ -12,9 +12,9 @@
 #include "msg_manager.h"
 #include "malloc_mascot.h"
 #include "options_gen.h"
-#include "test.h"
 #include "menus.h"
 #include "device.h"
+#include "text_editor.h"
 
 bool is_first_startup()
 {
@@ -30,15 +30,16 @@ void sys_setup()
 {
   stdio_init_all();
   hardware_drivers_init();
-  // wait_for_user_input();
+  wait_for_user_input();
   if (is_first_startup())
   {
-    write_first_startup_file();
     start_malloc_mascot_tutorial();
+    write_first_startup_file();
     dump_malloc_memories_to_sd();
   }
   load_malloc_memories_from_sd();
   msg_manager_init(malloc_memories_inst->ulmp_addr);
+  // msg_manager_init(22345);
   home_page_init();
 }
 
@@ -79,3 +80,18 @@ int main()
   sys_setup();
   sys_mainloop();
 }
+
+// int main()
+// {
+//   sys_setup();
+//   uint8_t ledpin = 25;
+//   gpio_init(ledpin);
+//   gpio_set_dir(ledpin, true);
+//   while (true)
+//   {
+//     gpio_put(ledpin, true);
+//     sleep_ms(1000);
+//     gpio_put(ledpin, false);
+//     sleep_ms(1000);
+//   }
+// }

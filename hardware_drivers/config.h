@@ -42,7 +42,7 @@ as the SD card driver code is not wrote by me, this only serves as reference.
 If you wish to change the pins go to lib/no-Os-FatFS-SD-SPI-RPi-Pico/FatFs_SPI/sd_driver/hw_config.c*/
 #define MICRO_SD_MOSI 15
 #define MICRO_SD_MISO 12
-#define MICRO_SD_CS 13
+#define MICRO_SD_CS 13         
 #define MICRO_SD_SCK 14
 #define MICRO_SD_SPI_PORT spi1
 #define MICRO_SD_SPI_BAUDRATE 40000000

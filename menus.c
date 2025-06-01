@@ -121,10 +121,10 @@ void take_note()
   ssd1306_clear(drivers->oled_screen);
   ssd1306_print(drivers->oled_screen, "Taking note...", 0, 0, false);
   ssd1306_show(drivers->oled_screen);
-  text_editor *name_editor = text_editor_launch("# Name of your note...");
+  text_editor *name_editor = text_editor_launch("# Name of your note...", true);
   char *name = text_editor_get_buf(name_editor);
   text_editor_kill(name_editor);
-  text_editor *note_editor = text_editor_launch("# Write your note here...");
+  text_editor *note_editor = text_editor_launch("# Write your note here...", true);
   char *note = text_editor_get_buf(name_editor);
   if (note != NULL)
   {

@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include "pico/stdlib.h"
 
 char *string_add(char *str1, char *str2)
 {
@@ -58,4 +60,18 @@ bool is_string_alpha(char *str)
     if ((str[i] < 'A' || str[i] > 'Z') && (str[i] < 'a' || str[i] > 'z'))
       return false;
   return true;
+}
+
+void wait_for_user_input()
+{
+  while (!stdio_usb_connected())
+  {
+    sleep_ms(100);
+  }
+  printf("Watchdog_2040 tester, send any key to continue...\n");
+  while (1)
+  {
+    getchar();
+    break;
+  }
 }

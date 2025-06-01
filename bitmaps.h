@@ -25,6 +25,7 @@ extern uint8_t malloc_saying_hi[];
 extern uint8_t malloc_with_glasses[];
 extern uint8_t malloc_with_pointy_eyes[];
 extern uint8_t malloc_with_both_eyes[];
+extern uint8_t easyarrow[];
 
 #define TOP_BAR_BITMAPS_H 16
 #define TOP_BAR_BITMAPS_W 21

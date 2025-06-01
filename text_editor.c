@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "data_structures/string_list.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/ssd1306.h"
 #include "hardware_drivers/config.h"
@@ -27,22 +28,23 @@ void print_logic_buf(text_editor *editor);
 void populate_video_buffer(text_editor *editor);
 char *stringify_logic_buffer(text_editor *editor);
 void navigate_text(text_editor *editor);
-void insert_placeholder_text(text_editor *editor, char *placeholder_text);
+void insert_text(text_editor *editor, char *text);
 
 /**
  * @brief Launch a new instance of the text editor so that it appears
  * on the oled screen with all needed components loaded
  */
-text_editor *text_editor_launch(char *placeholder_text)
+text_editor *text_editor_launch(char *text, bool is_text_placeholder)
 {
   virtual_keyboard *keyboard = virtual_keyboard_init();
   ssd1306_clear(drivers->oled_screen);
   text_editor *editor = text_editor_init(keyboard, false);
   draw_keyboard(keyboard);
-  if (strcmp(placeholder_text, "") != 0)
+  if (strcmp(text, "") != 0)
   {
-    insert_placeholder_text(editor, placeholder_text);
-    editor->placeholder_text_present = true;
+    insert_text(editor, text);
+    if (is_text_placeholder)
+      editor->placeholder_text_present = true;
   }
   return editor;
 }
@@ -76,11 +78,11 @@ text_editor *text_editor_init(virtual_keyboard *keyboard, bool debug)
   return editor;
 }
 
-void insert_placeholder_text(text_editor *editor, char *placeholder_text)
+void insert_text(text_editor *editor, char *text)
 {
-  for (uint8_t i = 0; i < strlen(placeholder_text); i++)
+  for (uint32_t i = 0; i < strlen(text); i++)
   {
-    editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] = placeholder_text[i];
+    editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] = text[i];
     editor->logic_cursor_col++;
     editor->video_cursor_col++;
   }

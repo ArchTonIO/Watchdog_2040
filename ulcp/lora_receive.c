@@ -112,7 +112,6 @@ void on_recv(char *msg)
     // printf("TRANSAC RECEIVED :%s\n", this_lora->rx->recv_payloads_buf);
     this_lora->rx->must_send_ack = true;
     free_message(deserialized);
-    this_lora->rx->on_transac_ended_callback(this_lora->rx->must_send_ack_dest);
     return;
   }
 }

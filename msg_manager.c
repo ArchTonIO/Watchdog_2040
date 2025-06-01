@@ -48,7 +48,7 @@ msg_manager *msg_manager_init(uint16_t my_addr)
   msg_man->should_notify = true;
   msg_man->contacts_count = 0;
   msg_man->received_msgs_count = 0;
-  lora_init(my_addr, drivers->lora_module, notify);
+  msg_man->ulmp_impl = lora_init(my_addr, drivers->lora_module);
   lora_receive();
   msg_man_inst = msg_man;
   if (sdcard_file_exists(drivers->sd_card, CONTACTS_ADDR_FILE) && sdcard_file_exists(drivers->sd_card, CONTACTS_NAMES_FILE))
@@ -61,7 +61,7 @@ msg_manager *msg_manager_init(uint16_t my_addr)
  */
 void process_messages()
 {
-  lora_eventually_send_ack();
+  lora_send_ack(notify);
   sleep_ms(10);
 }
 
@@ -188,8 +188,9 @@ void notify(uint16_t src_address)
 {
   msg_man_inst->new_msg_arrived = true;
   msg_man_inst->received_msgs_count++;
-  if (msg_man_inst->should_notify)
-    printf("a new message has been received");
+  if (!msg_man_inst->should_notify)
+    return;
+  display_received_message(src_address);
 }
 
 void save_contact(char *name, uint16_t addr)
@@ -247,7 +248,7 @@ char *find_contact_name_by_addr(uint16_t addr)
 
 char *compose_message()
 {
-  text_editor *editor = text_editor_launch("# Type in your message");
+  text_editor *editor = text_editor_launch("# Type in your message", true);
   char *message = text_editor_get_buf(editor);
   text_editor_kill(editor);
   return message;
@@ -270,7 +271,7 @@ uint16_t select_contact()
 
 char *ask_for_contact_name()
 {
-  text_editor *editor = text_editor_launch("# Type in the contact name");
+  text_editor *editor = text_editor_launch("# Type in the contact name", true);
   char *name = text_editor_get_buf(editor);
   text_editor_kill(editor);
   return name;
@@ -278,7 +279,7 @@ char *ask_for_contact_name()
 
 uint16_t ask_for_contact_addr()
 {
-  text_editor *editor = text_editor_launch("# Type in the contact address");
+  text_editor *editor = text_editor_launch("# Type in the contact address", true);
   char *temp = text_editor_get_buf(editor);
   text_editor_kill(editor);
   if (!is_string_numeric(temp) || strlen(temp) > 5 || strlen(temp) == 0)
@@ -322,10 +323,46 @@ void display_sent_message_status(uint8_t status, uint16_t dest_addr)
 void display_received_message(uint16_t src_address)
 {
   char *name = find_contact_name_by_addr(src_address);
-  ssd1306_print(drivers->oled_screen, "New message from", 0, 0, false);
-  ssd1306_print(drivers->oled_screen, "New message from", 16, 0, false);
-  ssd1306_draw_bitmap(drivers->oled_screen, 50, 22, message_received, 28, 20, 0);
+  bool to_free = false;
+  if (name == NULL)
+  {
+    name = (char *)malloc(20 * sizeof(char));
+    sprintf(name, "Unknown (%u)", src_address);
+    to_free = true;
+  }
+  uint8_t persistency = 10;
+  uint32_t start;
+  start = to_us_since_boot(get_absolute_time()) / 1000000;
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_print(drivers->oled_screen, "New message from:", 0, 0, false);
+  ssd1306_print(drivers->oled_screen, name, 0, 1, false);
+  ssd1306_draw_bitmap(drivers->oled_screen, 22, 22, message_received, 28, 20, 0);
+  ssd1306_draw_bitmap(drivers->oled_screen, 50, 24, easyarrow, 28, 20, 0);
+  ssd1306_draw_bitmap(drivers->oled_screen, 78, 22, message_received_open, 28, 20, 0);
+  ssd1306_print(drivers->oled_screen, "Right to read -> ", 0, 7, false);
   ssd1306_show(drivers->oled_screen);
+  while (true)
+  {
+    if ((to_us_since_boot(get_absolute_time()) / 1000000) - start > persistency)
+    {
+      ssd1306_clear(drivers->oled_screen);
+      ssd1306_show(drivers->oled_screen);
+      if (to_free)
+        free(name);
+      return;
+    }
+    joystick_update(drivers->joystick);
+    if (joystick_get_direction(drivers->joystick) == E)
+    {
+      text_editor *editor = text_editor_launch(msg_man_inst->ulmp_impl->rx->recv_payloads_buf, false);
+      char *text = text_editor_get_buf(editor);
+      text_editor_kill(editor);
+      free(text);
+      if (to_free)
+        free(name);
+      return;
+    }
+  }
 }
 
 void scan_online_contacts()

@@ -20,8 +20,7 @@ void reset_ack();
  */
 lora_instance *lora_init(
     uint16_t this_addr,
-    sx1278 *sx1278_radio,
-    void (*on_transac_ended_callback)(uint16_t src_address))
+    sx1278 *sx1278_radio)
 {
   this_lora = malloc(sizeof(lora_instance));
   this_lora->tx = malloc(sizeof(tx_fields));
@@ -40,7 +39,6 @@ lora_instance *lora_init(
   this_lora->rx->must_send_ack = false;
   this_lora->rx->recv_payloads_buf = (char *)malloc(16);
   this_lora->radio->message_received_callback = on_recv;
-  this_lora->rx->on_transac_ended_callback = on_transac_ended_callback;
   return this_lora;
 }
 
@@ -162,13 +160,13 @@ uint8_t lora_ping(uint16_t dest_address)
   return 1;
 }
 
-void lora_eventually_send_ack()
+void lora_send_ack(void (*notify)(uint16_t src_address))
 {
   if (!this_lora->rx->must_send_ack)
     return;
   send_ack_packet(this_lora->rx->must_send_ack_dest, this_lora->rx->must_send_ack_transac_uid);
   this_lora->rx->must_send_ack = false;
   sleep_ms(PACKET_TIMEOUT);
+  notify(this_lora->rx->must_send_ack_dest);
   lora_receive();
-  printf("ACK SENT\n");
 }

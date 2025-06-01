@@ -167,7 +167,7 @@ void malloc_explains_you_text_editor()
   press_to_continue();
   clear_text_area();
   malloc_explains_keyboard_commands();
-  text_editor *editor = text_editor_launch("# Try the text editor");
+  text_editor *editor = text_editor_launch("# Try the text editor", true);
   char *text = text_editor_get_buf(editor);
   text_editor_kill(editor);
   ssd1306_draw_bitmap(drivers->oled_screen, 0, 19, malloc_the_mascot, 22, 28, 0);
@@ -191,7 +191,7 @@ void malloc_asks_your_name() // TODO: fix this
   char *name;
   while (1)
   {
-    text_editor *editor = text_editor_launch("# Type in your name");
+    text_editor *editor = text_editor_launch("# Type in your name", true);
     name = text_editor_get_buf(editor);
     if (strlen(name) <= 16)
     {

@@ -45,7 +45,6 @@ hardware_drivers/rtc_time.c
 hardware_drivers/sdcard.c
 hardware_drivers/ssd1306.c
 hardware_drivers/sx1278.c
-hardware_drivers/tests.c
 ulcp/lora_receive.c
 ulcp/lora_send.c
 ulcp/ulcp.c
@@ -59,7 +58,6 @@ malloc_mascot.c
 menus.c
 msg_manager.c
 options_gen.c
-test.c
 text_editor.c
 utils.c
 virtual_keyboard.c

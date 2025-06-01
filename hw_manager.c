@@ -10,7 +10,6 @@
 #include "hardware_drivers/sdcard.h"
 #include "hardware_drivers/ssd1306.h"
 #include "hardware_drivers/sx1278.h"
-#include "hardware_drivers/tests.h"
 #include "hw_manager.h"
 #include "data_structures/string_list.h"
 #include <stdint.h>
