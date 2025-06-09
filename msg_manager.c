@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "pico/stdlib.h"
-#include "hardware_drivers/sdcard.h"
 #include "hardware_drivers/ssd1306.h"
 #include "hardware_drivers/rtc_time.h"
 #include "data_structures/string_list.h"
@@ -12,7 +11,9 @@
 #include "utils.h"
 #include "hw_manager.h"
 #include "msg_manager.h"
+#include "malloc_mascot.h"
 #include "options_gen.h"
+#include "device.h"
 
 msg_manager *msg_man_inst;
 
@@ -49,10 +50,16 @@ msg_manager *msg_manager_init(uint16_t my_addr)
   msg_man->contacts_count = 0;
   msg_man->received_msgs_count = 0;
   msg_man->ulmp_impl = lora_init(my_addr, drivers->lora_module);
+  msg_man->contacts_addr_file = path_init(string_add(malloc_memories_inst->user_folder, CONTACTS_ADDR_FILE));
+  msg_man->contacts_names_file = path_init(string_add(malloc_memories_inst->user_folder, CONTACTS_NAMES_FILE));
+  msg_man->sent_msg_file = path_init(string_add(malloc_memories_inst->user_folder, SENT_MSG_FILE));
+  msg_man->received_msg_file = path_init(string_add(malloc_memories_inst->user_folder, RECEIVED_MSG_FILE));
   lora_receive();
   msg_man_inst = msg_man;
-  if (sdcard_file_exists(drivers->sd_card, CONTACTS_ADDR_FILE) && sdcard_file_exists(drivers->sd_card, CONTACTS_NAMES_FILE))
+  if (path_exists(msg_man->contacts_addr_file) && path_exists(msg_man->contacts_names_file))
     load_contacts_from_sd();
+  else
+    printf("[MSG MANAGER] (INFO): no contacts found, creating empty contacts list\n");
   return msg_man;
 }
 
@@ -390,8 +397,8 @@ void dump_contacts_to_sd()
   ssd1306_print(drivers->oled_screen, "to MicroSD...", 0, 1, false);
   ssd1306_show(drivers->oled_screen);
   str_list *contacts = get_all_contacts();
-  sdcard_write_file(drivers->sd_card, CONTACTS_NAMES_FILE, "", 'w');
-  sdcard_write_file(drivers->sd_card, CONTACTS_ADDR_FILE, "", 'w');
+  path_fwrite(msg_man_inst->contacts_names_file, "", 'w');
+  path_fwrite(msg_man_inst->contacts_names_file, "", 'w');
   for (uint16_t i = 0; i < contacts->len; i++)
   {
     char i_to_str[4];
@@ -406,9 +413,9 @@ void dump_contacts_to_sd()
     uint16_t addr = find_contact_addr_by_name(name);
     char addr_str[8];
     sprintf(addr_str, "%u", addr);
-    sdcard_write_key_value_to_file(drivers->sd_card, CONTACTS_ADDR_FILE, 'a', name, addr_str);
-    sdcard_write_file(drivers->sd_card, CONTACTS_NAMES_FILE, name, 'a');
-    sdcard_write_file(drivers->sd_card, CONTACTS_NAMES_FILE, "\n", 'a');
+    path_key_value_dump(msg_man_inst->contacts_addr_file, 'a', name, addr_str);
+    path_fwrite(msg_man_inst->contacts_names_file, name, 'a');
+    path_fwrite(msg_man_inst->contacts_names_file, "\n", 'a');
   }
   list_free(contacts);
   ssd1306_print(drivers->oled_screen, "Contacts dumped !", 0, 3, false);
@@ -420,14 +427,14 @@ void dump_contacts_to_sd()
 
 void load_contacts_from_sd()
 {
-  str_list *contact_names = sdcard_read_file(drivers->sd_card, CONTACTS_NAMES_FILE);
+  str_list *contact_names = path_fread(msg_man_inst->contacts_names_file);
   for (uint8_t i = 0; i < contact_names->len; i++)
   {
     char *name = get(contact_names, i);
     size_t name_len = strlen(name);
     if (name[name_len - 1] == '\n')
       name[name_len - 1] = '\0';
-    char *addr_str = sdcard_read_value_from_file(drivers->sd_card, CONTACTS_ADDR_FILE, name);
+    char *addr_str = path_key_value_get(msg_man_inst->contacts_addr_file, name);
     uint16_t addr;
     sscanf(addr_str, "%hu", &addr);
     save_contact(name, addr);

@@ -28,7 +28,7 @@ void print_logic_buf(text_editor *editor);
 void populate_video_buffer(text_editor *editor);
 char *stringify_logic_buffer(text_editor *editor);
 void navigate_text(text_editor *editor);
-void insert_text(text_editor *editor, char *text);
+void insert_text(text_editor *editor, char *text, bool is_text_placeholder);
 
 /**
  * @brief Launch a new instance of the text editor so that it appears
@@ -42,7 +42,7 @@ text_editor *text_editor_launch(char *text, bool is_text_placeholder)
   draw_keyboard(keyboard);
   if (strcmp(text, "") != 0)
   {
-    insert_text(editor, text);
+    insert_text(editor, text, is_text_placeholder);
     if (is_text_placeholder)
       editor->placeholder_text_present = true;
   }
@@ -78,7 +78,7 @@ text_editor *text_editor_init(virtual_keyboard *keyboard, bool debug)
   return editor;
 }
 
-void insert_text(text_editor *editor, char *text)
+void insert_text(text_editor *editor, char *text, bool is_text_placeholder)
 {
   for (uint32_t i = 0; i < strlen(text); i++)
   {
@@ -89,6 +89,8 @@ void insert_text(text_editor *editor, char *text)
   editor->logic_cursor_row++;
   editor->video_cursor_row++;
   handle_text_wrapping(editor);
+  if (!is_text_placeholder)
+    return;
   editor->video_cursor_col = 0;
   editor->logic_cursor_col = 0;
   editor->video_cursor_row = 0;

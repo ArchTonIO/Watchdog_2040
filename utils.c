@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "pico/stdlib.h"
+#include "data_structures/string_list.h"
+#include "utils.h"
 
 char *string_add(char *str1, char *str2)
 {
@@ -74,4 +76,37 @@ void wait_for_user_input()
     getchar();
     break;
   }
+}
+
+str_list *string_split(char *str, char delimiter)
+{
+  str_list *result = list_init();
+  char *copy = strdup(str);
+  char delim[2] = {delimiter, '\0'};
+  char *token = strtok(copy, delim);
+  while (token != NULL)
+  {
+    list_append(result, strdup(token));
+    token = strtok(NULL, delim);
+  }
+  free(copy);
+  return result;
+}
+
+char *string_remove_linefeed(char *str)
+{
+  char *newstr = strdup(str);
+  size_t len = strlen(newstr);
+  if (len > 0 && newstr[len - 1] == '\n')
+    newstr[len - 1] = '\0';
+  return newstr;
+}
+
+char *string_replace(char *str, char old_char, char new_char)
+{
+  char *newstr = strdup(str);
+  for (size_t i = 0; i < strlen(newstr); i++)
+    if (newstr[i] == old_char)
+      newstr[i] = new_char;
+  return newstr;
 }

@@ -13,6 +13,7 @@
 typedef struct
 {
   char username[15];
+  char user_folder[20];
   uint32_t ulmp_addr;
   char ulmp_addr_str[6];
 } malloc_memories;

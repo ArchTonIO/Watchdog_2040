@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "utils.h"
+#include "path.h"
+#include "device.h"
 
 sdcard *sdcard_init()
 {
@@ -20,7 +23,7 @@ sdcard *sdcard_init()
 
 bool sdcard_mount(sdcard *sd)
 {
-	sd->fr = f_mount(&sd->fs, "0:", 1);
+	sd->fr = f_mount(&sd->fs, ROOT_DIR, 1);
 	if (sd->fr != FR_OK)
 	{
 		printf("ERROR: Could not mount filesystem (%d)\r\n", sd->fr);
@@ -35,12 +38,17 @@ void sdcard_unmount(sdcard *sd)
 	f_unmount("0:");
 }
 
-bool sdcard_write_file(sdcard *sd, char *filename, char *content, char mode)
+bool sdcard_write_file(sdcard *sd, path *file, const char *content, char mode)
 {
+	if (file->is_dir)
+	{
+		printf("ERROR: Cannot write to a directory (%s)\r\n", file->abs_path);
+		return false;
+	}
 	if (mode == 'w')
-		sd->fr = f_open(&sd->fil, filename, FA_WRITE | FA_CREATE_ALWAYS);
+		sd->fr = f_open(&sd->fil, file->abs_path, FA_WRITE | FA_CREATE_ALWAYS);
 	else if (mode == 'a')
-		sd->fr = f_open(&sd->fil, filename, FA_WRITE | FA_OPEN_APPEND);
+		sd->fr = f_open(&sd->fil, file->abs_path, FA_WRITE | FA_OPEN_APPEND);
 	if (sd->fr != FR_OK)
 	{
 		printf("ERROR: Could not open file (%d)\r\n", sd->fr);
@@ -62,10 +70,10 @@ bool sdcard_write_file(sdcard *sd, char *filename, char *content, char mode)
 	return true;
 }
 
-str_list *sdcard_read_file(sdcard *sd, char *filename)
+str_list *sdcard_read_file(sdcard *sd, path *file)
 {
 	str_list *lines = list_init();
-	sd->fr = f_open(&sd->fil, filename, FA_READ);
+	sd->fr = f_open(&sd->fil, file->abs_path, FA_READ);
 	if (sd->fr != FR_OK)
 	{
 		printf("ERROR: Could not open file (%d)\r\n", sd->fr);
@@ -87,12 +95,13 @@ str_list *sdcard_read_file(sdcard *sd, char *filename)
 	return lines;
 }
 
-str_list *sdcard_list_files(sdcard *sd)
+str_list *sdcard_list_files(sdcard *sd, path *directory)
 {
+
 	str_list *files = list_init();
 	DIR dir;
 	FILINFO fno;
-	sd->fr = f_opendir(&dir, "/");
+	sd->fr = f_opendir(&dir, directory->abs_path);
 	if (sd->fr != FR_OK)
 	{
 		printf("ERROR: Could not open directory (%d)\r\n", sd->fr);
@@ -129,13 +138,13 @@ str_list *sdcard_list_files(sdcard *sd)
  *
  * @note it is assumed that the key and value do not contain the separator character '~'
  */
-bool sdcard_write_key_value_to_file(sdcard *sd, char *filename, char mode, char *key, char *value)
+bool sdcard_write_key_value_to_file(sdcard *sd, path *file, char mode, const char *key, const char *value)
 {
 	char sep = '~';
 	size_t total_len = strlen(key) + strlen(value) + 3;
 	char *content = (char *)malloc(total_len);
 	snprintf(content, total_len, "%s%c%s\n", key, sep, value);
-	bool res = sdcard_write_file(sd, filename, content, mode);
+	bool res = sdcard_write_file(sd, file, content, mode);
 	free(content);
 	return res;
 }
@@ -150,10 +159,10 @@ bool sdcard_write_key_value_to_file(sdcard *sd, char *filename, char mode, char 
  *
  * @note it is assumed that the key and value do not contain the separator character '~'
  */
-char *sdcard_read_value_from_file(sdcard *sd, char *filename, char *key)
+char *sdcard_read_value_from_file(sdcard *sd, path *file, const char *key)
 {
 	char sep = '~';
-	str_list *lines = sdcard_read_file(sd, filename);
+	str_list *lines = sdcard_read_file(sd, file);
 	for (uint16_t i = 0; i < lines->len; i++)
 	{
 		char *line = get(lines, i);
@@ -171,11 +180,11 @@ char *sdcard_read_value_from_file(sdcard *sd, char *filename, char *key)
 	return NULL;
 }
 
-bool sdcard_file_exists(sdcard *sd, char *filename)
+bool sdcard_file_exists(sdcard *sd, path *file)
 {
-	str_list *files = sdcard_list_files(sd);
+	str_list *files = sdcard_list_files(sd, file->parent);
 	bool found = false;
-	if (list_index_of(files, filename) == -1)
+	if (list_index_of(files, file->full_name) == -1)
 		found = false;
 	else
 		found = true;
@@ -183,38 +192,61 @@ bool sdcard_file_exists(sdcard *sd, char *filename)
 	return found;
 }
 
-bool sdcard_delete_file(sdcard *sd, char *filename)
+bool sdcard_delete_file(sdcard *sd, path *file)
 {
-	sd->fr = f_unlink(filename);
+	if (file->is_dir == true)
+	{
+		printf("ERROR: The path '%s' is a directory, not a file.\r\n", file->abs_path);
+		return false;
+	}
+	sd->fr = f_unlink(file->abs_path);
 	if (sd->fr != FR_OK)
 	{
 		printf("ERROR: Could not delete file (%d)\r\n", sd->fr);
 		return false;
 	}
-	printf("File '%s' deleted successfully.\r\n", filename);
 	return true;
 }
 
-bool sdcard_mkdir(sdcard *sd, char *dirname)
+bool sdcard_touch_file(sdcard *sd, path *file)
 {
-	sd->fr = f_mkdir(dirname);
+	if (!sdcard_file_exists(sd, file->parent))
+		sdcard_write_file(sd, file, "", 'w');
+}
+
+bool sdcard_mkdir(sdcard *sd, path *dir)
+{
+	sd->fr = f_mkdir(dir->abs_path);
 	if (sd->fr != FR_OK)
 	{
 		printf("ERROR: Could not create directory (%d)\r\n", sd->fr);
 		return false;
 	}
-	printf("Directory '%s' created successfully.\r\n", dirname);
 	return true;
 }
 
-bool sdcard_rmdir(sdcard *sd, char *dirname)
+bool sdcard_rmdir(sdcard *sd, path *dir)
 {
-	sd->fr = f_unlink(dirname);
+	if (dir->is_dir == false)
+	{
+		printf("ERROR: The path '%s' is not a directory.\r\n", dir->abs_path);
+		return false;
+	}
+	sd->fr = f_unlink(dir->abs_path);
 	if (sd->fr != FR_OK)
 	{
 		printf("ERROR: Could not remove directory (%d)\r\n", sd->fr);
 		return false;
 	}
-	printf("Directory '%s' removed successfully.\r\n", dirname);
 	return true;
+}
+
+bool sdcard_path_is_dir(sdcard *sd, path *path)
+{
+	FILINFO fno;
+	FRESULT res = f_stat(path->abs_path, &fno);
+	if (res == FR_OK)
+		return (fno.fattrib & AM_DIR) != 0;
+	else
+		return false;
 }

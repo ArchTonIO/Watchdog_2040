@@ -45,6 +45,7 @@ hardware_drivers/rtc_time.c
 hardware_drivers/sdcard.c
 hardware_drivers/ssd1306.c
 hardware_drivers/sx1278.c
+path.c
 ulcp/lora_receive.c
 ulcp/lora_send.c
 ulcp/ulcp.c

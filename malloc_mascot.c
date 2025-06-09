@@ -13,20 +13,22 @@
 #include "virtual_keyboard.h"
 #include "malloc_mascot.h"
 #include "menus.h"
+#include "path.h"
+#include "device.h"
 
 malloc_memories *malloc_memories_inst = NULL;
 
 void start_malloc_mascot_tutorial()
 {
   malloc_memories *memories = malloc_memories_init();
-  malloc_greets_you();
-  malloc_explains_you_joystick();
-  malloc_explains_you_menu();
-  malloc_explains_you_text_editor();
+  // malloc_greets_you();
+  // malloc_explains_you_joystick();
+  // malloc_explains_you_menu();
+  // malloc_explains_you_text_editor();
   malloc_asks_your_name();
-  malloc_explains_you_home_screen();
+  // malloc_explains_you_home_screen();
   malloc_generates_ulcp_address();
-  malloc_says_goodbye();
+  // malloc_says_goodbye();
 }
 
 malloc_memories *malloc_memories_init()
@@ -452,40 +454,42 @@ void malloc_says_goodbye()
 
 void dump_malloc_memories_to_sd()
 {
-  sdcard_write_key_value_to_file(
-      drivers->sd_card,
-      ".malloc_memories",
-      'w',
-      "username",
-      malloc_memories_inst->username);
+  char *username_no_lfd = string_remove_linefeed(malloc_memories_inst->username);
+  char *username_no_spaces = string_replace(username_no_lfd, ' ', '_');
+  strcpy(malloc_memories_inst->username, username_no_spaces);
+  free(username_no_lfd);
+  free(username_no_spaces);
+  strcpy(malloc_memories_inst->user_folder, string_add(HOME_DIR, malloc_memories_inst->username));
+  path *file = path_init(string_add(malloc_memories_inst->user_folder, MALLOC_MEMORIES_FILE));
+  path_key_value_dump(file, 'w', "username", malloc_memories_inst->username);
   char addr_str[6];
   sprintf(addr_str, "%u", malloc_memories_inst->ulmp_addr);
-  sdcard_write_key_value_to_file(
-      drivers->sd_card,
-      ".malloc_memories",
-      'w',
-      "ulmp_addr",
-      addr_str);
+  path_key_value_dump(file, 'a', "ulmp_addr", addr_str);
+  path_free(file);
 }
 
 malloc_memories *load_malloc_memories_from_sd()
 {
+  path *user_file = path_init(USER_FILE);
+  char *username = path_key_value_get(user_file, "username");
+  char *username_no_lfd = string_remove_linefeed(username);
+  char *username_no_spaces = string_replace(username_no_lfd, ' ', '_');
+  strcpy(username, username_no_spaces);
+  free(username_no_lfd);
+  free(username_no_spaces);
+  path_free(user_file);
   malloc_memories *memories = malloc(sizeof(malloc_memories));
-  char *username = sdcard_read_value_from_file(
-      drivers->sd_card,
-      ".malloc_memories",
-      "username");
+  strcpy(memories->user_folder, string_add(HOME_DIR, username));
+  path *file = path_init(string_add(memories->user_folder, MALLOC_MEMORIES_FILE));
   strcpy(memories->username, username);
   free(username);
-  char *ulmp_addr = sdcard_read_value_from_file(
-      drivers->sd_card,
-      ".malloc_memories",
-      "ulmp_addr");
+  char *ulmp_addr = path_key_value_get(file, "ulmp_addr");
   strcpy(memories->ulmp_addr_str, ulmp_addr);
   uint32_t addr;
   sscanf(ulmp_addr, "%u", &addr);
   free(ulmp_addr);
   memories->ulmp_addr = (uint16_t)addr;
   malloc_memories_inst = memories;
+  path_free(file);
   return memories;
 }

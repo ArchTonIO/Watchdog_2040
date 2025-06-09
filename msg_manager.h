@@ -4,12 +4,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "ulcp/ulcp.h"
+#include "path.h"
 
 #define MAX_CONTACT_NAME_LENGTH 30
 #define MAX_CONTACTS 50
 
-#define CONTACTS_ADDR_FILE ".contacts"
-#define CONTACTS_NAMES_FILE ".contact-names"
 #define INFO_PAGES_TIMEOUT 2000
 
 typedef struct
@@ -26,6 +25,10 @@ typedef struct
   uint16_t received_msgs_count;
   uint8_t contacts_count;
   lora_instance *ulmp_impl;
+  path *contacts_addr_file;
+  path *contacts_names_file;
+  path *sent_msg_file;
+  path *received_msg_file;
 } msg_manager;
 
 msg_manager *msg_manager_init(uint16_t my_addr);

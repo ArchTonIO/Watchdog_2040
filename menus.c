@@ -16,6 +16,7 @@
 #include "graphs.h"
 #include "graphic_primitives.h"
 #include "device.h"
+#include "path.h"
 #include "text_editor.h"
 
 void display_ulmp_menu();
@@ -128,8 +129,10 @@ void take_note()
   char *note = text_editor_get_buf(name_editor);
   if (note != NULL)
   {
-    sdcard_write_file(drivers->sd_card, name, note, 'w');
+    path *note_path = path_init(string_add(NOTES_DIR, name));
+    path_fwrite(note_path, note, 'w');
     free(note);
+    path_free(note_path);
   }
   text_editor_kill(name_editor);
 }

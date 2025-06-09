@@ -14,29 +14,75 @@
 #include "options_gen.h"
 #include "menus.h"
 #include "device.h"
-#include "text_editor.h"
+#include "utils.h"
+#include "path.h"
 
-bool is_first_startup()
+path *first_boot_file;
+
+bool is_first_boot()
 {
-  return !sdcard_file_exists(drivers->sd_card, FIRST_TIME_FILE);
+  return (!path_exists(first_boot_file));
 }
 
-void write_first_startup_file()
+void write_first_boot_file()
 {
-  sdcard_write_file(drivers->sd_card, FIRST_TIME_FILE, "", 'w');
+  path_ftouch(first_boot_file);
+}
+
+void create_dir_tree()
+{
+  path *user_file = path_init(USER_FILE);
+  path_key_value_dump(user_file, 'w', "username", malloc_memories_inst->username);
+  path_free(user_file);
+  str_list *dirs = list_init();
+  char *USER_DIR = string_add(HOME_DIR, malloc_memories_inst->username);
+  list_append(dirs, HOME_DIR);
+  list_append(dirs, USER_DIR);
+  list_append(dirs, string_add(USER_DIR, MALLOC_MASCOT_DIR));
+  list_append(dirs, string_add(USER_DIR, MESSAGES_DIR));
+  list_append(dirs, string_add(USER_DIR, CONTACTS_DIR));
+  list_append(dirs, string_add(USER_DIR, LOGS_DIR));
+  list_append(dirs, string_add(USER_DIR, CONFIG_DIR));
+  list_append(dirs, string_add(USER_DIR, NOTES_DIR));
+  list_append(dirs, string_add(USER_DIR, SENSORS_DIR));
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_print(drivers->oled_screen, "Creating sys dir tree", 0, 0, false);
+  ssd1306_show(drivers->oled_screen);
+  for (uint8_t i = 0; i < dirs->len; i++)
+  {
+    path *dir = path_init(get(dirs, i));
+    if (path_mkdir(dir))
+    {
+      ssd1306_print(drivers->oled_screen, "[OK] ", 0, 1 + i, false);
+      ssd1306_print(drivers->oled_screen, get(dirs, i), 4, 1 + i, false);
+    }
+    else
+    {
+      ssd1306_print(drivers->oled_screen, "[ERR] ", 0, 1 + i, false);
+      ssd1306_print(drivers->oled_screen, get(dirs, i), 5, 1 + i, false);
+    }
+    ssd1306_show(drivers->oled_screen);
+    path_free(dir);
+  }
+  list_free(dirs);
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_show(drivers->oled_screen);
 }
 
 void sys_setup()
 {
   stdio_init_all();
   hardware_drivers_init();
-  wait_for_user_input();
-  if (is_first_startup())
+  //  wait_for_user_input();
+  first_boot_file = path_init(FIRST_BOOT_FILE);
+  if (is_first_boot())
   {
     start_malloc_mascot_tutorial();
-    write_first_startup_file();
+    write_first_boot_file();
+    create_dir_tree();
     dump_malloc_memories_to_sd();
   }
+  path_free(first_boot_file);
   load_malloc_memories_from_sd();
   msg_manager_init(malloc_memories_inst->ulmp_addr);
   // msg_manager_init(22345);
