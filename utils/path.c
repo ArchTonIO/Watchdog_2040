@@ -1,17 +1,13 @@
 #include "utils/path.h"
 
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "pico/stdlib.h"
-
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
 #include "hardware_drivers/sdcard.h"
-#include "utils/utils.h"
 
 void generate_parent(path *path);
 

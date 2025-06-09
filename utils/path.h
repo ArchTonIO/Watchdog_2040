@@ -2,15 +2,8 @@
 #define PATH_H
 
 #include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "pico/stdlib.h"
 
 #include "data_structures/string_list.h"
-#include "utils/utils.h"
 
 typedef struct path path;
 

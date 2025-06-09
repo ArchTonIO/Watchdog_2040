@@ -166,6 +166,7 @@ uint8_t joystick_get_direction(joystick *stick) {
   if (polar.theta_deg >= SW_DEG - ZONE_SIZE &&
       polar.theta_deg < SW_DEG + ZONE_SIZE)
     return SW;
+  return C;
 }
 
 /**

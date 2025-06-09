@@ -3,15 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
 
-#include "pico/stdlib.h"
-
-#include "components/hw_manager.h"
-#include "hardware_drivers/config.h"
-#include "hardware_drivers/joystick.h"
-#include "hardware_drivers/ssd1306.h"
 #include "tools/virtual_keyboard.h"
 
 #define MEMSET_FILL 149 /*ascii for bullet - not printable*/

@@ -4,7 +4,6 @@
 
 #include "data_structures/string_list.h"
 #include "ff.h"
-#include "sd_card.h"
 #include "utils/path.h"
 
 typedef struct {

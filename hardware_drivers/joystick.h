@@ -2,11 +2,9 @@
 #define JOYSTICK_H
 
 #include <stdbool.h>
-
-#include "pico/stdlib.h"
+#include <stdint.h>
 
 #include "config.h"
-#include "hardware/adc.h"
 
 #define C 0
 #define N 1

@@ -1,17 +1,11 @@
 #ifndef VIRTUAL_KEYBOARD_H
 #define VIRTUAL_KEYBOARD_H
 
+#include <stdbool.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
 
-#include "pico/stdlib.h"
-
-#include "components/hw_manager.h"
 #include "data_structures/string_list.h"
 #include "hardware_drivers/config.h"
-#include "hardware_drivers/joystick.h"
-#include "utils/utils.h"
 
 #define ROWS 4
 #define COLS 15

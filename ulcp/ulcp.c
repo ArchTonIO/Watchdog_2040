@@ -6,7 +6,6 @@
 #include "pico/rand.h"
 #include "pico/stdlib.h"
 
-#include "hardware_drivers/config.h"
 #include "hardware_drivers/sx1278.h"
 #include "lora_receive.h"
 #include "lora_send.h"

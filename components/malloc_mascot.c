@@ -16,6 +16,7 @@
 #include "tools/text_editor.h"
 #include "tools/virtual_keyboard.h"
 #include "utils/path.h"
+#include "utils/utils.h"
 
 malloc_memories *malloc_memories_inst = NULL;
 

@@ -3,16 +3,9 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "pico/stdlib.h"
 
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
-#include "hardware_drivers/joystick.h"
-#include "hardware_drivers/ssd1306.h"
 
 #define MAX_OPTIONS 20
 #define MAX_OPTIONS_ON_SCREEN 6

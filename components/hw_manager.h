@@ -2,7 +2,6 @@
 #define HW_MANAGER_H
 
 #include <stdint.h>
-#include <stdlib.h>
 
 #include "data_structures/string_list.h"
 #include "hardware_drivers/battery.h"

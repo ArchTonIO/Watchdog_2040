@@ -2,8 +2,6 @@
 #define MALLOC_MASCOT_H
 
 #include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
 
 typedef struct {
   char username[15];

@@ -1,7 +1,5 @@
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "pico/stdlib.h"
 
@@ -12,10 +10,8 @@
 #include "data_structures/string_list.h"
 #include "device.h"
 #include "hardware_drivers/joystick.h"
-#include "hardware_drivers/sdcard.h"
 #include "hardware_drivers/ssd1306.h"
 #include "tools/menus.h"
-#include "tools/options_gen.h"
 #include "utils/path.h"
 #include "utils/utils.h"
 

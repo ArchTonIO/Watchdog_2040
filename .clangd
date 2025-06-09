@@ -1,0 +1,17 @@
+CompileFlags:
+  Add: [
+    "-xc",
+    "--target=arm-none-eabi",
+    "-mcpu=cortex-m0plus",
+    "-mthumb",
+
+    # Pico SDK includes
+    "-I/home/antonio/.pico-sdk/sdk/2.1.0/src/common/include",
+    "-I/home/antonio/.pico-sdk/sdk/2.1.0/src/boards/include",
+    "-I/home/antonio/.pico-sdk/sdk/2.1.0/src/rp2_common/pico_stdlib/include",
+
+    # Toolchain standard includes
+    "-isystem/home/antonio/.pico-sdk/toolchain/13_3_Rel1/lib/gcc/arm-none-eabi/13.3.1/include",
+    "-isystem/home/antonio/.pico-sdk/toolchain/13_3_Rel1/lib/gcc/arm-none-eabi/13.3.1/include-fixed",
+    "-isystem/home/antonio/.pico-sdk/toolchain/13_3_Rel1/arm-none-eabi/include"
+  ]

@@ -3,12 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pico/rand.h"
-#include "pico/stdlib.h"
-
 #include "data_structures/string_list.h"
-#include "hardware_drivers/config.h"
-#include "hardware_drivers/sx1278.h"
 #include "lora_send.h"
 #include "stdint.h"
 #include "stdio.h"
@@ -72,7 +67,7 @@ void on_recv(char *msg) {
   }
   if (deserialized->header->packet_type ==
       ACK) //&& strcmp(deserialized->header->transaction_uid,
-           //this_lora->tx->sent_transac_uid) == 0)
+           // this_lora->tx->sent_transac_uid) == 0)
   {
     printf("ACK RECEIVED\n");
     this_lora->tx->ack_received = true;

@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "components/hw_manager.h"
 #include "hardware_drivers/ssd1306.h"

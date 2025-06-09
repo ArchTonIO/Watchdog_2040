@@ -10,7 +10,6 @@
 #include "ff.h"
 #include "sd_card.h"
 #include "utils/path.h"
-#include "utils/utils.h"
 
 sdcard *sdcard_init() {
   if (!sd_init_driver()) {
@@ -188,7 +187,7 @@ bool sdcard_delete_file(sdcard *sd, path *file) {
 
 bool sdcard_touch_file(sdcard *sd, path *file) {
   if (!sdcard_file_exists(sd, file->parent))
-    sdcard_write_file(sd, file, "", 'w');
+    return sdcard_write_file(sd, file, "", 'w');
 }
 
 bool sdcard_mkdir(sdcard *sd, path *dir) {

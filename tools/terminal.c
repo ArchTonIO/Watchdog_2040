@@ -1,16 +1,19 @@
 
+#include "terminal.h"
+
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
-#include <stdbool.h>
+
 #include "pico/stdlib.h"
-#include "hardware_drivers/joystick.h"
-#include "hardware_drivers/ssd1306.h"
+
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
+#include "hardware_drivers/joystick.h"
+#include "hardware_drivers/ssd1306.h"
 #include "utils/utils.h"
-#include "terminal.h"
 
 void help();
 void clear();
@@ -33,8 +36,7 @@ void whoami();
 void ping();
 void nano();
 
-void generate_commands()
-{
+void generate_commands() {
   command help_cmd;
   strcpy(help_cmd.name, "help");
   help_cmd.callback = help;
@@ -97,8 +99,7 @@ void generate_commands()
   nano_cmd.callback = nano;
 }
 
-terminal *terminal_init()
-{
+terminal *terminal_init() {
   terminal *term = (terminal *)malloc(sizeof(terminal));
   term->history = list_init();
   strcpy(term->current_command, "");
@@ -106,28 +107,26 @@ terminal *terminal_init()
   return term;
 }
 
-void terminal_launch(terminal *term)
-{
+void terminal_launch(terminal *term) {
   ssd1306_clear(drivers->oled_screen);
   ssd1306_show(drivers->oled_screen);
   draw_keyboard(term->keyboard);
-  while (true)
-  {
+  while (true) {
     char last_char = virtual_keyboard_read(term->keyboard);
     if (last_char == END)
       break;
-    else if (last_char == BCK)
-    {
+    else if (last_char == BCK) {
       if (strlen(term->current_command) > 0)
         term->current_command[strlen(term->current_command) - 1] = '\0';
-    }
-    else if (last_char != NOW && last_char != NSK)
-    {
+    } else if (last_char != NOW && last_char != NSK) {
       strncat(term->current_command, &last_char, 1);
     }
     ssd1306_clear(drivers->oled_screen);
     ssd1306_set_cursor(0, 0);
-    ssd1306_print(drivers->oled_screen, term->current_command, FONT_SIZE_1, true);
+    ssd1306_print(drivers->oled_screen,
+        term->current_command,
+        FONT_SIZE_1,
+        true);
     ssd1306_show(drivers->oled_screen);
   }
 }

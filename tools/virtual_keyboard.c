@@ -3,16 +3,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
-
-#include "pico/stdlib.h"
 
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
-#include "hardware_drivers/config.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/ssd1306.h"
-#include "utils/utils.h"
 
 /**
 If you wish to modify the layout of the keyboard, you can do so by changing the
@@ -30,59 +25,21 @@ characters:
 - END: save the buffer and exit
 - NSK: not shown key
 */
+
+// clang-format off
 char uppercase_layout[ROWS][COLS] = {
     {'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '|', SPC, LFD},
     {NSK, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', NSK, NSK, BCK},
     {NSK, NSK, 'Z', 'X', 'C', 'V', 'B', 'N', 'M', NSK, NSK, '?', NSK, LOW, SHF},
-    {'!',
-        '@',
-        '#',
-        '$',
-        '%',
-        '^',
-        '&',
-        '*',
-        '(',
-        ')',
-        NSK,
-        '+',
-        NSK,
-        NAV,
-        END}};
+    {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', NSK, '+', NSK, NAV, END}};
 
 char lowercase_layout[ROWS][COLS] = {
     {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', NSK, SPC, LFD},
-    {NSK,
-        'a',
-        's',
-        'd',
-        'f',
-        'g',
-        'h',
-        'j',
-        'k',
-        'l',
-        ';',
-        '\'',
-        NSK,
-        NSK,
-        BCK},
+    {NSK, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', NSK, NSK, BCK},
     {NSK, NSK, 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', NSK, UPP, SHF},
-    {'1',
-        '2',
-        '3',
-        '4',
-        '5',
-        '6',
-        '7',
-        '8',
-        '9',
-        '0',
-        '-',
-        '=',
-        NSK,
-        NAV,
-        END}};
+    {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', NSK, NAV, END}};
+
+// clang-format on
 
 char NEWLINE_PIXELS[] = {0x7c, 0x04, 0x24, 0x64, 0xcc, 0x60, 0x20, 0x00};
 char BACSPACE_PIXELS[] = {0x00, 0x20, 0x60, 0xcc, 0x60, 0x20, 0x00, 0x00};

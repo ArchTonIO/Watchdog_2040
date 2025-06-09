@@ -3,6 +3,10 @@ An Uncomplicated LoRa Communication Protocol (ULCP)
 Author: Antonio Del Cogliano
 */
 
+#include <stdint.h>
+
+#include "hardware_drivers/sx1278.h"
+
 #ifndef ULCP_H
 #define ULCP_H
 
@@ -44,11 +48,6 @@ Author: Antonio Del Cogliano
 #define END 0x03
 #define MSG 0x04
 #define ACK 0x05
-
-#include "hardware_drivers/config.h"
-#include "hardware_drivers/sx1278.h"
-#include "stdint.h"
-#include "stdio.h"
 
 typedef struct {
   uint8_t transac_sending_attempts;

@@ -3,10 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pico/rand.h"
 #include "pico/stdlib.h"
 
-#include "hardware_drivers/config.h"
 #include "hardware_drivers/sx1278.h"
 #include "stdint.h"
 #include "stdio.h"

@@ -2,8 +2,6 @@
 #define GRAPHS_H
 
 #include <stdint.h>
-#include <stdio.h>
-#include <string.h>
 
 #include "graphics/graphic_primitives.h"
 
