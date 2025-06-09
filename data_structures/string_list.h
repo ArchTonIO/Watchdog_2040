@@ -17,11 +17,10 @@
 #define MEMORY_ERR_STR "[MEMORY_ERROR]"
 #define MAX_STRLEN_REACHED_STR "[MAX_STR_LEN_REACHED]"
 
-typedef struct
-{
-	uinteger len;
-	struct lnode *head;
-	struct lnode *tail;
+typedef struct {
+  uinteger len;
+  struct lnode *head;
+  struct lnode *tail;
 } str_list;
 
 str_list *list_init();

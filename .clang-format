@@ -1,0 +1,21 @@
+BasedOnStyle: LLVM
+SortIncludes: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<.*>$'              # Category 1: Standard C headers
+    Priority: 1
+    SortPriority: 1
+
+  - Regex: '^"pico/.*"$'         # Category 2: Pico SDK headers
+    Priority: 2
+    SortPriority: 2
+
+  - Regex: '^".*"$'              # Category 3: Local project headers
+    Priority: 3
+    SortPriority: 3
+
+BinPackArguments: false
+BinPackParameters: false
+AllowAllArgumentsOnNextLine: false
+AlignAfterOpenBracket: DontAlign
+PenaltyBreakBeforeFirstCallParameter: 0

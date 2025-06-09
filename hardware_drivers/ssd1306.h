@@ -2,6 +2,7 @@
 #define SSD1306_H
 
 #include <stdint.h>
+
 #include "config.h"
 #include "hardware/i2c.h"
 
@@ -31,8 +32,7 @@ extern const uint8_t ssd1306_font6x8[];
 #define MAX_X_CHARS 21
 #define MAX_Y_CHARS 8
 
-typedef struct
-{
+typedef struct {
   pin sda;
   pin sck;
   i2c_inst_t *i2c_port;
@@ -46,12 +46,27 @@ typedef struct
   int cursory;
 } ssd1306;
 
-ssd1306 *ssd1306_init(pin sda, pin sck, i2c_inst_t *i2c_port, uint32_t baudrate, uint8_t width, uint8_t height, uint8_t SID);
+ssd1306 *ssd1306_init(pin sda,
+    pin sck,
+    i2c_inst_t *i2c_port,
+    uint32_t baudrate,
+    uint8_t width,
+    uint8_t height,
+    uint8_t SID);
 void ssd1306_draw_pixel(ssd1306 *screen, int16_t x, int16_t y, int color);
-void ssd1306_draw_letter_at(ssd1306 *screen, uint8_t x, uint8_t y, char c, bool reversed);
-void ssd1306_print(ssd1306 *screen, const char *str, uint8_t x, uint8_t y, bool reversed);
-void ssd1306_print_gradually(ssd1306 *screen, const char *str, uint8_t x, uint8_t y, bool reversed);
-void ssd1306_draw_bitmap(ssd1306 *display, uint8_t x, uint8_t y, const uint8_t bitmap[], int16_t width, int16_t height, bool reversed);
+void ssd1306_draw_letter_at(
+    ssd1306 *screen, uint8_t x, uint8_t y, char c, bool reversed);
+void ssd1306_print(
+    ssd1306 *screen, const char *str, uint8_t x, uint8_t y, bool reversed);
+void ssd1306_print_gradually(
+    ssd1306 *screen, const char *str, uint8_t x, uint8_t y, bool reversed);
+void ssd1306_draw_bitmap(ssd1306 *display,
+    uint8_t x,
+    uint8_t y,
+    const uint8_t bitmap[],
+    int16_t width,
+    int16_t height,
+    bool reversed);
 void ssd1306_set_cursor(ssd1306 *screen, uint8_t x, uint8_t y);
 void ssd1306_invert(ssd1306 *display, uint8_t invert);
 void ssd1306_show(ssd1306 *screen);

@@ -1,13 +1,13 @@
 #ifndef SDCARD_H
 #define SDCARD_H
-#include "sd_card.h"
-#include "ff.h"
-#include "data_structures/string_list.h"
-#include "path.h"
 #include <stdbool.h>
 
-typedef struct
-{
+#include "data_structures/string_list.h"
+#include "ff.h"
+#include "sd_card.h"
+#include "utils/path.h"
+
+typedef struct {
   FRESULT fr;
   FATFS fs;
   FIL fil;
@@ -23,7 +23,8 @@ void sdcard_unmount(sdcard *sd);
 bool sdcard_write_file(sdcard *sd, path *file, const char *data, char mode);
 str_list *sdcard_read_file(sdcard *sd, path *file);
 str_list *sdcard_list_files(sdcard *sd, path *directory);
-bool sdcard_write_key_value_to_file(sdcard *sd, path *file, char mode, const char *key, const char *value);
+bool sdcard_write_key_value_to_file(
+    sdcard *sd, path *file, char mode, const char *key, const char *value);
 char *sdcard_read_value_from_file(sdcard *sd, path *file, const char *key);
 bool sdcard_file_exists(sdcard *sd, path *file);
 bool sdcard_delete_file(sdcard *sd, path *file);

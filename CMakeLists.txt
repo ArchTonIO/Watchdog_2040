@@ -1,5 +1,4 @@
 # Generated Cmake Pico project file
-
 cmake_minimum_required(VERSION 3.13)
 
 set(CMAKE_C_STANDARD 11)
@@ -36,8 +35,15 @@ add_subdirectory(lib/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(Watchdog_2040
-Watchdog_2040.c
+boot/bootup.c
+components/home_page.c
+components/hw_manager.c
+components/malloc_mascot.c
+components/msg_manager.c
 data_structures/string_list.c
+graphics/bitmaps.c
+graphics/graphic_primitives.c
+graphics/graphs.c
 hardware_drivers/battery.c
 hardware_drivers/ens160.c
 hardware_drivers/joystick.c
@@ -45,23 +51,16 @@ hardware_drivers/rtc_time.c
 hardware_drivers/sdcard.c
 hardware_drivers/ssd1306.c
 hardware_drivers/sx1278.c
-path.c
+tools/menus.c
+tools/options_gen.c
+tools/text_editor.c
+tools/virtual_keyboard.c
 ulcp/lora_receive.c
 ulcp/lora_send.c
 ulcp/ulcp.c
-bitmaps.c
-bootup.c
-graphic_primitives.c
-graphs.c
-home_page.c
-hw_manager.c
-malloc_mascot.c
-menus.c
-msg_manager.c
-options_gen.c
-text_editor.c
-utils.c
-virtual_keyboard.c
+utils/path.c
+utils/utils.c
+Watchdog_2040.c
 )
 
 pico_set_program_name(Watchdog_2040 "Watchdog_2040")

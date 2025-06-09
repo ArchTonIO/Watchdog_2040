@@ -1,10 +1,12 @@
 #ifndef JOYSTICK_H
 #define JOYSTICK_H
 
-#include "pico/stdlib.h"
-#include "hardware/adc.h"
-#include "config.h"
 #include <stdbool.h>
+
+#include "pico/stdlib.h"
+
+#include "config.h"
+#include "hardware/adc.h"
 
 #define C 0
 #define N 1
@@ -27,8 +29,7 @@
 
 #define ZONE_SIZE 22.5f
 
-typedef struct
-{
+typedef struct {
   pin x_pin;
   pin y_pin;
   pin button_pin;
@@ -49,13 +50,18 @@ typedef struct
   bool is_working;
 } joystick;
 
-typedef struct
-{
+typedef struct {
   float l;
   float theta_deg;
 } polar_coords;
 
-joystick *joystick_init(pin x_pin, pin y_pin, uint8_t x_channel, uint8_t y_channel, pin button_pin, float sensitivity, int16_t axis_rotation);
+joystick *joystick_init(pin x_pin,
+    pin y_pin,
+    uint8_t x_channel,
+    uint8_t y_channel,
+    pin button_pin,
+    float sensitivity,
+    int16_t axis_rotation);
 uint8_t joystick_get_direction(joystick *joystick);
 polar_coords joystick_get_polar(joystick *joystick);
 bool joystick_check_long_press(joystick *joystick, uint16_t interval_ms);

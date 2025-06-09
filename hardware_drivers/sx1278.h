@@ -41,13 +41,13 @@
 
 #define FXOSC = 32000000.0
 
+#include <stdbool.h>
+
 #include "config.h"
 #include "hardware/spi.h"
 #include "stdio.h"
-#include <stdbool.h>
 
-typedef struct
-{
+typedef struct {
   pin mosi;
   pin miso;
   pin sck;
@@ -65,8 +65,7 @@ typedef struct
 
 } sx1278;
 
-sx1278 *sx1278_init(
-    pin mosi,
+sx1278 *sx1278_init(pin mosi,
     pin miso,
     pin sck,
     pin cs,

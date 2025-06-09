@@ -1,54 +1,44 @@
-#include "hardware_drivers/config.h"
-#include "pico/rand.h"
-#include "stdio.h"
-#include "stdint.h"
-#include "hardware_drivers/sx1278.h"
-#include "ulcp.h"
+#include "lora_send.h"
+
 #include <stdlib.h>
 #include <string.h>
+
+#include "pico/rand.h"
 #include "pico/stdlib.h"
-#include "lora_send.h"
+
+#include "hardware_drivers/config.h"
+#include "hardware_drivers/sx1278.h"
+#include "stdint.h"
+#include "stdio.h"
+#include "ulcp.h"
 
 uint8_t *serialize_packet(message *msg);
 
-uint8_t *build_packet(
-    uint16_t src_addr,
+uint8_t *build_packet(uint16_t src_addr,
     uint16_t dest_addr,
     uint8_t packet_type,
     char *transaction_uid,
     char *payload);
 
-void send_start_packet(uint16_t dest_addr, char *transaction_uid)
-{
+void send_start_packet(uint16_t dest_addr, char *transaction_uid) {
   sleep_ms(PACKET_TIMEOUT);
-  char *packet = build_packet(
-      this_lora->address,
-      dest_addr,
-      START,
-      transaction_uid,
-      "");
+  char *packet =
+      build_packet(this_lora->address, dest_addr, START, transaction_uid, "");
   sx1278_send_raw(this_lora->radio, packet, HEADER_SIZE);
   free(packet);
 }
 
-void send_end_packet(uint16_t dest_addr, char *transaction_uid)
-{
+void send_end_packet(uint16_t dest_addr, char *transaction_uid) {
   sleep_ms(PACKET_TIMEOUT);
-  char *packet = build_packet(
-      this_lora->address,
-      dest_addr,
-      END,
-      transaction_uid,
-      "");
+  char *packet =
+      build_packet(this_lora->address, dest_addr, END, transaction_uid, "");
   sx1278_send_raw(this_lora->radio, packet, HEADER_SIZE);
   free(packet);
 }
 
-void send_msg_packet(uint16_t dest_addr, char *transaction_uid, char *payload)
-{
+void send_msg_packet(uint16_t dest_addr, char *transaction_uid, char *payload) {
   sleep_ms(PACKET_TIMEOUT);
-  char *packet = build_packet(
-      this_lora->address,
+  char *packet = build_packet(this_lora->address,
       dest_addr,
       MSG,
       transaction_uid,
@@ -57,51 +47,34 @@ void send_msg_packet(uint16_t dest_addr, char *transaction_uid, char *payload)
   free(packet);
 }
 
-void send_ack_packet(uint16_t dest_addr, char *transaction_uid)
-{
+void send_ack_packet(uint16_t dest_addr, char *transaction_uid) {
   sleep_ms(PACKET_TIMEOUT);
-  char *packet = build_packet(
-      this_lora->address,
-      dest_addr,
-      ACK,
-      transaction_uid,
-      "");
+  char *packet =
+      build_packet(this_lora->address, dest_addr, ACK, transaction_uid, "");
   sx1278_send_raw(this_lora->radio, packet, HEADER_SIZE);
   free(packet);
 }
 
-void send_ping_packet(uint16_t dest_addr, char *transaction_uid)
-{
+void send_ping_packet(uint16_t dest_addr, char *transaction_uid) {
   sleep_ms(PACKET_TIMEOUT);
-  char *packet = build_packet(
-      this_lora->address,
-      dest_addr,
-      PING,
-      transaction_uid,
-      "");
+  char *packet =
+      build_packet(this_lora->address, dest_addr, PING, transaction_uid, "");
   sx1278_send_raw(this_lora->radio, packet, HEADER_SIZE);
   free(packet);
 }
 
-void send_pong_packet(uint16_t dest_addr, char *transaction_uid)
-{
+void send_pong_packet(uint16_t dest_addr, char *transaction_uid) {
   sleep_ms(PACKET_TIMEOUT);
-  char *packet = build_packet(
-      this_lora->address,
-      dest_addr,
-      PONG,
-      transaction_uid,
-      "");
+  char *packet =
+      build_packet(this_lora->address, dest_addr, PONG, transaction_uid, "");
   sx1278_send_raw(this_lora->radio, packet, HEADER_SIZE);
   free(packet);
 }
 
-uint8_t *serialize_packet(message *msg)
-{
+uint8_t *serialize_packet(message *msg) {
   size_t packet_size = HEADER_SIZE + msg->header->payload_length;
   char *buf = (char *)calloc(packet_size, sizeof(uint8_t));
-  if (!buf)
-  {
+  if (!buf) {
     return NULL;
   };
   uint8_t offset = 0;
@@ -120,13 +93,11 @@ uint8_t *serialize_packet(message *msg)
   return buf;
 }
 
-uint8_t *build_packet(
-    uint16_t src_addr,
+uint8_t *build_packet(uint16_t src_addr,
     uint16_t dest_addr,
     uint8_t packet_type,
     char *transaction_uid,
-    char *payload)
-{
+    char *payload) {
   message *msg = (message *)malloc(sizeof(message));
   header *head = (header *)malloc(sizeof(header));
   head->src_address = src_addr;
