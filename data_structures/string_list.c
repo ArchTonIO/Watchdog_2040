@@ -266,6 +266,14 @@ str_list *list_copy(str_list *to_copy) {
   return newlist;
 }
 
+str_list *list_reverse(str_list *list) {
+  str_list *newlist = list_init();
+  for (integer i = list->len - 1; i >= 0; i--) {
+    list_append(newlist, get(list, i));
+  }
+  return newlist;
+}
+
 /*
  * @brief Delete the list.
  *

@@ -15,8 +15,6 @@
 #define SENSORS_DIR "/sensors/"
 
 #define MALLOC_MEMORIES_FILE MALLOC_MASCOT_DIR "malloc_memories"
-#define SENT_MSG_FILE MESSAGES_DIR "sent"
-#define RECEIVED_MSG_FILE MESSAGES_DIR "received"
 #define CONTACTS_ADDR_FILE CONTACTS_DIR "contacts"
 #define CONTACTS_NAMES_FILE CONTACTS_DIR "contact-names"
 #define LOG_FILE LOGS_DIR "log"

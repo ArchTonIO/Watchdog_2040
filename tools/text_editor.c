@@ -79,8 +79,12 @@ text_editor *text_editor_init(virtual_keyboard *keyboard, bool debug) {
 
 void insert_text(text_editor *editor, char *text, bool is_text_placeholder) {
   for (uint32_t i = 0; i < strlen(text); i++) {
-    editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] =
-        text[i];
+    if (text[i] == '\n') {
+      handle_newline(editor);
+      continue;
+    }
+    editor->logic_buf[editor->logic_cursor_row]
+                     [editor->logic_cursor_col] = text[i];
     editor->logic_cursor_col++;
     editor->video_cursor_col++;
   }
@@ -214,8 +218,8 @@ void handle_text_wrapping(text_editor *editor) {
 }
 
 void handle_normal_char(text_editor *editor, char last_char) {
-  editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] =
-      last_char;
+  editor->logic_buf[editor->logic_cursor_row]
+                   [editor->logic_cursor_col] = last_char;
   editor->logic_cursor_col++;
   editor->video_cursor_col++;
 }
@@ -241,13 +245,12 @@ void handle_backspace(text_editor *editor) {
                                    [editor->logic_cursor_col + 1];
       editor->logic_cursor_col--;
       editor->video_cursor_col--;
-      editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] =
-          following;
+      editor->logic_buf[editor->logic_cursor_row]
+                       [editor->logic_cursor_col] = following;
     }
   } else {
-    char following =
-        editor
-            ->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col + 1];
+    char following = editor->logic_buf[editor->logic_cursor_row]
+                                      [editor->logic_cursor_col + 1];
     editor->logic_cursor_col = MAX_LOGIC_COLS;
     editor->video_cursor_col = MAX_VIDEO_COLS;
     editor->logic_cursor_row--;
@@ -255,11 +258,10 @@ void handle_backspace(text_editor *editor) {
       editor->video_cursor_row--;
     if (editor->logic_cursor_row >= MAX_VIDEO_ROWS - 1)
       scroll_view_up(editor);
-    while (
-        editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] ==
-            MEMSET_FILL ||
-        editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] ==
-            '\n') {
+    while (editor->logic_buf[editor->logic_cursor_row]
+                            [editor->logic_cursor_col] == MEMSET_FILL ||
+           editor->logic_buf[editor->logic_cursor_row]
+                            [editor->logic_cursor_col] == '\n') {
       if (editor->logic_cursor_col == 0) {
         if (editor->logic_cursor_row > MAX_VIDEO_ROWS - 1)
           scroll_view_up(editor);
@@ -273,8 +275,8 @@ void handle_backspace(text_editor *editor) {
         editor->video_cursor_col--;
       }
     }
-    editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] =
-        following;
+    editor->logic_buf[editor->logic_cursor_row]
+                     [editor->logic_cursor_col] = following;
   }
 }
 

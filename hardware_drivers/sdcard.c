@@ -32,7 +32,10 @@ bool sdcard_mount(sdcard *sd) {
 
 void sdcard_unmount(sdcard *sd) { f_unmount("0:"); }
 
-bool sdcard_write_file(sdcard *sd, path *file, const char *content, char mode) {
+bool sdcard_write_file(sdcard *sd,
+    path *file,
+    const char *content,
+    char mode) {
   if (file->is_dir) {
     printf("ERROR: Cannot write to a directory (%s)\r\n", file->abs_path);
     return false;
@@ -112,7 +115,8 @@ str_list *sdcard_list_files(sdcard *sd, path *directory) {
  *
  * @param sd The sdcard instance
  * @param filename The name of the file to write to
- * @param mode The mode to open the file in ('w' for write, 'a' for list_append)
+ * @param mode The mode to open the file in ('w' for write, 'a' for
+ * list_append)
  * @param key The key to write
  * @param value The value to write
  * @return true if the write was successful, false otherwise
@@ -120,8 +124,11 @@ str_list *sdcard_list_files(sdcard *sd, path *directory) {
  * @note it is assumed that the key and value do not contain the separator
  * character '~'
  */
-bool sdcard_write_key_value_to_file(
-    sdcard *sd, path *file, char mode, const char *key, const char *value) {
+bool sdcard_write_key_value_to_file(sdcard *sd,
+    path *file,
+    char mode,
+    const char *key,
+    const char *value) {
   char sep = '~';
   size_t total_len = strlen(key) + strlen(value) + 3;
   char *content = (char *)malloc(total_len);

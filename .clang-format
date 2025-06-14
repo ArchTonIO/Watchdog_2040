@@ -19,3 +19,8 @@ BinPackParameters: false
 AllowAllArgumentsOnNextLine: false
 AlignAfterOpenBracket: DontAlign
 PenaltyBreakBeforeFirstCallParameter: 0
+ExperimentalAutoDetectBinPacking: false
+AllowAllParametersOfDeclarationOnNextLine: false
+PenaltyBreakAssignment: 1000
+PenaltyBreakOpenParenthesis: 1
+ColumnLimit: 79

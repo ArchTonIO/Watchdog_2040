@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/_intsup.h>
 
 #include "components/hw_manager.h"
 #include "components/malloc_mascot.h"
@@ -13,6 +14,7 @@
 #include "tools/options_gen.h"
 #include "tools/text_editor.h"
 #include "ulcp/ulcp.h"
+#include "utils/path.h"
 #include "utils/utils.h"
 
 msg_manager *msg_man_inst;
@@ -25,11 +27,16 @@ char *ask_for_contact_name();
 uint16_t ask_for_contact_addr();
 void display_sent_message_status(uint8_t result, uint16_t dest_addr);
 void save_contact(char *name, uint16_t addr);
+void update_conversation_file(uint16_t dest_addr,
+    char *msg,
+    bool is_sent,
+    uint8_t status);
 uint16_t find_contact_addr_by_name(char *name);
 char *find_contact_name_by_addr(uint16_t addr);
 void display_received_message(uint16_t src_address);
 void load_contacts_from_sd();
 void dump_contacts_to_sd();
+char *get_displayable_msg_by_timestamp(uint16_t contact_addr, char *timestamp);
 
 /**
  * @brief Initializes the message manager with the given address.
@@ -52,10 +59,6 @@ msg_manager *msg_manager_init(uint16_t my_addr) {
       string_add(malloc_memories_inst->user_folder, CONTACTS_ADDR_FILE));
   msg_man->contacts_names_file = path_init(
       string_add(malloc_memories_inst->user_folder, CONTACTS_NAMES_FILE));
-  msg_man->sent_msg_file =
-      path_init(string_add(malloc_memories_inst->user_folder, SENT_MSG_FILE));
-  msg_man->received_msg_file = path_init(
-      string_add(malloc_memories_inst->user_folder, RECEIVED_MSG_FILE));
   lora_receive();
   msg_man_inst = msg_man;
   if (path_exists(msg_man->contacts_addr_file) &&
@@ -76,7 +79,40 @@ void process_messages() {
 }
 
 void read_messages() {
-  //! TODO implement
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_print(drivers->oled_screen, "Reading messages...", 0, 0, false);
+  ssd1306_show(drivers->oled_screen);
+  ssd1306_clear(drivers->oled_screen);
+  path *conversations_dir = path_init(
+      string_add(malloc_memories_inst->user_folder, MESSAGES_DIR));
+  str_list *all_files = path_listdir(conversations_dir);
+  str_list *active_conversations = list_init();
+  for (uint16_t i = 0; i < all_files->len; i++) {
+    path *conv_file = path_init(
+        string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
+            get(all_files, i)));
+    if (strcmp(conv_file->ext, "keys") != 0)
+      list_append(active_conversations, conv_file->name);
+  }
+  options_page *conversations = options_page_init("Active conversations:",
+      active_conversations);
+  char *selected_contact = options_page_launch(conversations);
+  uint16_t contact_addr = find_contact_addr_by_name(selected_contact);
+  str_list *messages = get_stored_messages_by_user(contact_addr);
+  options_page *messages_entries = options_page_init("Select a msg to read",
+      messages);
+  char *selected_msg = options_page_launch(messages_entries);
+  char *full_msg = get_displayable_msg_by_timestamp(contact_addr,
+      selected_msg);
+  text_editor *editor = text_editor_launch(full_msg, false);
+  char *editor_buf = text_editor_get_buf(editor);
+  path_free(conversations_dir);
+  options_page_free(messages_entries);
+  options_page_free(conversations);
+  text_editor_kill(editor);
+  list_free(all_files);
+  free(editor_buf);
+  free(full_msg);
 }
 
 void send_message_status_update_callback(uint8_t progress) {
@@ -102,10 +138,12 @@ void send_message() {
     return;
   }
   char *msg = compose_message();
-  uint8_t result =
-      lora_send_msg(dest_addr, msg, send_message_status_update_callback);
+  uint8_t result = lora_send_msg(dest_addr,
+      msg,
+      send_message_status_update_callback);
   free(msg);
   display_sent_message_status(result, dest_addr);
+  update_conversation_file(dest_addr, msg, true, result);
 }
 
 bool name_exists(char *name) {
@@ -118,6 +156,193 @@ bool name_exists(char *name) {
   }
   list_free(contacts);
   return false;
+}
+
+void update_conversation_file(uint16_t dest_addr,
+    char *msg,
+    bool is_sent,
+    uint8_t status) {
+  msg_record *record = msg_record_init(dest_addr, msg, is_sent, status);
+  msg_record_dump(record);
+  msg_record_free(record);
+}
+
+msg_record *msg_record_init(uint16_t contact_addr,
+    char *message,
+    bool is_sent,
+    uint8_t status) {
+  msg_record *record = (msg_record *)malloc(sizeof(msg_record));
+  record->contact_addr = contact_addr;
+  char addr_str[6];
+  sprintf(addr_str, "%u", contact_addr);
+  strncpy(record->contact_addr_str,
+      addr_str,
+      sizeof(record->contact_addr_str));
+  record->message = (char *)malloc(strlen(message) + 1);
+  strcpy(record->message, message);
+  strncpy(record->contact_name,
+      find_contact_name_by_addr(contact_addr),
+      MAX_CONTACT_NAME_LENGTH);
+  record->is_sent = is_sent;
+  record->status = status;
+  sprintf(record->timestamp,
+      "%02d:%02d:%02d %02d/%02d/%04d",
+      drivers->rtc->internal_datetime.hour,
+      drivers->rtc->internal_datetime.min,
+      drivers->rtc->internal_datetime.sec,
+      drivers->rtc->internal_datetime.day,
+      drivers->rtc->internal_datetime.month,
+      drivers->rtc->internal_datetime.year);
+  if (status == 0)
+    strcpy(record->status_str, "delivered");
+  else if (status == 1)
+    strcpy(record->status_str, "sent");
+  else if (status == 2)
+    strcpy(record->status_str, "not sent");
+  else if (status == 3)
+    strcpy(record->status_str, "received");
+  return record;
+}
+
+void msg_record_print(msg_record *record) {
+  printf("Message Record:\n");
+  printf("Status: %s\n", record->status_str);
+  printf("Contact Name: %s\n", record->contact_name);
+  printf("Contact Address: %s\n", record->contact_addr_str);
+  printf("Contact Address (numeric): %u\n", record->contact_addr);
+  printf("Message: %s\n", record->message);
+  printf("Is Sent: %s\n", record->is_sent ? "true" : "false");
+  printf("Timestamp: %s\n", record->timestamp);
+  printf("Status Code: %u\n", record->status);
+  printf("Status String: %s\n", record->status_str);
+  printf("Contact Address (numeric): %u\n", record->contact_addr);
+  printf("Contact Address (string): %s\n", record->contact_addr_str);
+}
+
+void msg_record_dump(msg_record *record) {
+  path *conversation_file = path_init(
+      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
+          record->contact_name));
+  path *keys_file = path_init(
+      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
+          string_add(record->contact_name, ".keys")));
+  path_ftouch(conversation_file);
+  size_t payload_size = (strlen(record->contact_name) +
+                         strlen(record->message) +
+                         strlen(record->contact_addr_str) +
+                         strlen(record->status_str) + strlen("from") +
+                         strlen("[   (): ]") + 1);
+  // [<status_str> <to || from> <contact_name> (<contact_addr_str>): <message>]
+  char *payload = (char *)malloc(payload_size);
+  snprintf(payload,
+      payload_size,
+      "[%s %s %s (%s): %s]",
+      record->status_str,
+      record->is_sent ? "to" : "from",
+      record->contact_name,
+      record->contact_addr_str,
+      record->message);
+  path_fwrite(keys_file, string_add(record->timestamp, "\n"), 'a');
+  path_key_value_dump(conversation_file, 'a', record->timestamp, payload);
+  path_free(conversation_file);
+  path_free(keys_file);
+  free(payload);
+}
+
+msg_record *msg_record_load(const char *stringified_record) {
+  msg_record *record = (msg_record *)malloc(sizeof(msg_record));
+  size_t len = strlen(stringified_record);
+
+  // Copy string without brackets
+  char buffer[512];
+  if (len - 2 >= sizeof(buffer))
+    return false;
+  strncpy(buffer, stringified_record + 1, len - 2);
+  buffer[len - 2] = '\0';
+
+  // Step-by-step parsing
+  char status[10], direction[5], name[MAX_CONTACT_NAME_LENGTH], addr[6];
+  const char *msg_start = strchr(buffer, ':');
+  if (!msg_start)
+    return false;
+
+  // Copy message (after ": ")
+  msg_start += 2;                      // skip ": "
+  record->message = strdup(msg_start); // allocate copy
+
+  // Null-terminate string before message to parse header
+  buffer[msg_start - buffer - 2] = '\0';
+
+  // Parse header
+  int parsed = sscanf(buffer,
+      "%9s %4s %49s (%5[^)])",
+      status,
+      direction,
+      name,
+      addr);
+  if (parsed != 4)
+    return false;
+
+  // Fill struct fields
+  strncpy(record->status_str, status, sizeof(record->status_str));
+  strncpy(record->contact_name, name, sizeof(record->contact_name));
+  strncpy(record->contact_addr_str, addr, sizeof(record->contact_addr_str));
+  record->is_sent = (strcmp(direction, "to") == 0);
+
+  // Optional: infer status as integer
+  if (strcmp(status, "delivered") == 0)
+    record->status = 0;
+  else if (strcmp(status, "sent") == 0)
+    record->status = 1;
+  else if (strcmp(status, "not") == 0 || strstr(status, "not"))
+    record->status = 2;
+  else if (strcmp(status, "received") == 0)
+    record->status = 3;
+  return record;
+}
+
+char *get_displayable_msg_by_timestamp(uint16_t contact_addr,
+    char *timestamp) {
+  char *contact_name = find_contact_name_by_addr(contact_addr);
+  path *conversation_file = path_init(
+      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
+          contact_name));
+  timestamp[strlen(timestamp) - 1] = '\0';
+  char *message = path_key_value_get(conversation_file, timestamp);
+  path_free(conversation_file);
+  msg_record *record = msg_record_load(message);
+  record->message[strlen(record->message) - 1] = '\0';
+  char *displayable_msg = (char *)malloc(strlen(record->message) + 12);
+  snprintf(displayable_msg,
+      strlen(record->message) + 12,
+      "[%s]\n%s",
+      record->status_str,
+      record->message);
+  msg_record_free(record);
+  return displayable_msg;
+}
+
+void msg_record_free(msg_record *record) {
+  if (record) {
+    free(record->message);
+    free(record);
+  }
+}
+
+str_list *get_stored_messages_by_user(uint16_t contact_addr) {
+  char *contact_name = find_contact_name_by_addr(contact_addr);
+  path *conversation_file = path_init(
+      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
+          contact_name));
+  path *keys_file = path_init(
+      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
+          string_add(contact_name, ".keys")));
+  str_list *keys = path_fread(keys_file);
+  str_list *keys_reversed = list_reverse(keys);
+  path_free(keys_file);
+  path_free(conversation_file);
+  list_free(keys);
+  return keys_reversed;
 }
 
 /**
@@ -192,6 +417,10 @@ void remove_contact() {
 void notify(uint16_t src_address) {
   msg_man_inst->new_msg_arrived = true;
   msg_man_inst->received_msgs_count++;
+  update_conversation_file(src_address,
+      msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
+      false,
+      3);
   if (!msg_man_inst->should_notify)
     return;
   display_received_message(src_address);
@@ -269,8 +498,8 @@ char *ask_for_contact_name() {
 }
 
 uint16_t ask_for_contact_addr() {
-  text_editor *editor =
-      text_editor_launch("# Type in the contact address", true);
+  text_editor *editor = text_editor_launch("# Type in the contact address",
+      true);
   char *temp = text_editor_get_buf(editor);
   text_editor_kill(editor);
   if (!is_string_numeric(temp) || strlen(temp) > 5 || strlen(temp) == 0)
@@ -346,9 +575,9 @@ void display_received_message(uint16_t src_address) {
     }
     joystick_update(drivers->joystick);
     if (joystick_get_direction(drivers->joystick) == E) {
-      text_editor *editor =
-          text_editor_launch(msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
-              false);
+      text_editor *editor = text_editor_launch(
+          msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
+          false);
       char *text = text_editor_get_buf(editor);
       text_editor_kill(editor);
       free(text);
@@ -415,7 +644,8 @@ void load_contacts_from_sd() {
     size_t name_len = strlen(name);
     if (name[name_len - 1] == '\n')
       name[name_len - 1] = '\0';
-    char *addr_str = path_key_value_get(msg_man_inst->contacts_addr_file, name);
+    char *addr_str = path_key_value_get(msg_man_inst->contacts_addr_file,
+        name);
     uint16_t addr;
     sscanf(addr_str, "%hu", &addr);
     save_contact(name, addr);
