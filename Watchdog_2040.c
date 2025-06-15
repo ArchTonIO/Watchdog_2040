@@ -61,6 +61,7 @@ void create_dir_tree() {
 
 void sys_setup() {
   stdio_init_all();
+  collector_init();
   hardware_drivers_init();
   //  wait_for_user_input();
   first_boot_file = path_init(FIRST_BOOT_FILE);
@@ -93,6 +94,7 @@ void sys_mainloop() {
         joystick_update(drivers->joystick);
         if (joystick_get_direction(drivers->joystick) == E) {
           display_main_menu();
+          collect();
           screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
         }
         if ((to_us_since_boot(get_absolute_time()) / 1000000) -

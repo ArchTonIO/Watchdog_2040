@@ -18,17 +18,6 @@ typedef struct {
 } contact;
 
 typedef struct {
-  char *message;
-  char contact_name[MAX_CONTACT_NAME_LENGTH];
-  char contact_addr_str[6];
-  uint16_t contact_addr;
-  bool is_sent;
-  uint8_t status;      // 0: delivered, 1: sent, 2: not sent 3: received
-  char status_str[10]; // "delivered", "sent", "not sent", "received"
-  char timestamp[20];
-} msg_record;
-
-typedef struct {
   bool new_msg_arrived;
   bool should_notify;
   contact contacts[MAX_CONTACTS];
@@ -38,16 +27,6 @@ typedef struct {
   path *contacts_addr_file;
   path *contacts_names_file;
 } msg_manager;
-
-msg_record *msg_record_init(uint16_t contact_addr,
-    char *message,
-    bool is_sent,
-    uint8_t status);
-void msg_record_dump(msg_record *record);
-msg_record *msg_record_load(const char *stringified_record);
-str_list *get_stored_messages_by_user(uint16_t contact_addr);
-void msg_record_free(msg_record *record);
-void msg_record_print(msg_record *record);
 
 msg_manager *msg_manager_init(uint16_t my_addr);
 void process_messages();
@@ -59,6 +38,7 @@ void remove_contact();
 void dump_contacts_to_sd();
 void scan_online_contacts();
 str_list *get_all_contacts();
+char *find_contact_name_by_addr(uint16_t addr);
 void enable_message_notifications();
 void disable_message_notifications();
 

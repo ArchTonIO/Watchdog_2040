@@ -18,6 +18,7 @@
 #include "hardware_drivers/sdcard.h"
 #include "hardware_drivers/ssd1306.h"
 #include "hardware_drivers/sx1278.h"
+#include "utils/utils.h"
 
 hw_drivers *drivers;
 void wait_for_core1();
@@ -105,6 +106,14 @@ uint32_t get_total_heap(void) {
 uint32_t get_free_heap(void) {
   struct mallinfo m = mallinfo();
   return get_total_heap() - m.uordblks;
+}
+
+/**
+ * @brief prints how much memory is available in the heap.
+ */
+void print_free_heap() {
+  collect();
+  printf("Available memory: %u bytes\n", get_free_heap());
 }
 
 uint get_clock_freq_khz(void) { return clock_get_hz(clk_sys) / 1000; }

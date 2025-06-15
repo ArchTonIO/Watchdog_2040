@@ -7,6 +7,17 @@
 
 #include "data_structures/string_list.h"
 
+#define COLLECTOR_MAX_STR 100
+
+typedef struct {
+  char *pointers[COLLECTOR_MAX_STR];
+  uint8_t count;
+} collector;
+
+void collector_init();
+void collector_add(char *str);
+void collect();
+
 char *string_add(char *str1, char *str2);
 uint16_t array_find_max(uint16_t *array, size_t len);
 uint16_t array_find_min(uint16_t *array, size_t len);
@@ -17,4 +28,8 @@ void wait_for_user_input();
 str_list *string_split(char *str, char delimiter);
 char *string_remove_linefeed(char *str);
 char *string_replace(char *str, char old_char, char new_char);
+char *gen_random_string(size_t length);
+
+extern collector *collector_inst;
+
 #endif

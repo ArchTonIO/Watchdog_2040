@@ -40,6 +40,7 @@ components/home_page.c
 components/hw_manager.c
 components/malloc_mascot.c
 components/msg_manager.c
+components/msg_record.c
 data_structures/string_list.c
 graphics/bitmaps.c
 graphics/graphic_primitives.c
