@@ -6,7 +6,7 @@
 #include "components/home_page.h"
 #include "components/hw_manager.h"
 #include "components/malloc_mascot.h"
-#include "components/msg_manager.h"
+#include "components/msg_manager/msg_manager.h"
 #include "data_structures/string_list.h"
 #include "device.h"
 #include "hardware_drivers/joystick.h"

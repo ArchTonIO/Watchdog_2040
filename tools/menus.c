@@ -5,7 +5,8 @@
 #include <string.h>
 
 #include "components/hw_manager.h"
-#include "components/msg_manager.h"
+#include "components/msg_manager/contacts_manager.h"
+#include "components/msg_manager/msg_manager.h"
 #include "data_structures/string_list.h"
 #include "device.h"
 #include "graphics/graphic_primitives.h"
@@ -53,8 +54,8 @@ void display_notifications_menu() {
   str_list *options = list_init();
   list_append(options, "Enable notifications");
   list_append(options, "Disable notifications");
-  options_page *notifications_menu =
-      options_page_init("Notifications", options);
+  options_page *notifications_menu = options_page_init("Notifications",
+      options);
   attach_callback_to_option(notifications_menu,
       0,
       enable_message_notifications);
@@ -119,11 +120,12 @@ void take_note() {
   ssd1306_clear(drivers->oled_screen);
   ssd1306_print(drivers->oled_screen, "Taking note...", 0, 0, false);
   ssd1306_show(drivers->oled_screen);
-  text_editor *name_editor = text_editor_launch("# Name of your note...", true);
+  text_editor *name_editor = text_editor_launch("# Name of your note...",
+      true);
   char *name = text_editor_get_buf(name_editor);
   text_editor_kill(name_editor);
-  text_editor *note_editor =
-      text_editor_launch("# Write your note here...", true);
+  text_editor *note_editor = text_editor_launch("# Write your note here...",
+      true);
   char *note = text_editor_get_buf(name_editor);
   if (note != NULL) {
     path *note_path = path_init(string_add(NOTES_DIR, name));

@@ -6,7 +6,7 @@
 
 #include "components/hw_manager.h"
 #include "components/malloc_mascot.h"
-#include "components/msg_manager.h"
+#include "components/msg_manager/msg_manager.h"
 #include "data_structures/string_list.h"
 #include "graphics/bitmaps.h"
 #include "graphics/graphic_primitives.h"
