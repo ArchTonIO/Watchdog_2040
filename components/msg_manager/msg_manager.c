@@ -72,11 +72,7 @@ void show_fetching_screen() {
 }
 
 void read_messages() {
-  /*step 1: fetching screen*/
   show_fetching_screen();
-
-  /*step 2: found active conversations by parsing files in the messages
-   * folder and showing them with options_gen*/
   path *conversations_dir = path_init(
       string_add(malloc_memories_inst->user_folder, MESSAGES_DIR));
   str_list *all_files = path_listdir(conversations_dir);
@@ -89,47 +85,49 @@ void read_messages() {
       list_append(active_conversations, conv_file->name);
     path_free(conv_file);
   }
-
-  /*step 3: select a conversation, collect all message_uids for that
-   * conversation*/
-  options_page *conversations = options_page_init("Active conversations:",
-      active_conversations);
-  char *selected_contact = options_page_launch(conversations);
-  if (strcmp(selected_contact, "") == 0) {
-    path_free(conversations_dir);
-    list_free(all_files);
-    options_page_free(conversations);
-    return;
+  while (true) {
+    options_page *conversations = options_page_init("Active conversations:",
+        active_conversations);
+    char *selected_contact = options_page_launch(conversations);
+    if (strcmp(selected_contact, "") == 0) {
+      path_free(conversations_dir);
+      list_free(all_files);
+      options_page_free(conversations);
+      break;
+    }
+    while (true) {
+      show_fetching_screen();
+      uint16_t contact_addr = find_contact_addr_by_name(selected_contact);
+      str_list *message_uids = get_stored_msg_uids_by_user(contact_addr);
+      str_list *selectable_options = get_selectable_options_by_msg_uids(
+          message_uids,
+          contact_addr);
+      options_page *messages_entries = options_page_init(
+          "Select a msg to read",
+          selectable_options);
+      char *selected_msg = options_page_launch(messages_entries);
+      if (strcmp(selected_msg, "") == 0) {
+        options_page_free(messages_entries);
+        list_free(message_uids);
+        str_list *active_conversations_cp = list_copy(active_conversations);
+        options_page_free(conversations);
+        active_conversations = active_conversations_cp;
+        break;
+      }
+      show_fetching_screen();
+      uint16_t selected_msg_index = list_index_of(selectable_options,
+          selected_msg);
+      char *msg_uid = get(message_uids, selected_msg_index);
+      char *full_msg = get_displayable_msg_by_uid(contact_addr, msg_uid);
+      text_editor *editor = text_editor_launch(full_msg, false);
+      char *editor_buf = text_editor_get_buf(editor);
+      text_editor_kill(editor);
+      options_page_free(messages_entries);
+      list_free(message_uids);
+      free(full_msg);
+      free(editor_buf);
+    }
   }
-  show_fetching_screen();
-  uint16_t contact_addr = find_contact_addr_by_name(selected_contact);
-  str_list *message_uids = get_stored_msg_uids_by_user(contact_addr);
-  /*step 4: convert all those message_uids into usable entries for the user to
-   * select*/
-  str_list *selectable_options = get_selectable_options_by_msg_uids(
-      message_uids,
-      contact_addr);
-  options_page *messages_entries = options_page_init("Select a msg to read",
-      selectable_options);
-  char *selected_msg = options_page_launch(messages_entries);
-  /*step 5: since the selectable_options and the message_uids keeps the same
-   * indexing and order, the second can be used to understand which message uid
-   * has been selected*/
-  uint16_t selected_msg_index = list_index_of(selectable_options,
-      selected_msg);
-  char *msg_uid = get(message_uids, selected_msg_index);
-  char *full_msg = get_displayable_msg_by_uid(contact_addr, msg_uid);
-  show_fetching_screen();
-  text_editor *editor = text_editor_launch(full_msg, false);
-  char *editor_buf = text_editor_get_buf(editor);
-  text_editor_kill(editor);
-  path_free(conversations_dir);
-  options_page_free(messages_entries);
-  options_page_free(conversations);
-  list_free(message_uids);
-  list_free(all_files);
-  free(full_msg);
-  free(editor_buf);
 }
 
 void send_message_status_update_callback(uint8_t progress) {

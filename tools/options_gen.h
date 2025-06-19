@@ -7,7 +7,7 @@
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
 
-#define MAX_OPTIONS 20
+#define MAX_OPTIONS 50
 #define MAX_OPTIONS_ON_SCREEN 6
 #define INTERAC_TIMEOUT 200
 
@@ -28,8 +28,9 @@ typedef struct {
 } options_page;
 
 options_page *options_page_init(char *title, str_list *options);
-void attach_callback_to_option(
-    options_page *page, uint8_t option_index, void (*callback)(void));
+void attach_callback_to_option(options_page *page,
+    uint8_t option_index,
+    void (*callback)(void));
 char *options_page_launch(options_page *page);
 void options_page_free(options_page *page);
 
