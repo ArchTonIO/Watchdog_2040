@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/_intsup.h>
 
 #include "components/hw_manager.h"
 #include "components/malloc_mascot.h"
@@ -15,7 +16,9 @@ msg_record *
 msg_record_init(uint16_t contact_addr, char *message, uint8_t status) {
   msg_record *record = (msg_record *)malloc(sizeof(msg_record));
   record->message = (char *)malloc(strlen(message) + 1);
-  strcpy(record->message, message);
+  char *no_lfd_message = string_replace(message, '\n', LFD_REPLACEMENT);
+  free(message);
+  strcpy(record->message, no_lfd_message);
   record->record_uid = gen_random_string(RECORD_UID_LENGTH);
   strncpy(record->contact_name,
       find_contact_name_by_addr(contact_addr),
@@ -94,6 +97,7 @@ msg_record *msg_record_load(char *stringified_record, char *record_uid) {
   char *status_str = strtok(NULL, "|");
   char *timestamp = strtok(NULL, "|");
   char *message = strtok(NULL, "|");
+  char *message_with_lfd = string_replace(message, LFD_REPLACEMENT, '\n');
   uint8_t status = 5;
   if (strcmp(status_str, "delivered") == 0)
     status = 0;
@@ -105,7 +109,8 @@ msg_record *msg_record_load(char *stringified_record, char *record_uid) {
     status = 3;
   else if (strcmp(status_str, "read") == 0)
     status = 4;
-  record->message = strdup(message);
+  record->message = strdup(message_with_lfd);
+  free(message_with_lfd);
   record->record_uid = strdup(record_uid);
   strncpy(record->contact_name,
       contact_name,
