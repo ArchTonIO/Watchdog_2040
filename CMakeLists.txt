@@ -48,6 +48,7 @@ graphics/graphic_primitives.c
 graphics/graphs.c
 hardware_drivers/battery.c
 hardware_drivers/ens160.c
+hardware_drivers/haptics.c
 hardware_drivers/joystick.c
 hardware_drivers/rtc_time.c
 hardware_drivers/sdcard.c

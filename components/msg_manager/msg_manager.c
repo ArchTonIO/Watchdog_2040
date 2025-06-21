@@ -13,6 +13,7 @@
 #include "data_structures/string_list.h"
 #include "device.h"
 #include "graphics/bitmaps.h"
+#include "hardware_drivers/haptics.h"
 #include "hardware_drivers/ssd1306.h"
 #include "tools/options_gen.h"
 #include "tools/text_editor.h"
@@ -244,7 +245,9 @@ void notify(uint16_t src_address) {
       3);
   if (!msg_man_inst->should_notify)
     return;
+  haptic_double_pulse();
   display_received_message(src_address);
+  msg_man_inst->received_msgs_count--;
 }
 
 char *compose_message() {

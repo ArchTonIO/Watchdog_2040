@@ -12,6 +12,7 @@
 #include "graphics/graphic_primitives.h"
 #include "graphics/graphs.h"
 #include "hardware_drivers/battery.h"
+#include "hardware_drivers/haptics.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/ssd1306.h"
 #include "tools/options_gen.h"
@@ -29,6 +30,7 @@ void display_malloc_menu();
 void display_tutorial_page();
 
 void display_main_menu() {
+  haptic_short_pulse();
   str_list *options = list_init();
   list_append(options, "ULMP");
   list_append(options, "Air quality indexes");

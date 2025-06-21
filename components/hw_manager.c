@@ -13,6 +13,7 @@
 #include "hardware_drivers/battery.h"
 #include "hardware_drivers/config.h"
 #include "hardware_drivers/ens160.h"
+#include "hardware_drivers/haptics.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/rtc_time.h"
 #include "hardware_drivers/sdcard.h"
@@ -90,6 +91,7 @@ hw_drivers *hardware_drivers_init() {
   multicore_fifo_push_blocking(CHECKS_END);
   wait_for_core1();
   multicore_reset_core1();
+  haptics_init(HAPTICS_MOTOR_PIN);
   return hw_man;
 }
 

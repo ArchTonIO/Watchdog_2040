@@ -8,6 +8,7 @@
 
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
+#include "hardware_drivers/haptics.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/ssd1306.h"
 
@@ -53,17 +54,19 @@ options_page *options_page_init(char *title, str_list *options) {
  * @param option_index The index of the option to attach the callback to.
  * @param callback The callback function to attach.
  */
-void attach_callback_to_option(
-    options_page *page, uint8_t option_index, void (*callback)(void)) {
+void attach_callback_to_option(options_page *page,
+    uint8_t option_index,
+    void (*callback)(void)) {
   if (option_index < page->num_options) {
     page->options[option_index].callback = callback;
   }
 }
 
 /**
- * @brief Launches an options page with a list of options and allows the user to
- * select one. The selected option is returned as a string, or, if a callback
- * was previously attached to the option, the callback is executed instead.
+ * @brief Launches an options page with a list of options and allows the user
+ * to select one. The selected option is returned as a string, or, if a
+ * callback was previously attached to the option, the callback is executed
+ * instead.
  * @param page The options page to launch.
  * @returns The name of the selected option as a string.
  */
@@ -97,13 +100,17 @@ char *options_page_launch(options_page *page) {
     joystick_update(drivers->joystick);
     uint8_t joystick_dir = joystick_get_direction(drivers->joystick);
     if (joystick_dir == N) {
-      if (page->selected_option > 0)
+      haptic_auto_pulse();
+      if (page->selected_option > 0) {
         page->selected_option--;
+      }
     } else if (joystick_dir == S) {
+      haptic_auto_pulse();
       page->selected_option++;
       if (page->selected_option >= page->num_options)
-        page->selected_option = 0;
+        page->selected_option = page->num_options - 1;
     } else if (joystick_dir == E) {
+      haptic_short_pulse();
       if (page->options[page->selected_option].callback != NULL)
         page->options[page->selected_option].callback();
       else
@@ -111,6 +118,7 @@ char *options_page_launch(options_page *page) {
       ssd1306_clear(drivers->oled_screen);
       ssd1306_show(drivers->oled_screen);
     } else if (joystick_dir == W) {
+      haptic_short_pulse();
       return "";
     }
     handle_scroll(page);

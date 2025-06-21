@@ -6,6 +6,7 @@
 
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
+#include "hardware_drivers/haptics.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/ssd1306.h"
 
@@ -65,8 +66,8 @@ key *select_key(virtual_keyboard *keyboard, uint8_t direction, key *last_key);
  * @returns A new virtual keyboard instance
  */
 virtual_keyboard *virtual_keyboard_init() {
-  virtual_keyboard *new_keyboard =
-      (virtual_keyboard *)malloc(sizeof(virtual_keyboard));
+  virtual_keyboard *new_keyboard = (virtual_keyboard *)malloc(
+      sizeof(virtual_keyboard));
   populate_keys(new_keyboard);
   new_keyboard->shift = false;
   new_keyboard->caps_lock = false;
@@ -92,6 +93,7 @@ char virtual_keyboard_read(virtual_keyboard *keyboard) {
     sleep_ms(INPUT_TIMEOUT);
     return NOW;
   }
+  haptic_short_pulse();
   keyboard->last_char = keyboard->last_key->label;
 
   /*display the lowercase layout if shift was previously enabled*/
@@ -325,8 +327,8 @@ key *select_key(virtual_keyboard *keyboard, uint8_t direction, key *last_key) {
   if (is_out_of_bounds(last_key->row + row_adder, last_key->col + col_adder))
     return last_key;
   key *target_key;
-  target_key =
-      &keyboard->keys[last_key->row + row_adder][last_key->col + col_adder];
+  target_key = &keyboard->keys[last_key->row + row_adder]
+                              [last_key->col + col_adder];
   if (target_key->label != NSK) {
     highlight_key(keyboard, last_key, false);
     highlight_key(keyboard, target_key, true);

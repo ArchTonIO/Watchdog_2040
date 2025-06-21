@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdint.h>
+#include <sys/_intsup.h>
 
 #include "pico/stdlib.h"
 
@@ -9,6 +10,7 @@
 #include "components/msg_manager/msg_manager.h"
 #include "data_structures/string_list.h"
 #include "device.h"
+#include "hardware_drivers/haptics.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/ssd1306.h"
 #include "tools/menus.h"
@@ -86,6 +88,7 @@ void sys_mainloop() {
     check_pheripherals();
     process_system_state();
     if (joystick_get_direction(drivers->joystick) != C) {
+      haptic_short_pulse();
       screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
       while (true) {
         check_pheripherals();

@@ -3,6 +3,9 @@
 
 #define pin uint8_t
 
+/*vibrating motor settings*/
+#define HAPTICS_MOTOR_PIN 8
+
 /*ENS160 air quality sensor settings*/
 #define ENS160_SDA 2
 #define ENS160_SCK 3
