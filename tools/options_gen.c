@@ -80,19 +80,23 @@ char *options_page_launch(options_page *page) {
         0,
         false);
     for (uint8_t i = 0; i < page->num_options; i++) {
-      if (i < abs(page->scroll))
+      // if (i < abs(page->scroll))
+      //   continue;
+      if (i < page->scroll || i >= page->scroll + MAX_OPTIONS_ON_SCREEN)
         continue;
+      uint8_t screen_row = i - page->scroll +
+                           2; // +2 per lasciare spazio al titolo
       if (i == page->selected_option) {
         ssd1306_print(drivers->oled_screen,
             page->options[i].display_name,
             0,
-            (i + 2) + page->scroll,
+            screen_row,
             true);
       } else {
         ssd1306_print(drivers->oled_screen,
             page->options[i].display_name,
             0,
-            (i + 2) + page->scroll,
+            screen_row,
             false);
       }
     }
@@ -126,14 +130,10 @@ char *options_page_launch(options_page *page) {
 }
 
 void handle_scroll(options_page *page) {
-  if (page->selected_option + page->scroll > MAX_OPTIONS_ON_SCREEN - 1) {
-    page->scroll--;
-    return;
-  }
-  if (page->selected_option + page->scroll < MAX_OPTIONS_ON_SCREEN - 1 &&
-      page->scroll < 0) {
-    page->scroll++;
-    return;
+  if (page->selected_option < page->scroll) {
+    page->scroll = page->selected_option;
+  } else if (page->selected_option >= page->scroll + MAX_OPTIONS_ON_SCREEN) {
+    page->scroll = page->selected_option - MAX_OPTIONS_ON_SCREEN + 1;
   }
 }
 

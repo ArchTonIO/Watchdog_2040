@@ -7,7 +7,7 @@
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
 
-#define MAX_OPTIONS 50
+#define MAX_OPTIONS 100
 #define MAX_OPTIONS_ON_SCREEN 6
 #define INTERAC_TIMEOUT 200
 
