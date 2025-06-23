@@ -80,12 +80,9 @@ char *options_page_launch(options_page *page) {
         0,
         false);
     for (uint8_t i = 0; i < page->num_options; i++) {
-      // if (i < abs(page->scroll))
-      //   continue;
       if (i < page->scroll || i >= page->scroll + MAX_OPTIONS_ON_SCREEN)
         continue;
-      uint8_t screen_row = i - page->scroll +
-                           2; // +2 per lasciare spazio al titolo
+      uint8_t screen_row = i - page->scroll + 2;
       if (i == page->selected_option) {
         ssd1306_print(drivers->oled_screen,
             page->options[i].display_name,

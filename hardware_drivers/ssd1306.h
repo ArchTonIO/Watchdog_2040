@@ -40,7 +40,7 @@ typedef struct {
   uint8_t width;
   uint8_t height;
   uint8_t SID;
-  uint8_t scr[1025];
+  uint8_t *scr;
   volatile bool animation_timer_fired;
   int cursorx;
   int cursory;
@@ -54,12 +54,21 @@ ssd1306 *ssd1306_init(pin sda,
     uint8_t height,
     uint8_t SID);
 void ssd1306_draw_pixel(ssd1306 *display, int16_t x, int16_t y, int color);
-void ssd1306_draw_letter_at(
-    ssd1306 *display, uint8_t x, uint8_t y, char c, bool reversed);
-void ssd1306_print(
-    ssd1306 *display, const char *str, uint8_t x, uint8_t y, bool reversed);
-void ssd1306_print_gradually(
-    ssd1306 *display, const char *str, uint8_t x, uint8_t y, bool reversed);
+void ssd1306_draw_letter_at(ssd1306 *display,
+    uint8_t x,
+    uint8_t y,
+    char c,
+    bool reversed);
+void ssd1306_print(ssd1306 *display,
+    const char *str,
+    uint8_t x,
+    uint8_t y,
+    bool reversed);
+void ssd1306_print_gradually(ssd1306 *display,
+    const char *str,
+    uint8_t x,
+    uint8_t y,
+    bool reversed);
 void ssd1306_draw_bitmap(ssd1306 *display,
     uint8_t x,
     uint8_t y,

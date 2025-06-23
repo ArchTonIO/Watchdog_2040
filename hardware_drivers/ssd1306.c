@@ -151,8 +151,15 @@ ssd1306 *ssd1306_init(pin sda,
   new_display->cursorx = 0;
   new_display->cursory = 0;
   new_display->animation_timer_fired = false;
+  int buf_size = (height / 8) * width + 1;
+  new_display->scr = (uint8_t *)malloc(buf_size);
+  if (!new_display->scr) {
+    free(new_display);
+    return NULL;
+  }
+  memset(new_display->scr, 0, buf_size);
   init_i2c(new_display);
-  static uint8_t cmds[] = {SET_DISP | 0x00,
+  static const uint8_t cmds[] = {SET_DISP | 0x00,
       SET_MEM_ADDR,
       0x00,
       SET_DISP_START_LINE | 0x00,
@@ -226,8 +233,11 @@ void ssd1306_draw_pixel(ssd1306 *display, int16_t x, int16_t y, int color) {
  * @param reversed: whether to draw the character in reversed colors (thus
  * making it black fg in white bg)
  */
-void ssd1306_draw_letter_at(
-    ssd1306 *display, uint8_t x, uint8_t y, char c, bool reversed) {
+void ssd1306_draw_letter_at(ssd1306 *display,
+    uint8_t x,
+    uint8_t y,
+    char c,
+    bool reversed) {
   if (c < ' ' || c > 0x7F)
     c = '?';
   int offset = 4 + (c - ' ') * 6;
@@ -258,8 +268,11 @@ void ssd1306_draw_letter_at(
  * @param reversed: whether to print the string in reversed colors (thus making
  it black fg in white bg)
  */
-void ssd1306_print(
-    ssd1306 *display, const char *str, uint8_t x, uint8_t y, bool reversed) {
+void ssd1306_print(ssd1306 *display,
+    const char *str,
+    uint8_t x,
+    uint8_t y,
+    bool reversed) {
   display->cursorx = x * CHAR_WIDTH;
   display->cursory = y * CHAR_HEIGHT;
   char c;
@@ -279,8 +292,11 @@ void ssd1306_print(
   }
 }
 
-void ssd1306_print_gradually(
-    ssd1306 *display, const char *str, uint8_t x, uint8_t y, bool reversed) {
+void ssd1306_print_gradually(ssd1306 *display,
+    const char *str,
+    uint8_t x,
+    uint8_t y,
+    bool reversed) {
   display->cursorx = x * CHAR_WIDTH;
   display->cursory = y * CHAR_HEIGHT;
   char c;
@@ -326,7 +342,10 @@ void ssd1306_draw_bitmap(ssd1306 *display,
       uint8_t byte = bitmap[j * byte_width + (i / 8)];
       if (reversed)
         byte = ~byte;
-      ssd1306_draw_pixel(display, x + i, y, (byte & (0x80 >> (i % 8))) ? 1 : 0);
+      ssd1306_draw_pixel(display,
+          x + i,
+          y,
+          (byte & (0x80 >> (i % 8))) ? 1 : 0);
     }
   }
 }
@@ -348,7 +367,7 @@ void ssd1306_show(ssd1306 *display) {
   write_cmd(display, 0);
   write_cmd(display, pages(display) - 1);
   display->scr[0] = 0x40;
-  int size = pages(display) * display->width + 1;
+  int size = (display->height / 8) * display->width + 1;
   send_data(display, display->scr, size);
 }
 
@@ -366,7 +385,9 @@ void init_i2c(ssd1306 *display) {
  * @param display: the display to clear
  */
 void ssd1306_clear(ssd1306 *display) {
-  memset(display->scr, 0, sizeof(display->scr));
+  int buf_size = (display->height / 8) * display->width + 1;
+  if (display->scr)
+    memset(display->scr, 0, buf_size);
 }
 
 /*
@@ -374,8 +395,8 @@ void ssd1306_clear(ssd1306 *display) {
  * @param display: the display to set the cursor position for
  * @param x: the x position of the cursor in characters coordinates (CHAR_WIDTH
  * will be multiplied by this value)
- * @param y: the y position of the cursor in characters coordinates (CHAR_HEIGHT
- * will be multiplied by this value)
+ * @param y: the y position of the cursor in characters coordinates
+ * (CHAR_HEIGHT will be multiplied by this value)
  */
 void ssd1306_set_cursor(ssd1306 *display, uint8_t x, uint8_t y) {
   display->cursorx = CHAR_WIDTH * x;

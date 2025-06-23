@@ -62,6 +62,8 @@ void create_dir_tree() {
 }
 
 void sys_setup() {
+  gpio_init(25);
+  gpio_set_dir(25, true);
   stdio_init_all();
   collector_init();
   hardware_drivers_init();
@@ -74,10 +76,38 @@ void sys_setup() {
     dump_malloc_memories_to_sd();
   }
   path_free(first_boot_file);
-  load_malloc_memories_from_sd();
-  msg_manager_init(malloc_memories_inst->ulmp_addr);
+  load_malloc_memories_from_sd(); //! line suspected of causing later crash
+  msg_manager_init(malloc_memories_inst
+                       ->ulmp_addr); //! line suspected of causing later crash
   // msg_manager_init(22345);
-  home_page_init();
+  home_page_init(); //! line suspected of causing later crash
+}
+
+void count_time() {
+  while (true) {
+    uint64_t us_since_boot = to_us_since_boot(get_absolute_time());
+    uint32_t seconds = us_since_boot / 1000000;
+    uint32_t minutes = seconds / 60;
+    uint32_t hours = minutes / 60;
+    seconds %= 60;
+    minutes %= 60;
+    // ssd1306_print(drivers->oled_screen, "Time:", 0, 0, false);
+    // ssd1306_print(drivers->oled_screen, "H:M:S", 0, 1, false);
+    char time_str[10];
+    snprintf(time_str,
+        sizeof(time_str),
+        "%02u:%02u:%02u",
+        hours,
+        minutes,
+        seconds);
+    printf("Time: %s\n", time_str);
+    gpio_put(25, true);
+    sleep_ms(500);
+    gpio_put(25, false);
+    sleep_ms(500);
+    // ssd1306_print(drivers->oled_screen, time_str, 4, 2, false);
+    // ssd1306_show(drivers->oled_screen);
+  }
 }
 
 void sys_mainloop() {
@@ -113,20 +143,6 @@ void sys_mainloop() {
 
 int main() {
   sys_setup();
-  sys_mainloop();
+  count_time();
+  // sys_mainloop();
 }
-
-// int main()
-// {
-//   sys_setup();
-//   uint8_t ledpin = 25;
-//   gpio_init(ledpin);
-//   gpio_set_dir(ledpin, true);
-//   while (true)
-//   {
-//     gpio_put(ledpin, true);
-//     sleep_ms(1000);
-//     gpio_put(ledpin, false);
-//     sleep_ms(1000);
-//   }
-// }
