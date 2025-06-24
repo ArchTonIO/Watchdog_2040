@@ -138,6 +138,46 @@ bool sdcard_write_key_value_to_file(sdcard *sd,
   return res;
 }
 
+bool sdcard_replace_value_at_key(sdcard *sd,
+    path *file,
+    const char *key,
+    const char *value) {
+  bool found = false;
+  str_list *lines = sdcard_read_file(sd, file);
+  str_list *new_lines = list_init();
+  for (uint16_t i = 0; i < lines->len; i++) {
+    char *line = strdup(get(lines, i));
+    char *delimiter = strchr(line, '~');
+    if (delimiter != NULL) {
+      *delimiter = '\0';
+      if (strcmp(line, key) == 0) {
+        size_t new_len = strlen(key) + strlen(value) + 3;
+        char *new_line = (char *)malloc(new_len);
+        snprintf(new_line, new_len, "%s~%s\n", key, value);
+        list_append(new_lines, new_line);
+        free(new_line);
+        found = true;
+      } else {
+        list_append(new_lines, get(lines, i));
+      }
+      free(line);
+    }
+  }
+  char *new_file_content = (char *)malloc(1);
+  new_file_content[0] = '\0';
+  for (uint16_t i = 0; i < new_lines->len; i++) {
+    char *line = get(new_lines, i);
+    size_t new_len = strlen(new_file_content) + strlen(line) + 1;
+    new_file_content = (char *)realloc(new_file_content, new_len);
+    strcat(new_file_content, line);
+  }
+  sdcard_write_file(sd, file, new_file_content, 'w');
+  free(new_file_content);
+  list_free(lines);
+  list_free(new_lines);
+  return found;
+}
+
 /**
  * @brief Read a value from a file given a key in the format "key~value\n"
  *

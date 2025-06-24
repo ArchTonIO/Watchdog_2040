@@ -158,3 +158,35 @@ char *gen_random_string(size_t length) {
   s[length] = '\0';
   return s;
 }
+
+char *
+string_substring_replace(const char *str, const char *old, const char *new) {
+  size_t str_len = strlen(str);
+  size_t old_len = strlen(old);
+  size_t new_len = strlen(new);
+  if (old_len == 0)
+    return NULL;
+  size_t count = 0;
+  const char *p = str;
+  while ((p = strstr(p, old)) != NULL) {
+    count++;
+    p += old_len;
+  }
+  size_t new_str_len = str_len + count * (new_len - old_len) + 1;
+  char *result = malloc(new_str_len);
+  if (!result)
+    return NULL;
+  char *dst = result;
+  p = str;
+  const char *match;
+  while ((match = strstr(p, old)) != NULL) {
+    size_t bytes_before = match - p;
+    memcpy(dst, p, bytes_before);
+    dst += bytes_before;
+    memcpy(dst, new, new_len);
+    dst += new_len;
+    p = match + old_len;
+  }
+  strcpy(dst, p);
+  return result;
+}

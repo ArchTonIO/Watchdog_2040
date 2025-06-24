@@ -1,4 +1,6 @@
-#include "ulcp.h"
+// === PATCHED: ulmp.c ===
+
+#include "ulmp.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -15,40 +17,34 @@
 
 lora_instance *this_lora;
 
-void reset_ack();
+void reset_ack() {
+  this_lora->tx->ack_received = false;
+  this_lora->tx->transac_sending_attempts = 0;
+}
 
-/**
- * @brief Initializes the lora hardware module, self address and recv callback
- * @param this_addr: the address of this lora module
- */
 lora_instance *lora_init(uint16_t this_addr, sx1278 *sx1278_radio) {
   this_lora = malloc(sizeof(lora_instance));
   this_lora->tx = malloc(sizeof(tx_fields));
   this_lora->rx = malloc(sizeof(rx_fields));
   this_lora->radio = sx1278_radio;
   this_lora->address = this_addr;
-  /*tx fields initialization*/
+
   this_lora->tx->transac_sending_attempts = 0;
-  this_lora->tx->sent_transac_uid = (char *)calloc(TRANSACTION_UID_LENGTH + 1,
+  this_lora->tx->sent_transac_uid = calloc(TRANSACTION_UID_LENGTH + 1,
       sizeof(char));
   this_lora->tx->ack_received = false;
   this_lora->tx->pong_received = false;
-  /*rx fields initialization*/
-  this_lora->rx->recv_transac_uid = (char *)calloc(TRANSACTION_UID_LENGTH + 1,
+
+  this_lora->rx->recv_transac_uid = calloc(TRANSACTION_UID_LENGTH + 1,
       sizeof(char));
-  this_lora->rx->must_send_ack_transac_uid = (char *)calloc(
-      TRANSACTION_UID_LENGTH + 1,
+  this_lora->rx->must_send_ack_transac_uid = calloc(TRANSACTION_UID_LENGTH + 1,
       sizeof(char));
   this_lora->rx->must_send_ack_dest = 0;
   this_lora->rx->must_send_ack = false;
-  this_lora->rx->recv_payloads_buf = (char *)malloc(16);
+  this_lora->rx->recv_payloads_buf = malloc(16);
+
   this_lora->radio->message_received_callback = on_recv;
   return this_lora;
-}
-
-void reset_ack() {
-  this_lora->tx->ack_received = false;
-  this_lora->tx->transac_sending_attempts = 0;
 }
 
 /**
@@ -61,8 +57,12 @@ void lora_receive() { sx1278_set_mode_rx(this_lora->radio); }
 
 void attempt_single_transaction(uint16_t dest_address, char *payload) {
   char *transaction_uid = gen_random_string(TRANSACTION_UID_LENGTH);
-  this_lora->tx->sent_transac_uid = transaction_uid;
+  strncpy(this_lora->tx->sent_transac_uid,
+      transaction_uid,
+      TRANSACTION_UID_LENGTH);
+  this_lora->tx->sent_transac_uid[TRANSACTION_UID_LENGTH] = '\0';
   send_start_packet(dest_address, transaction_uid);
+
   size_t payload_len = strlen(payload);
   uint8_t num_packets = (payload_len / PAYLOAD_MAX_SIZE) +
                         (payload_len % PAYLOAD_MAX_SIZE ? 1 : 0);
@@ -70,8 +70,9 @@ void attempt_single_transaction(uint16_t dest_address, char *payload) {
     size_t chunk_size = (i == num_packets - 1)
                             ? (payload_len % PAYLOAD_MAX_SIZE)
                             : PAYLOAD_MAX_SIZE;
-    char *packet_payload = (char *)malloc(chunk_size + 1);
+    char *packet_payload = malloc(chunk_size + 1);
     if (!packet_payload) {
+      free(transaction_uid);
       return;
     }
     memcpy(packet_payload, payload + i * PAYLOAD_MAX_SIZE, chunk_size);
@@ -106,6 +107,7 @@ uint8_t lora_send_msg(uint16_t dest_address,
     void (*status_update_callback)(uint8_t progress)) {
   if (strlen(payload) > MAX_PAYLOAD_FOR_TRANSACTION)
     return 2;
+
   while (!this_lora->tx->ack_received &&
          this_lora->tx->transac_sending_attempts < MAX_SENDING_ATTEMPTS) {
     this_lora->tx->transac_sending_attempts++;
@@ -114,34 +116,20 @@ uint8_t lora_send_msg(uint16_t dest_address,
     lora_receive();
     sleep_ms(TRANSAC_TIMEOUT - 200);
   }
-  if (this_lora->tx->ack_received) {
-    reset_ack();
-    return 0;
-  }
-  if (this_lora->tx->transac_sending_attempts >= MAX_SENDING_ATTEMPTS) {
-    reset_ack();
-    return 1;
-  }
+
+  uint8_t result = this_lora->tx->ack_received ? 0 : 1;
   reset_ack();
-  return 2;
+  return result;
 }
 
-/**
- * @brief Sends a ping message to the specified destination address.
- *
- * This function sends a ping message to the specified destination address.
- *
- * @param dest_address The address of the destination LoRa module.
- *
- * @retval `0`: The ping message was sent successfully and a pong message was
- * received.
- * @retval `1`: The ping message was sent successfully but no pong message was
- * received.
- */
 uint8_t lora_ping(uint16_t dest_address) {
   char *transaction_uid = gen_random_string(TRANSACTION_UID_LENGTH);
-  this_lora->tx->sent_transac_uid = transaction_uid;
+  strncpy(this_lora->tx->sent_transac_uid,
+      transaction_uid,
+      TRANSACTION_UID_LENGTH);
+  this_lora->tx->sent_transac_uid[TRANSACTION_UID_LENGTH] = '\0';
   send_ping_packet(dest_address, transaction_uid);
+  free(transaction_uid);
   sleep_ms(TRANSAC_TIMEOUT);
   if (this_lora->tx->pong_received) {
     this_lora->tx->pong_received = false;

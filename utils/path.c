@@ -54,8 +54,8 @@ bool path_fwrite(path *file, const char *data, char mode) {
  * @brief Reads the contents of a file at the specified path.
  *
  * @param file The path structure representing the file.
- * @return A pointer to a string list containing the file's contents, or NULL if
- * an error occurred.
+ * @return A pointer to a string list containing the file's contents, or NULL
+ * if an error occurred.
  */
 str_list *path_fread(path *file) {
   return sdcard_read_file(drivers->sd_card, file);
@@ -118,8 +118,10 @@ str_list *path_listdir(path *path) {
  * @param value The value to write.
  * @return true if the dump was successful, false otherwise.
  */
-bool path_key_value_dump(
-    path *file, char mode, const char *key, const char *value) {
+bool path_key_value_dump(path *file,
+    char mode,
+    const char *key,
+    const char *value) {
   return sdcard_write_key_value_to_file(drivers->sd_card,
       file,
       mode,
@@ -127,9 +129,15 @@ bool path_key_value_dump(
       value);
 }
 
+bool path_replace_value_at_key(path *file,
+    const char *key,
+    const char *value) {
+  return sdcard_replace_value_at_key(drivers->sd_card, file, key, value);
+}
+
 /**
- * @brief Retrieves the value associated with a key from a file at the specified
- * path.
+ * @brief Retrieves the value associated with a key from a file at the
+ * specified path.
  *
  * @param file The path structure representing the file.
  * @param key The key to look for.

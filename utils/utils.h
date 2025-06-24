@@ -28,6 +28,8 @@ void wait_for_user_input();
 str_list *string_split(char *str, char delimiter);
 char *string_remove_linefeed(char *str);
 char *string_replace(char *str, char old_char, char new_char);
+char *
+string_substring_replace(const char *str, const char *old, const char *new);
 char *gen_random_string(size_t length);
 
 extern collector *collector_inst;

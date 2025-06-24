@@ -7,8 +7,8 @@ Author: Antonio Del Cogliano
 
 #include "hardware_drivers/sx1278.h"
 
-#ifndef ULCP_H
-#define ULCP_H
+#ifndef ULMP_H
+#define ULMP_H
 
 /*Headers fields lenght*/
 #define SRC_ADDRESS_LEN 2
@@ -17,8 +17,8 @@ Author: Antonio Del Cogliano
 #define PACKET_TYPE_LEN 1
 #define PAYLOAD_LENGTH_LEN 2
 #define PACKET_MAX_SIZE 135
-#define HEADER_SIZE                                                            \
-  (SRC_ADDRESS_LEN + DEST_ADDRESS_LEN + TRANSACTION_UID_LENGTH +               \
+#define HEADER_SIZE                                                           \
+  (SRC_ADDRESS_LEN + DEST_ADDRESS_LEN + TRANSACTION_UID_LENGTH +              \
       PACKET_TYPE_LEN + PAYLOAD_LENGTH_LEN)
 
 /*Payload max size for each packet*/
@@ -34,8 +34,8 @@ Author: Antonio Del Cogliano
 #define MAX_PACKET_FOR_TRANSACTION 25
 
 /*The limit of payload for a single transaction*/
-#define MAX_PAYLOAD_FOR_TRANSACTION                                            \
-  ((MAX_PACKET_FOR_TRANSACTION - 2) *                                          \
+#define MAX_PAYLOAD_FOR_TRANSACTION                                           \
+  ((MAX_PACKET_FOR_TRANSACTION - 2) *                                         \
       PAYLOAD_MAX_SIZE) /*-2 for start and end packets*/
 
 /*The number of retries for sending a transaction*/

@@ -59,9 +59,9 @@ tools/menus.c
 tools/options_gen.c
 tools/text_editor.c
 tools/virtual_keyboard.c
-ulcp/lora_receive.c
-ulcp/lora_send.c
-ulcp/ulcp.c
+ulmp/lora_receive.c
+ulmp/lora_send.c
+ulmp/ulmp.c
 utils/path.c
 utils/utils.c
 Watchdog_2040.c

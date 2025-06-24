@@ -10,13 +10,14 @@
 #include "components/hw_manager.h"
 #include "components/malloc_mascot.h"
 #include "components/msg_manager/contacts_manager.h"
+#include "components/msg_manager/msg_manager.h"
 #include "components/msg_manager/msg_record.h"
 #include "data_structures/string_list.h"
 #include "device.h"
 #include "hardware_drivers/ssd1306.h"
 #include "tools/options_gen.h"
 #include "tools/text_editor.h"
-#include "ulcp/ulcp.h"
+#include "ulmp/ulmp.h"
 #include "utils/path.h"
 #include "utils/utils.h"
 
@@ -84,17 +85,20 @@ void show_read_messages_menu() {
       options_page *chunks_page = options_page_init("1 chunk = 10 msg",
           chunks);
       char *selected_chunk = options_page_launch(chunks_page);
+      char *selected_chunk_copy = strdup(selected_chunk);
       options_page_free(chunks_page); // also frees `chunks`
 
       if (strcmp(selected_chunk, "") == 0) {
         // Go back to contact selection
         list_free(message_uids);
         free(selected_contact_copy);
+        free(selected_chunk_copy);
         break;
       }
 
       // Extract chunk index (after "chunk: ")
-      uint8_t chunk_index = atoi(selected_chunk + 7);
+      uint8_t chunk_index = atoi(selected_chunk_copy + 7);
+      free(selected_chunk_copy);
       str_list *message_uids_chunk = get_msg_uids_by_chunk(message_uids,
           chunk_index,
           10);
@@ -133,7 +137,8 @@ void show_read_messages_menu() {
         text_editor *editor = text_editor_launch(full_msg, false);
         char *editor_buf = text_editor_get_buf(editor);
         text_editor_kill(editor);
-
+        if (msg_record_flag_as_read(msg_uid, selected_contact_copy))
+          msg_man_inst->received_msgs_count--;
         // Cleanup
         free(full_msg);
         free(editor_buf);
@@ -223,11 +228,12 @@ str_list *get_selectable_options_by_msg_uids(str_list *msg_uids,
     char *message = path_key_value_get(conversation_file, msg_uid);
     msg_record *record = msg_record_load(message, msg_uid);
     char *option = (char *)malloc(strlen(record->status_str) +
-                                  strlen(record->message) + strlen("[ ]") + 3);
+                                  strlen(record->message) + strlen("[ ]:") +
+                                  3);
     snprintf(option,
-        strlen(record->status_str) + strlen(record->message) + strlen("[ ]") +
+        strlen(record->status_str) + strlen(record->message) + strlen("[ ]:") +
             3,
-        "[%s %s]%s",
+        "[%s]%s: %s",
         strcmp(record->direction, "transmitted") == 0 ? "->" : "<-",
         record->status_str,
         record->message);

@@ -76,11 +76,10 @@ void sys_setup() {
     dump_malloc_memories_to_sd();
   }
   path_free(first_boot_file);
-  load_malloc_memories_from_sd(); //! line suspected of causing later crash
+  load_malloc_memories_from_sd(); //! call suspected of causing later crash
   msg_manager_init(malloc_memories_inst
-                       ->ulmp_addr); //! line suspected of causing later crash
-  // msg_manager_init(22345);
-  home_page_init(); //! line suspected of causing later crash
+                       ->ulmp_addr); //! call suspected of causing later crash
+  home_page_init();                  //! call suspected of causing later crash
 }
 
 void count_time() {
@@ -111,6 +110,8 @@ void count_time() {
 }
 
 void sys_mainloop() {
+  uint8_t loops = 0;
+  bool ledvalue = false;
   uint8_t screen_up_seconds = 10;
   uint32_t screen_up_start;
   while (true) {
@@ -138,11 +139,19 @@ void sys_mainloop() {
       ssd1306_clear(drivers->oled_screen);
       ssd1306_show(drivers->oled_screen);
     }
+    if (loops % 10 == 0) {
+      gpio_put(25, ledvalue);
+      ledvalue = !ledvalue;
+    }
+    if (loops < 254)
+      loops++;
+    else
+      loops = 0;
   }
 }
 
 int main() {
   sys_setup();
-  count_time();
-  // sys_mainloop();
+  // count_time();
+  sys_mainloop();
 }

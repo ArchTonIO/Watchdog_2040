@@ -16,7 +16,7 @@
 #include "hardware_drivers/ssd1306.h"
 #include "tools/options_gen.h"
 #include "tools/text_editor.h"
-#include "ulcp/ulcp.h"
+#include "ulmp/ulmp.h"
 
 msg_manager *msg_man_inst;
 
@@ -102,22 +102,22 @@ void send_message() {
 void update_conversation_file(uint16_t contact_addr,
     char *message,
     uint8_t status) {
+  printf("BEFORE MSG RECORD INIT\n");
   msg_record *record = msg_record_init(contact_addr, message, status);
+  printf("AFTER MSG RECORD INIT\n");
   msg_record_dump(record);
+  printf("AFTER MSG RECORD DUMP\n");
   msg_record_free(record);
+  printf("AFTER MSG RECORD FREE\n");
 }
 
 void notify(uint16_t src_address) {
   msg_man_inst->new_msg_arrived = true;
   msg_man_inst->received_msgs_count++;
-  update_conversation_file(src_address,
-      msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
-      3);
   if (!msg_man_inst->should_notify)
     return;
   haptic_double_pulse();
   display_received_message(src_address);
-  msg_man_inst->received_msgs_count--;
 }
 
 char *compose_message() {
@@ -187,6 +187,9 @@ void display_received_message(uint16_t src_address) {
       ssd1306_show(drivers->oled_screen);
       if (to_free)
         free(name);
+      update_conversation_file(src_address,
+          msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
+          3);
       return;
     }
     joystick_update(drivers->joystick);
@@ -196,6 +199,10 @@ void display_received_message(uint16_t src_address) {
           false);
       char *text = text_editor_get_buf(editor);
       text_editor_kill(editor);
+      update_conversation_file(src_address,
+          msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
+          4);
+      msg_man_inst->received_msgs_count--;
       free(text);
       if (to_free)
         free(name);

@@ -23,6 +23,7 @@ msg_record *
 msg_record_init(uint16_t contact_addr, char *message, uint8_t status);
 void msg_record_dump(msg_record *record);
 msg_record *msg_record_load(char *stringified_record, char *record_uid);
+bool msg_record_flag_as_read(const char *record_uid, char *contact_name);
 void msg_record_free(msg_record *record);
 void msg_record_print(msg_record *record);
 #endif

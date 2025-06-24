@@ -4,4 +4,5 @@
 - [solved]   - bug03 - joystick east and west are flipped all around the code (just swapped E and W)
 - [solved]   - bug04 - when messagging a contact 1 bytes of sram randomly leaks (was the transaction_uid of the attempt_single_transaction function not being freed)
 - [solved]   - bug05 - when messagges clearly arrives to the recipient device the sending one keeps telling they were not received, and vice-versa
-- [unsolved] - bug06 - loading a non 10-lenght chunk of a conversation will make the system crash
+- [solved]   - bug06 - loading a non 10-lenght chunk of a conversation will make the system crash (chunk index was not properly parsed since its memory was freed before)
+- [unsolved] - bug07 - messages are not correctly delivered if receiving user is in one of the menu (is interacting with the device outside of home screen)

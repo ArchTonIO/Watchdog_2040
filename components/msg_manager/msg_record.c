@@ -10,6 +10,7 @@
 #include "components/msg_manager/msg_manager.h"
 #include "data_structures/string_list.h"
 #include "device.h"
+#include "utils/path.h"
 #include "utils/utils.h"
 
 msg_record *
@@ -17,13 +18,13 @@ msg_record_init(uint16_t contact_addr, char *message, uint8_t status) {
   msg_record *record = (msg_record *)malloc(sizeof(msg_record));
   record->message = (char *)malloc(strlen(message) + 1);
   char *no_lfd_message = string_replace(message, '\n', LFD_REPLACEMENT);
-  free(message);
   strcpy(record->message, no_lfd_message);
   record->record_uid = gen_random_string(RECORD_UID_LENGTH);
   strncpy(record->contact_name,
       find_contact_name_by_addr(contact_addr),
       MAX_CONTACT_NAME_LENGTH);
   record->status = status;
+  printf("flag\n");
   switch (status) {
   case 0:
     strcpy(record->status_str, "delivered");
@@ -124,6 +125,37 @@ msg_record *msg_record_load(char *stringified_record, char *record_uid) {
   record->timestamp[sizeof(record->timestamp) - 1] = '\0';
   record->status = status;
   return record;
+}
+
+/**
+ * @brief Flags a message record as read.
+ *
+ * @param record_uid The unique identifier of the record.
+ * @param contact_name The name of the contact associated with the record.
+ * @return true if the record was successfully flagged as read, false
+ * otherwise.
+ */
+bool msg_record_flag_as_read(const char *record_uid, char *contact_name) {
+  path *conversation_file = path_init(
+      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
+          contact_name));
+  char *stringified_record = path_key_value_get(conversation_file, record_uid);
+  char *read_flagged_record = string_substring_replace(stringified_record,
+      "unread",
+      "read");
+  path_replace_value_at_key(conversation_file,
+      record_uid,
+      read_flagged_record);
+  if (strcmp(read_flagged_record, stringified_record) == 0) {
+    free(stringified_record);
+    free(read_flagged_record);
+    path_free(conversation_file);
+    return false;
+  }
+  free(read_flagged_record);
+  free(stringified_record);
+  path_free(conversation_file);
+  return true;
 }
 
 void msg_record_print(msg_record *record) {

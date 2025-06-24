@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "ulcp/ulcp.h"
+#include "ulmp/ulmp.h"
 
 #define INFO_PAGES_TIMEOUT 2000
 
