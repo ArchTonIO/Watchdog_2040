@@ -196,7 +196,8 @@ uint16_t ask_for_contact_addr() {
       true);
   char *temp = text_editor_get_buf(editor);
   text_editor_kill(editor);
-  if (!is_string_numeric(temp) || strlen(temp) > 5 || strlen(temp) == 0)
+  if (!is_string_numeric(temp) || strlen(temp) > 5 || strlen(temp) == 0 ||
+      strcmp(temp, malloc_memories_inst->ulmp_addr_str) == 0)
     return 0;
   uint16_t addr = 0;
   if (sscanf(temp, "%hu", &addr) == 1) {

@@ -34,6 +34,7 @@ rtc_time *rtc_time_init(int16_t year,
       .sec = second};
   new_rtc->internal_datetime = t;
   new_rtc->alarm_set = false;
+  new_rtc->alarm_triggered = false;
   rtc_init();
   rtc_set_datetime(&new_rtc->internal_datetime);
   sleep_us(64);
@@ -89,4 +90,7 @@ void rtc_time_add_alarm(rtc_time *rtc,
   rtc_enable_alarm();
 }
 
-void rtc_time_remove_alarm(rtc_time *rtc) { rtc_disable_alarm(); }
+void rtc_time_remove_alarm(rtc_time *rtc) {
+  rtc_disable_alarm();
+  rtc->alarm_set = false;
+}

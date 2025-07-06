@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "data_structures/string_list.h"
+#include "graphics/graphic_primitives.h"
 
 typedef struct {
   uint8_t *hour_tens_bitmap;
@@ -28,6 +29,7 @@ typedef struct {
   uint8_t bpm;
   uint8_t spo2;
   uint16_t notifications;
+  layout *ly;
 } home_page;
 
 home_page *home_page_init();

@@ -67,7 +67,7 @@ void sys_setup() {
   stdio_init_all();
   collector_init();
   hardware_drivers_init();
-  //  wait_for_user_input();
+  // wait_for_user_input();
   first_boot_file = path_init(FIRST_BOOT_FILE);
   if (is_first_boot()) {
     start_malloc_mascot_tutorial();
@@ -76,10 +76,9 @@ void sys_setup() {
     dump_malloc_memories_to_sd();
   }
   path_free(first_boot_file);
-  load_malloc_memories_from_sd(); //! call suspected of causing later crash
-  msg_manager_init(malloc_memories_inst
-                       ->ulmp_addr); //! call suspected of causing later crash
-  home_page_init();                  //! call suspected of causing later crash
+  load_malloc_memories_from_sd();
+  msg_manager_init(malloc_memories_inst->ulmp_addr);
+  home_page_init();
 }
 
 void count_time() {

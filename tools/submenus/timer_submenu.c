@@ -1,0 +1,90 @@
+#include "tools/submenus/timer_submenu.h"
+
+#include <pico/time.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+
+#include "components/hw_manager.h"
+#include "data_structures/string_list.h"
+#include "graphics/bitmaps.h"
+#include "hardware_drivers/haptics.h"
+#include "hardware_drivers/joystick.h"
+#include "hardware_drivers/ssd1306.h"
+#include "tools/submenus/time_utils.h"
+
+void set_timer() {};
+void start_countdown(time_digits *digits);
+
+void enter_timer_submenu() {
+  sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
+  ssd1306_clear(drivers->oled_screen);
+  time_digits *digits = time_digits_init();
+  digits->hour_tens = 0;
+  digits->hour_units = 0;
+  digits->minute_tens = 0;
+  digits->minute_units = 0;
+  digits->second_tens = 0;
+  digits->second_units = 0;
+  draw_symbols(set_timedate_incr,
+      set_timedate_decr,
+      set_timedate_leftmost,
+      set_timedate_rigthmost);
+  time_digits_show(digits, 28, 23, 2);
+  set_hours_tens(digits, set_timer);
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_print(drivers->oled_screen, "Press to start", 3, 0, false);
+  time_digits_show(digits, 28, 23, 2);
+  ssd1306_show(drivers->oled_screen);
+  while (!drivers->joystick->button_pressed)
+    joystick_update(drivers->joystick);
+  start_countdown(digits);
+  ssd1306_print(drivers->oled_screen, "Press to stop alarm", 1, 0, false);
+  joystick_update(drivers->joystick);
+  while (!drivers->joystick->button_pressed) {
+    joystick_update(drivers->joystick);
+    haptic_auto_pulse();
+  }
+  free(digits);
+}
+
+void start_countdown(time_digits *digits) {
+  ssd1306_clear(drivers->oled_screen);
+  time_digits_show(digits, 28, 23, 2);
+  ssd1306_show(drivers->oled_screen);
+  int32_t total_seconds = (digits->hour_tens * 10 + digits->hour_units) *
+                              3600 +
+                          (digits->minute_tens * 10 + digits->minute_units) *
+                              60 +
+                          (digits->second_tens * 10 + digits->second_units);
+  while (total_seconds > 0) {
+    sleep_ms(1000);
+    total_seconds--;
+    digits->second_units--;
+    if (digits->second_units < 0) {
+      digits->second_units = 9;
+      digits->second_tens--;
+      if (digits->second_tens < 0) {
+        digits->second_tens = 5;
+        digits->minute_units--;
+        if (digits->minute_units < 0) {
+          digits->minute_units = 9;
+          digits->minute_tens--;
+          if (digits->minute_tens < 0) {
+            digits->minute_tens = 5;
+            digits->hour_units--;
+            if (digits->hour_units < 0) {
+              digits->hour_units = 9;
+              digits->hour_tens--;
+              if (digits->hour_tens < 0) {
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+    time_digits_show(digits, 28, 23, 2);
+    ssd1306_show(drivers->oled_screen);
+  }
+}

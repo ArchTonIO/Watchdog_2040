@@ -11,6 +11,7 @@ typedef struct {
   char *internal_datetime_str;
   datetime_t internal_datetime;
   bool alarm_set;
+  bool alarm_triggered;
   int16_t year;
   int8_t month;
   int8_t day;

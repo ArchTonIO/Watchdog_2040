@@ -1,0 +1,79 @@
+#include "tools/submenus/set_alarm_submenu.h"
+
+#include <pico/time.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+
+#include "components/hw_manager.h"
+#include "data_structures/string_list.h"
+#include "graphics/bitmaps.h"
+#include "hardware_drivers/haptics.h"
+#include "hardware_drivers/joystick.h"
+#include "hardware_drivers/rtc_time.h"
+#include "hardware_drivers/ssd1306.h"
+#include "tools/submenus/time_utils.h"
+#include "tools/text_editor.h"
+
+static char *alarm_message;
+
+void alarm_callback();
+
+void enter_set_alarm_submenu() {
+  sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
+  ssd1306_clear(drivers->oled_screen);
+  time_digits *digits = time_digits_init();
+  draw_symbols(set_timedate_incr,
+      set_timedate_decr,
+      set_timedate_leftmost,
+      set_timedate_rigthmost);
+  set_hours_tens(digits, NULL);
+  text_editor *editor = text_editor_launch(
+      "# Write the message to display when the alarm goes off\n",
+      true);
+  alarm_message = text_editor_get_buf(editor);
+  text_editor_kill(editor);
+  int8_t alarm_hour = digits->hour_tens * 10 + digits->hour_units;
+  int8_t alarm_minute = digits->minute_tens * 10 + digits->minute_units;
+  int8_t alarm_second = digits->second_tens * 10 + digits->second_units;
+  rtc_time_add_alarm(drivers->rtc,
+      alarm_hour,
+      alarm_minute,
+      alarm_second,
+      alarm_callback);
+  free(digits);
+}
+
+void alarm_callback() { drivers->rtc->alarm_triggered = true; }
+
+void process_alarm() {
+  if (!drivers->rtc->alarm_triggered)
+    return;
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_draw_bitmap(drivers->oled_screen,
+      0,
+      (SSD1306_HEIGHT - 28) / 2,
+      malloc_with_both_eyes_saying_hi,
+      26,
+      28,
+      false);
+  ssd1306_print(drivers->oled_screen, alarm_message, 0, 0, false);
+  ssd1306_print(drivers->oled_screen, "E' tempo !", 4, 5, false);
+  ssd1306_show(drivers->oled_screen);
+  joystick_update(drivers->joystick);
+  while (joystick_get_direction(drivers->joystick) == C) {
+    joystick_update(drivers->joystick);
+    haptic_auto_pulse();
+  }
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_show(drivers->oled_screen);
+  drivers->rtc->alarm_triggered = false;
+}
+
+void unset_alarm() {
+  ssd1306_clear(drivers->oled_screen);
+  rtc_time_remove_alarm(drivers->rtc);
+  ssd1306_print(drivers->oled_screen, "Alarm was disabled !", 0, 0, false);
+  ssd1306_show(drivers->oled_screen);
+  sleep_ms(3000);
+}

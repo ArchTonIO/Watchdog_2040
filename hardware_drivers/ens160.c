@@ -84,9 +84,12 @@ void ens160_reset(ens160 *sensor) {
 }
 
 bool ens160_is_working(ens160 *sensor) {
-  uint8_t aqi = ens160_read_aqi(sensor);
-  if (aqi < 1 || aqi > 5)
-    return false;
+  sleep_ms(10);
+  if (ens160_get_op_mode(sensor) != 2) {
+    ens160_reset(sensor);
+    if (ens160_get_op_mode(sensor) != 2)
+      return false;
+  }
   return true;
 }
 

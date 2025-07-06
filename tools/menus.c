@@ -16,6 +16,11 @@
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/ssd1306.h"
 #include "tools/options_gen.h"
+#include "tools/submenus/set_alarm_submenu.h"
+#include "tools/submenus/set_date_submenu.h"
+#include "tools/submenus/set_time_submenu.h"
+#include "tools/submenus/stopwatch_submenu.h"
+#include "tools/submenus/timer_submenu.h"
 #include "tools/text_editor.h"
 #include "utils/path.h"
 #include "utils/utils.h"
@@ -167,8 +172,18 @@ void display_tools_menu() {
 void display_time_menu() {
   str_list *options = list_init();
   list_append(options, "Set time");
+  list_append(options, "Set date");
   list_append(options, "Set alarm");
+  list_append(options, "Unset alarm");
+  list_append(options, "Stopwatch");
+  list_append(options, "Timer");
   options_page *time_menu = options_page_init("Time", options);
+  attach_callback_to_option(time_menu, 0, enter_set_time_submenu);
+  attach_callback_to_option(time_menu, 1, enter_set_date_submenu);
+  attach_callback_to_option(time_menu, 2, enter_set_alarm_submenu);
+  attach_callback_to_option(time_menu, 3, unset_alarm);
+  attach_callback_to_option(time_menu, 4, enter_stopwatch_submenu);
+  attach_callback_to_option(time_menu, 5, enter_timer_submenu);
   options_page_launch(time_menu);
   options_page_free(time_menu);
 }
@@ -287,17 +302,15 @@ void display_joystick_check() {
 
 void display_system_menu() {
   str_list *options = list_init();
-  list_append(options, "Notifications");
   list_append(options, "System info");
   list_append(options, "System reset");
   list_append(options, "Battery status");
   list_append(options, "Check joystick");
   options_page *system_menu = options_page_init("System", options);
-  attach_callback_to_option(system_menu, 0, display_notifications_menu);
-  attach_callback_to_option(system_menu, 1, display_system_info);
-  attach_callback_to_option(system_menu, 2, reset_system);
-  attach_callback_to_option(system_menu, 3, display_battery_status);
-  attach_callback_to_option(system_menu, 4, display_joystick_check);
+  attach_callback_to_option(system_menu, 0, display_system_info);
+  attach_callback_to_option(system_menu, 1, reset_system);
+  attach_callback_to_option(system_menu, 2, display_battery_status);
+  attach_callback_to_option(system_menu, 3, display_joystick_check);
   options_page_launch(system_menu);
   options_page_free(system_menu);
 }

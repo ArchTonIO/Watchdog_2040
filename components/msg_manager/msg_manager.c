@@ -53,7 +53,7 @@ msg_manager *msg_manager_init(uint16_t my_addr) {
   msg_man->received_msgs_count = 0;
   msg_man->ulmp_impl = lora_init(my_addr, drivers->lora_module);
   contacts_manager_init();
-  lora_receive();
+  lora_receive(); //! most sus function about the random crashes
   msg_man_inst = msg_man;
   return msg_man;
 }

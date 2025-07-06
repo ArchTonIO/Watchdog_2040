@@ -55,6 +55,12 @@ hardware_drivers/rtc_time.c
 hardware_drivers/sdcard.c
 hardware_drivers/ssd1306.c
 hardware_drivers/sx1278.c
+tools/submenus/set_alarm_submenu.c
+tools/submenus/set_date_submenu.c
+tools/submenus/set_time_submenu.c
+tools/submenus/stopwatch_submenu.c
+tools/submenus/time_utils.c
+tools/submenus/timer_submenu.c
 tools/menus.c
 tools/options_gen.c
 tools/text_editor.c
