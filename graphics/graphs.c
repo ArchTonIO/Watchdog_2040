@@ -55,8 +55,10 @@ graph *graph_init(char *title,
  * @param value Pointer to the value to be pushed onto the graph.
  */
 void graph_push_value(graph *g, uint16_t value) {
-  uint8_t normalized =
-      normalize(g, value, g->min_expected_value, g->max_expected_value);
+  uint8_t normalized = normalize(g,
+      value,
+      g->min_expected_value,
+      g->max_expected_value);
   shift_and_add(g, normalized);
   snprintf(g->last_value_buf, sizeof(g->last_value_buf), "%d", value);
 }
@@ -66,7 +68,6 @@ void graph_push_value(graph *g, uint16_t value) {
  * @param g Pointer to the graph structure.
  */
 void graph_update(graph *g) {
-  printf("Pushed value: %s\n", g->last_value_buf);
   ssd1306_print(drivers->oled_screen,
       g->title,
       g->x_offset / 7,
@@ -98,8 +99,8 @@ uint8_t normalize(graph *g, int16_t val, int16_t min, int16_t max) {
     val = min;
   if (val > max)
     val = max;
-  return (
-      uint8_t)((g->height - 1) - ((val - min) * (g->height - 1)) / (max - min));
+  return (uint8_t)((g->height - 1) -
+                   ((val - min) * (g->height - 1)) / (max - min));
 }
 
 void shift_and_add(graph *g, uint8_t new_val) {

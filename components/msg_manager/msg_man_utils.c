@@ -34,16 +34,10 @@ str_list *get_selectable_options_by_msg_uids(str_list *msg_uids,
 /*scary aah function*/
 void show_read_messages_menu() {
   show_fetching_screen();
-
-  // Build path to messages dir
   path *conversations_dir = path_init(
       string_add(malloc_memories_inst->user_folder, MESSAGES_DIR));
-
-  // Get all files inside the messages dir
   str_list *all_files = path_listdir(conversations_dir);
   str_list *active_conversations = list_init();
-
-  // Filter out "*.keys" files and collect active conversation names
   for (uint16_t i = 0; i < all_files->len; i++) {
     path *conv_file = path_init(
         string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
@@ -52,97 +46,69 @@ void show_read_messages_menu() {
       list_append(active_conversations, conv_file->name);
     path_free(conv_file);
   }
-
-  // MAIN MENU: CONTACTS
   while (true) {
-    // Create contact menu (takes ownership of active_conversations)
     options_page *conversations = options_page_init("Active conversations:",
         active_conversations);
-
     char *selected_contact = options_page_launch(conversations);
     char *selected_contact_copy = strdup(selected_contact);
-
     if (strcmp(selected_contact, "") == 0) {
-      // User pressed left at contact menu → Exit
       path_free(conversations_dir);
       list_free(all_files);
-      options_page_free(conversations); // also frees active_conversations
+      options_page_free(conversations);
       free(selected_contact_copy);
       break;
     }
-
-    // Store contact name, free old conversations page
     active_conversations = list_copy(conversations->options_list);
     options_page_free(conversations);
-
-    // CHUNKS MENU: Messages by 10
     while (true) {
       show_fetching_screen();
       uint16_t contact_addr = find_contact_addr_by_name(selected_contact_copy);
       str_list *message_uids = get_stored_msg_uids_by_user(contact_addr);
       str_list *chunks = get_chunks_by_msg_uids(message_uids, 10);
-
       options_page *chunks_page = options_page_init("1 chunk = 10 msg",
           chunks);
       char *selected_chunk = options_page_launch(chunks_page);
       char *selected_chunk_copy = strdup(selected_chunk);
-      options_page_free(chunks_page); // also frees `chunks`
-
+      options_page_free(chunks_page);
       if (strcmp(selected_chunk, "") == 0) {
-        // Go back to contact selection
         list_free(message_uids);
         free(selected_contact_copy);
         free(selected_chunk_copy);
         break;
       }
-
-      // Extract chunk index (after "chunk: ")
       uint8_t chunk_index = atoi(selected_chunk_copy + 7);
       free(selected_chunk_copy);
       str_list *message_uids_chunk = get_msg_uids_by_chunk(message_uids,
           chunk_index,
           10);
-
-      // We don’t need full UID list anymore
       list_free(message_uids);
-
-      // MESSAGE SELECTION
       while (true) {
         show_fetching_screen();
         str_list *selectable_options = get_selectable_options_by_msg_uids(
             message_uids_chunk,
             contact_addr);
-
         options_page *messages_entries = options_page_init(
             "Select a msg to read",
             selectable_options);
         char *selected_msg = options_page_launch(messages_entries);
-
         if (strcmp(selected_msg, "") == 0) {
-          // Go back to chunk selection
-          options_page_free(
-              messages_entries); // also frees `selectable_options`
+          options_page_free(messages_entries);
           list_free(message_uids_chunk);
           break;
         }
-
         show_fetching_screen();
-
         uint16_t selected_msg_index = list_index_of(selectable_options,
             selected_msg);
         char *msg_uid = get(message_uids_chunk, selected_msg_index);
-
         char *full_msg = get_displayable_msg_by_uid(contact_addr, msg_uid);
-
         text_editor *editor = text_editor_launch(full_msg, false);
         char *editor_buf = text_editor_get_buf(editor);
         text_editor_kill(editor);
         if (msg_record_flag_as_read(msg_uid, selected_contact_copy))
           msg_man_inst->received_msgs_count--;
-        // Cleanup
         free(full_msg);
         free(editor_buf);
-        options_page_free(messages_entries); // also frees `selectable_options`
+        options_page_free(messages_entries);
       }
     }
   }

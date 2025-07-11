@@ -22,19 +22,19 @@ malloc_memories *malloc_memories_inst = NULL;
 
 void start_malloc_mascot_tutorial() {
   malloc_memories *memories = malloc_memories_init();
-  // malloc_greets_you();
-  // malloc_explains_you_joystick();
-  // malloc_explains_you_menu();
-  // malloc_explains_you_text_editor();
+  malloc_greets_you();
+  malloc_explains_you_joystick();
+  malloc_explains_you_menu();
+  malloc_explains_you_text_editor();
   malloc_asks_your_name();
-  // malloc_explains_you_home_screen();
+  malloc_explains_you_home_screen();
   malloc_generates_ulcp_address();
-  // malloc_says_goodbye();
+  malloc_says_goodbye();
 }
 
 malloc_memories *malloc_memories_init() {
-  malloc_memories *memories =
-      (malloc_memories *)malloc(sizeof(malloc_memories));
+  malloc_memories *memories = (malloc_memories *)malloc(
+      sizeof(malloc_memories));
   memories->ulmp_addr = 0;
   malloc_memories_inst = memories;
   return memories;
@@ -65,7 +65,13 @@ void clear_text_area_reduced() {
 }
 
 void malloc_greets_you() {
-  ssd1306_draw_bitmap(drivers->oled_screen, 0, 19, malloc_saying_hi, 26, 28, 0);
+  ssd1306_draw_bitmap(drivers->oled_screen,
+      0,
+      19,
+      malloc_saying_hi,
+      26,
+      28,
+      0);
   ssd1306_print_gradually(drivers->oled_screen, "Ciao!", 4, 0, 0);
   sleep_ms(50);
   ssd1306_print_gradually(drivers->oled_screen, "Io sono Malloc e", 4, 1, 0);
@@ -249,7 +255,13 @@ void malloc_asks_your_name() // TODO: fix this
     clear_text_area();
   }
   strcpy(malloc_memories_inst->username, name);
-  ssd1306_draw_bitmap(drivers->oled_screen, 0, 19, malloc_saying_hi, 26, 28, 0);
+  ssd1306_draw_bitmap(drivers->oled_screen,
+      0,
+      19,
+      malloc_saying_hi,
+      26,
+      28,
+      0);
   ssd1306_print_gradually(drivers->oled_screen, "Ciao", 4, 0, 0);
   ssd1306_print_gradually(drivers->oled_screen,
       malloc_memories_inst->username,
@@ -343,7 +355,13 @@ void malloc_explains_you_home_screen() {
   ssd1306_print_gradually(drivers->oled_screen, "vedi questo", 4, 5, 0);
   press_to_continue();
   clear_text_area_reduced();
-  ssd1306_draw_bitmap(drivers->oled_screen, 42, 0, lora_not_working, 21, 16, 0);
+  ssd1306_draw_bitmap(drivers->oled_screen,
+      42,
+      0,
+      lora_not_working,
+      21,
+      16,
+      0);
   ssd1306_print_gradually(drivers->oled_screen, "Se il modulo", 4, 2, 0);
   ssd1306_print_gradually(drivers->oled_screen, "LoRa non", 4, 3, 0);
   ssd1306_print_gradually(drivers->oled_screen, "funziona", 4, 4, 0);
@@ -563,7 +581,13 @@ void malloc_says_goodbye() {
   ssd1306_print_gradually(drivers->oled_screen, "nel menu", 4, 2, 0);
   ssd1306_print_gradually(drivers->oled_screen, "principale!", 4, 3, 0);
   sleep_ms(100);
-  ssd1306_draw_bitmap(drivers->oled_screen, 0, 19, malloc_saying_hi, 26, 28, 0);
+  ssd1306_draw_bitmap(drivers->oled_screen,
+      0,
+      19,
+      malloc_saying_hi,
+      26,
+      28,
+      0);
   ssd1306_print_gradually(drivers->oled_screen, "Ciao! :)", 4, 4, 0);
   press_to_continue();
   ssd1306_clear(drivers->oled_screen);
@@ -571,8 +595,8 @@ void malloc_says_goodbye() {
 }
 
 void dump_malloc_memories_to_sd() {
-  char *username_no_lfd =
-      string_remove_linefeed(malloc_memories_inst->username);
+  char *username_no_lfd = string_remove_linefeed(
+      malloc_memories_inst->username);
   char *username_no_spaces = string_replace(username_no_lfd, ' ', '_');
   strcpy(malloc_memories_inst->username, username_no_spaces);
   free(username_no_lfd);
@@ -599,8 +623,8 @@ malloc_memories *load_malloc_memories_from_sd() {
   path_free(user_file);
   malloc_memories *memories = malloc(sizeof(malloc_memories));
   strcpy(memories->user_folder, string_add(HOME_DIR, username));
-  path *file =
-      path_init(string_add(memories->user_folder, MALLOC_MEMORIES_FILE));
+  path *file = path_init(
+      string_add(memories->user_folder, MALLOC_MEMORIES_FILE));
   strcpy(memories->username, username);
   free(username);
   char *ulmp_addr = path_key_value_get(file, "ulmp_addr");

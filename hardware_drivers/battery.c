@@ -9,6 +9,20 @@
 
 bool battery_is_working(battery *bat);
 
+/**
+ * @brief Initializes a battery instance with the given parameters.
+ *
+ * @param voltage_divider_ratio The ratio of the voltage divider used to
+ * measure the battery voltage.
+ * @param adc_max_value The maximum value of the ADC.
+ * @param vcc_measured_voltage The measured VCC voltage.
+ * @param battery_slope The slope for calculating battery percentage.
+ * @param min_battery_voltage The minimum voltage for the battery.
+ * @param max_battery_voltage The maximum voltage for the battery.
+ * @param battery_control_pin The GPIO pin used to control the battery.
+ * @param adc_channel The ADC channel used to read the battery voltage.
+ * @return A pointer to the initialized battery instance.
+ */
 battery *battery_init(float voltage_divider_ratio,
     float adc_max_value,
     float vcc_measured_voltage,
@@ -34,11 +48,17 @@ battery *battery_init(float voltage_divider_ratio,
   return new_battery;
 }
 
+/**
+ * @brief Gets the battery percentage based on the current voltage.
+ *
+ * @param bat Pointer to the battery instance.
+ * @return The battery percentage (0-100).
+ */
 uint8_t battery_get_percentage(battery *bat) {
   adc_select_input(bat->adc_channel);
-  float v_bat =
-      ((adc_read() * bat->vcc_measured_voltage) / bat->adc_max_value) *
-      bat->voltage_divider_ratio;
+  float v_bat = ((adc_read() * bat->vcc_measured_voltage) /
+                    bat->adc_max_value) *
+                bat->voltage_divider_ratio;
   if (v_bat < bat->min_battery_voltage)
     return 0;
   if (v_bat >= bat->max_battery_voltage)
@@ -46,17 +66,35 @@ uint8_t battery_get_percentage(battery *bat) {
   return (v_bat - bat->min_battery_voltage) * bat->battery_slope;
 }
 
+/**
+ * @brief Gets the battery voltage in volts.
+ *
+ * @param bat Pointer to the battery instance.
+ * @return The battery voltage in volts.
+ */
 float battery_get_voltage(battery *bat) {
   adc_select_input(bat->adc_channel);
   return ((adc_read() * bat->vcc_measured_voltage) / bat->adc_max_value) *
          bat->voltage_divider_ratio;
 }
 
+/**
+ * @brief Gets the battery percentage as a string.
+ *
+ * @param bat Pointer to the battery instance.
+ * @return A string representation of the battery percentage.
+ */
 char *battery_get_percentage_str(battery *bat) {
   sprintf(bat->battery_percentage_str, "%d%%", battery_get_percentage(bat));
   return bat->battery_percentage_str;
 }
 
+/**
+ * @brief Gets the battery voltage as a string.
+ *
+ * @param bat Pointer to the battery instance.
+ * @return A string representation of the battery voltage.
+ */
 char *battery_get_voltage_str(battery *bat) {
   sprintf(bat->battery_voltage_str, "%.2fV", battery_get_voltage(bat));
   return bat->battery_voltage_str;

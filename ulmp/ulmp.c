@@ -22,6 +22,17 @@ void reset_ack() {
   this_lora->tx->transac_sending_attempts = 0;
 }
 
+/**
+ * @brief Initializes the LoRa module with the given address and radio
+ * instance.
+ *
+ * This function allocates memory for the LoRa instance and initializes its
+ * fields, including the radio instance, address, and transaction fields.
+ *
+ * @param this_addr The address of this LoRa module.
+ * @param sx1278_radio Pointer to the SX1278 radio instance.
+ * @return Pointer to the initialized LoRa instance.
+ */
 lora_instance *lora_init(uint16_t this_addr, sx1278 *sx1278_radio) {
   this_lora = malloc(sizeof(lora_instance));
   this_lora->tx = malloc(sizeof(tx_fields));
@@ -39,8 +50,13 @@ lora_instance *lora_init(uint16_t this_addr, sx1278 *sx1278_radio) {
       sizeof(char));
   this_lora->rx->must_send_ack_transac_uid = calloc(TRANSACTION_UID_LENGTH + 1,
       sizeof(char));
+  this_lora->rx->must_send_pong_transac_uid = calloc(
+      TRANSACTION_UID_LENGTH + 1,
+      sizeof(char));
   this_lora->rx->must_send_ack_dest = 0;
+  this_lora->rx->must_send_pong_dest = 0;
   this_lora->rx->must_send_ack = false;
+  this_lora->rx->must_send_pong = false;
   this_lora->rx->recv_payloads_buf = malloc(16);
 
   this_lora->radio->message_received_callback = on_recv;
@@ -122,6 +138,15 @@ uint8_t lora_send_msg(uint16_t dest_address,
   return result;
 }
 
+/**
+ * @brief Sends a ping packet to the specified destination address.
+ *
+ * This function sends a ping packet to the specified destination address and
+ * waits for a pong response.
+ *
+ * @param dest_address The address of the destination LoRa module.
+ * @return `0` if pong is received, `1` if pong is not received.
+ */
 uint8_t lora_ping(uint16_t dest_address) {
   char *transaction_uid = gen_random_string(TRANSACTION_UID_LENGTH);
   strncpy(this_lora->tx->sent_transac_uid,
@@ -130,6 +155,8 @@ uint8_t lora_ping(uint16_t dest_address) {
   this_lora->tx->sent_transac_uid[TRANSACTION_UID_LENGTH] = '\0';
   send_ping_packet(dest_address, transaction_uid);
   free(transaction_uid);
+  sleep_ms(10);
+  lora_receive();
   sleep_ms(TRANSAC_TIMEOUT);
   if (this_lora->tx->pong_received) {
     this_lora->tx->pong_received = false;
@@ -138,6 +165,16 @@ uint8_t lora_ping(uint16_t dest_address) {
   return 1;
 }
 
+/**
+ * @brief Sends an acknowledgment packet to the specified destination address.
+ *
+ * This function sends an acknowledgment packet to the specified destination
+ * address calls a notification callback.
+ * This function should be called in a loop to ensure that ACKs are sent
+ * whenever necessary.
+ *
+ * @param notify A callback function that is called after sending the ACK
+ */
 void lora_send_ack(void (*notify)(uint16_t src_address)) {
   if (!this_lora->rx->must_send_ack)
     return;
@@ -146,5 +183,23 @@ void lora_send_ack(void (*notify)(uint16_t src_address)) {
   this_lora->rx->must_send_ack = false;
   sleep_ms(PACKET_TIMEOUT);
   notify(this_lora->rx->must_send_ack_dest);
+  lora_receive();
+}
+
+/**
+ * @brief Sends a pong packet in response to a ping request.
+ *
+ * This function sends a pong packet to the specified destination address if
+ * there is a pending ping request.
+ * This function should be called in a loop to ensure that pong packets
+ * are sent whenever necessary.
+ */
+void lora_send_pong() {
+  if (!this_lora->rx->must_send_pong)
+    return;
+  send_pong_packet(this_lora->rx->must_send_pong_dest,
+      this_lora->rx->must_send_pong_transac_uid);
+  this_lora->rx->must_send_pong = false;
+  sleep_ms(PACKET_TIMEOUT);
   lora_receive();
 }

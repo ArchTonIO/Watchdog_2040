@@ -53,7 +53,7 @@ msg_manager *msg_manager_init(uint16_t my_addr) {
   msg_man->received_msgs_count = 0;
   msg_man->ulmp_impl = lora_init(my_addr, drivers->lora_module);
   contacts_manager_init();
-  lora_receive(); //! most sus function about the random crashes
+  lora_receive();
   msg_man_inst = msg_man;
   return msg_man;
 }
@@ -63,6 +63,7 @@ msg_manager *msg_manager_init(uint16_t my_addr) {
  */
 void process_messages() {
   lora_send_ack(notify);
+  lora_send_pong();
   sleep_ms(10);
 }
 
@@ -102,13 +103,9 @@ void send_message() {
 void update_conversation_file(uint16_t contact_addr,
     char *message,
     uint8_t status) {
-  printf("BEFORE MSG RECORD INIT\n");
   msg_record *record = msg_record_init(contact_addr, message, status);
-  printf("AFTER MSG RECORD INIT\n");
   msg_record_dump(record);
-  printf("AFTER MSG RECORD DUMP\n");
   msg_record_free(record);
-  printf("AFTER MSG RECORD FREE\n");
 }
 
 void notify(uint16_t src_address) {
@@ -214,7 +211,7 @@ void display_received_message(uint16_t src_address) {
 void scan_online_contacts() {
   str_list *contacts = get_all_contacts();
   str_list *results = list_init();
-  uint8_t addr;
+  uint16_t addr;
   for (uint8_t i = 0; i < contacts->len; i++) {
     addr = find_contact_addr_by_name(get(contacts, i));
     if (lora_ping(addr) == 0)

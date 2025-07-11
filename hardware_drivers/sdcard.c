@@ -32,6 +32,14 @@ bool sdcard_mount(sdcard *sd) {
 
 void sdcard_unmount(sdcard *sd) { f_unmount("0:"); }
 
+/**
+ * @brief Write content to a file on the SD card.
+ * @param sd The sdcard instance
+ * @param file The path to the file to write to
+ * @param content The content to write to the file
+ * @param mode The mode to open the file in ('w' for write, 'a' for append)
+ * @return true if the write was successful, false otherwise
+ */
 bool sdcard_write_file(sdcard *sd,
     path *file,
     const char *content,
@@ -62,6 +70,12 @@ bool sdcard_write_file(sdcard *sd,
   return true;
 }
 
+/**
+ * @brief Read the content of a file on the SD card line by line.
+ * @param sd The sdcard instance
+ * @param file The path to the file to read
+ * @return A list of strings, each representing a line in the file
+ */
 str_list *sdcard_read_file(sdcard *sd, path *file) {
   str_list *lines = list_init();
   sd->fr = f_open(&sd->fil, file->abs_path, FA_READ);
@@ -83,6 +97,12 @@ str_list *sdcard_read_file(sdcard *sd, path *file) {
   return lines;
 }
 
+/**
+ * @brief List all files in a directory on the SD card.
+ * @param sd The sdcard instance
+ * @param directory The path to the directory to list files from
+ * @return A list of strings, each representing a file name in the directory
+ */
 str_list *sdcard_list_files(sdcard *sd, path *directory) {
 
   str_list *files = list_init();
@@ -138,6 +158,18 @@ bool sdcard_write_key_value_to_file(sdcard *sd,
   return res;
 }
 
+/**
+ * @brief Replace the value at a given key in a file with a new value.
+ *
+ * @param sd The sdcard instance
+ * @param file The path to the file to modify
+ * @param key The key to search for
+ * @param value The new value to set
+ * @return true if the key was found and replaced, false otherwise
+ *
+ * @note it is assumed that the key and value do not contain the separator
+ * character '~'
+ */
 bool sdcard_replace_value_at_key(sdcard *sd,
     path *file,
     const char *key,
@@ -207,6 +239,13 @@ char *sdcard_read_value_from_file(sdcard *sd, path *file, const char *key) {
   return NULL;
 }
 
+/**
+ * @brief Check if a file exists on the SD card.
+ *
+ * @param sd The sdcard instance
+ * @param file The path to the file to check
+ * @return true if the file exists, false otherwise
+ */
 bool sdcard_file_exists(sdcard *sd, path *file) {
   str_list *files = sdcard_list_files(sd, file->parent);
   bool found = false;
@@ -218,6 +257,13 @@ bool sdcard_file_exists(sdcard *sd, path *file) {
   return found;
 }
 
+/**
+ * @brief Delete a file from the SD card.
+ *
+ * @param sd The sdcard instance
+ * @param file The path to the file to delete
+ * @return true if the file was successfully deleted, false otherwise
+ */
 bool sdcard_delete_file(sdcard *sd, path *file) {
   if (file->is_dir == true) {
     printf("ERROR: The path '%s' is a directory, not a file.\r\n",
@@ -232,11 +278,25 @@ bool sdcard_delete_file(sdcard *sd, path *file) {
   return true;
 }
 
+/**
+ * @brief Create an empty file on the SD card if it does not exist.
+ *
+ * @param sd The sdcard instance
+ * @param file The path to the file to create
+ * @return true if the file was created or already exists, false otherwise
+ */
 bool sdcard_touch_file(sdcard *sd, path *file) {
   if (!sdcard_file_exists(sd, file->parent))
     return sdcard_write_file(sd, file, "", 'w');
 }
 
+/**
+ * @brief Create a directory on the SD card.
+ *
+ * @param sd The sdcard instance
+ * @param dir The path to the directory to create
+ * @return true if the directory was successfully created, false otherwise
+ */
 bool sdcard_mkdir(sdcard *sd, path *dir) {
   sd->fr = f_mkdir(dir->abs_path);
   if (sd->fr != FR_OK) {
@@ -246,6 +306,13 @@ bool sdcard_mkdir(sdcard *sd, path *dir) {
   return true;
 }
 
+/**
+ * @brief Remove a directory from the SD card.
+ *
+ * @param sd The sdcard instance
+ * @param dir The path to the directory to remove
+ * @return true if the directory was successfully removed, false otherwise
+ */
 bool sdcard_rmdir(sdcard *sd, path *dir) {
   if (dir->is_dir == false) {
     printf("ERROR: The path '%s' is not a directory.\r\n", dir->abs_path);
@@ -259,6 +326,13 @@ bool sdcard_rmdir(sdcard *sd, path *dir) {
   return true;
 }
 
+/**
+ * @brief Check if a path is a directory.
+ *
+ * @param sd The sdcard instance
+ * @param path The path to check
+ * @return true if the path is a directory, false otherwise
+ */
 bool sdcard_path_is_dir(sdcard *sd, path *path) {
   FILINFO fno;
   FRESULT res = f_stat(path->abs_path, &fno);

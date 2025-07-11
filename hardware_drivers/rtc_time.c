@@ -41,6 +41,18 @@ rtc_time *rtc_time_init(int16_t year,
   return new_rtc;
 }
 
+/**
+  * @brief Sets the RTC time to the specified values.
+  * @param rtc Pointer to the rtc_time instance.
+  * @param year The year to set (e.g., 2025).
+  * @param month The month to set (1-12).
+  * @param day The day of the month to set (1-31).
+  * @param weekday The day of the week to set (0-6, where
+  0 = Sunday).
+  * @param hour The hour to set (0-23).
+  * @param minute The minute to set (0-59).
+  * @param second The second to set (0-59).
+ */
 void rtc_time_set_time(rtc_time *rtc,
     int16_t year,
     int8_t month,
@@ -65,6 +77,11 @@ void rtc_time_set_time(rtc_time *rtc,
 
 void update_time(rtc_time *rtc) { rtc_get_datetime(&rtc->internal_datetime); }
 
+/**
+ * @brief Gets the current RTC time as a formatted string.
+ * @param rtc Pointer to the rtc_time instance.
+ * @return A string representation of the current RTC time.
+ */
 char *rtc_time_now(rtc_time *rtc) {
   update_time(rtc);
   datetime_to_str(rtc->internal_datetime_buf,
@@ -73,6 +90,14 @@ char *rtc_time_now(rtc_time *rtc) {
   return rtc->internal_datetime_buf;
 }
 
+/**
+ * @brief Adds an alarm to the RTC time.
+ * @param rtc Pointer to the rtc_time instance.
+ * @param hour The hour for the alarm (0-23).
+ * @param minute The minute for the alarm (0-59).
+ * @param second The second for the alarm (0-59).
+ * @param callback The callback function to be called when the alarm triggers.
+ */
 void rtc_time_add_alarm(rtc_time *rtc,
     int8_t hour,
     int8_t minute,
@@ -90,6 +115,11 @@ void rtc_time_add_alarm(rtc_time *rtc,
   rtc_enable_alarm();
 }
 
+/**
+ * @brief Checks if the RTC alarm is triggered.
+ * @param rtc Pointer to the rtc_time instance.
+ * @return True if the alarm is triggered, false otherwise.
+ */
 void rtc_time_remove_alarm(rtc_time *rtc) {
   rtc_disable_alarm();
   rtc->alarm_set = false;

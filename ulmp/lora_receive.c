@@ -54,18 +54,18 @@ void on_recv(char *msg) {
   }
   switch (deserialized->header->packet_type) {
   case PING:
-    send_pong_packet(deserialized->header->src_address,
+    strcpy(this_lora->rx->must_send_pong_transac_uid,
         deserialized->header->transaction_uid);
+    this_lora->rx->must_send_pong_dest = deserialized->header->src_address;
+    this_lora->rx->must_send_pong = true;
     break;
   case PONG:
     if (strcmp(deserialized->header->transaction_uid,
             this_lora->tx->sent_transac_uid) == 0) {
-      printf("PONG RECEIVED\n");
       this_lora->tx->pong_received = true;
     }
     break;
   case ACK:
-    printf("ACK RECEIVED\n");
     this_lora->tx->ack_received = true;
     break;
   case START:

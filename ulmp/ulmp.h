@@ -61,6 +61,9 @@ typedef struct {
   char *must_send_ack_transac_uid;
   uint16_t must_send_ack_dest;
   bool must_send_ack;
+  char *must_send_pong_transac_uid;
+  uint16_t must_send_pong_dest;
+  bool must_send_pong;
   char *recv_payloads_buf;
 } rx_fields;
 
@@ -93,5 +96,6 @@ uint8_t lora_send_msg(uint16_t dest_address,
     void (*status_update_callback)(uint8_t progress));
 uint8_t lora_ping(uint16_t dest_address);
 void lora_send_ack(void (*notify)(uint16_t src_address));
+void lora_send_pong();
 
 #endif

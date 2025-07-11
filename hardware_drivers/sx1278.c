@@ -1,6 +1,7 @@
 #include "sx1278.h"
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -26,6 +27,24 @@ void irq_handler(uint gpio, uint32_t events);
 void message_sent_callback();
 void message_received_callback();
 
+/**
+ * @brief Initializes the SX1278 radio module.
+ *
+ * This function sets up the SPI communication, configures the GPIO pins,
+ * and initializes the radio module with default settings.
+ *
+ * @param mosi The MOSI pin for SPI communication.
+ * @param miso The MISO pin for SPI communication.
+ * @param sck The SCK pin for SPI communication.
+ * @param cs The chip select pin for the radio module.
+ * @param interrupt The interrupt pin for the radio module.
+ * @param spi_port The SPI port to use.
+ * @param baudrate The baud rate for SPI communication.
+ * @param tx_power The transmission power level (5-23).
+ * @param message_received_callback Callback function to handle received
+ * messages.
+ * @return A pointer to the initialized sx1278 instance.
+ */
 sx1278 *sx1278_init(pin mosi,
     pin miso,
     pin sck,
@@ -123,10 +142,29 @@ sx1278 *sx1278_init(pin mosi,
   return new_radio;
 }
 
+/**
+ * @brief Attaches a new ISR callback to the radio instance.
+ *
+ * This function allows the user to set a custom callback function that will
+ * be called when a message is received by the radio.
+ *
+ * @param radio Pointer to the sx1278 radio instance.
+ * @param new_callback The callback function to be called when a message is
+ * received.
+ */
 void sx1278_attach_isr(sx1278 *radio, void (*new_callback)(char *msg)) {
   radio->message_received_callback = new_callback;
 }
 
+/**
+ * @brief Sets the radio module to sleep mode.
+ *
+ * This function puts the radio module into sleep mode, which is the lowest
+ * power consumption state. It can be woken up by setting it to a different
+ * mode.
+ *
+ * @param radio Pointer to the sx1278 radio instance.
+ */
 void sx1278_sleep(sx1278 *radio) {
   if (radio->mode != MODE_SLEEP) {
     spi_write_reg_single_byte(radio, REG_01_OP_MODE, MODE_SLEEP);
@@ -134,6 +172,14 @@ void sx1278_sleep(sx1278 *radio) {
   }
 }
 
+/**
+ * @brief Sets the radio module to transmit mode.
+ *
+ * This function puts the radio module into transmit mode, allowing it to send
+ * data. It also configures the DIO mapping for transmission.
+ *
+ * @param radio Pointer to the sx1278 radio instance.
+ */
 void sx1278_set_mode_tx(sx1278 *radio) {
   if (radio->mode != MODE_TX) {
     spi_write_reg_single_byte(radio, REG_01_OP_MODE, MODE_TX);
@@ -142,6 +188,15 @@ void sx1278_set_mode_tx(sx1278 *radio) {
   }
 }
 
+/**
+ * @brief Sets the radio module to receive mode.
+ *
+ * This function puts the radio module into continuous receive mode, allowing
+ * it to listen for incoming messages. It also configures the DIO mapping for
+ * receiving.
+ *
+ * @param radio Pointer to the sx1278 radio instance.
+ */
 void sx1278_set_mode_rx(sx1278 *radio) {
   if (radio->mode != MODE_RXCONTINUOUS) {
     spi_write_reg_single_byte(radio, REG_01_OP_MODE, MODE_RXCONTINUOUS);
@@ -152,6 +207,14 @@ void sx1278_set_mode_rx(sx1278 *radio) {
   }
 }
 
+/**
+ * @brief Sets the radio module to idle mode.
+ *
+ * This function puts the radio module into standby mode, which is a low-power
+ * state that allows for quick transitions to transmit or receive modes.
+ *
+ * @param radio Pointer to the sx1278 radio instance.
+ */
 void sx1278_set_mode_idle(sx1278 *radio) {
   if (radio->mode != MODE_STDBY) {
     spi_write_reg_single_byte(radio, REG_01_OP_MODE, MODE_STDBY);
@@ -159,6 +222,17 @@ void sx1278_set_mode_idle(sx1278 *radio) {
   }
 }
 
+/**
+ * @brief Waits for the packet to be sent.
+ *
+ * This function blocks until the radio module is no longer in transmit mode,
+ * indicating that the packet has been sent. It uses a timeout to prevent
+ * indefinite blocking.
+ *
+ * @param radio Pointer to the sx1278 radio instance.
+ * @return `true` if the packet was sent successfully, `false` if the timeout
+ * occurred.
+ */
 bool wait_packet_sent(sx1278 *radio) {
   uint32_t start_ms = to_ms_since_boot(get_absolute_time());
   while ((to_ms_since_boot(get_absolute_time()) - start_ms) <
@@ -170,6 +244,16 @@ bool wait_packet_sent(sx1278 *radio) {
   return false;
 }
 
+/**
+ * @brief Sends a string message using the radio module.
+ *
+ * This function prepares the radio module to send a string message by
+ * writing the data to the FIFO buffer and setting the payload length.
+ * It then switches the radio to transmit mode.
+ *
+ * @param radio Pointer to the sx1278 radio instance.
+ * @param data The string data to be sent (null-terminated).
+ */
 void sx1278_send_str(sx1278 *radio, char *data) {
   wait_packet_sent(radio);
   sx1278_set_mode_idle(radio);
@@ -179,6 +263,17 @@ void sx1278_send_str(sx1278 *radio, char *data) {
   sx1278_set_mode_tx(radio);
 }
 
+/**
+ * @brief Sends raw data using the radio module.
+ *
+ * This function prepares the radio module to send raw bytes data by writing
+ * the data to the FIFO buffer and setting the payload length. It then switches
+ * the radio to transmit mode.
+ *
+ * @param radio Pointer to the sx1278 radio instance.
+ * @param data Pointer to the raw data to be sent.
+ * @param length The length of the raw data in bytes.
+ */
 void sx1278_send_raw(sx1278 *radio, char *data, size_t length) {
   wait_packet_sent(radio);
   sx1278_set_mode_idle(radio);
@@ -230,8 +325,11 @@ void spi_read_reg_multi_byte(sx1278 *radio,
 
 void irq_handler(uint gpio, uint32_t event_mask) {
   printf("@@@@@@@@@@@@@@@ IRQ! @@@@@@@@@@@@@@@\n");
-  if (!instance || !instance->is_working)
+  if (!instance || !instance->is_working) {
+    printf(
+        "[ERROR] IRQ handler called but instance is NULL or not working.\n");
     return;
+  }
   instance->irq_flags = spi_read_reg_single_byte(instance, REG_12_IRQ_FLAGS);
   spi_write_reg_single_byte(instance, REG_12_IRQ_FLAGS, instance->irq_flags);
   if (instance->mode == MODE_TX && instance->irq_flags & TX_DONE) {
@@ -255,7 +353,7 @@ void message_received_callback() {
       spi_read_reg_single_byte(instance, REG_10_FIFO_RX_CURRENT_ADDR));
   static uint8_t buffer[256];
   spi_read_reg_multi_byte(instance, REG_00_FIFO, buffer, length);
-  buffer[length] = '\0'; // Ensure null-termination
+  buffer[length] = '\0';
   if (instance->message_received_callback) {
     instance->message_received_callback((char *)buffer);
   }

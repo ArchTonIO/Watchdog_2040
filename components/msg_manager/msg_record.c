@@ -24,7 +24,6 @@ msg_record_init(uint16_t contact_addr, char *message, uint8_t status) {
       find_contact_name_by_addr(contact_addr),
       MAX_CONTACT_NAME_LENGTH);
   record->status = status;
-  printf("flag\n");
   switch (status) {
   case 0:
     strcpy(record->status_str, "delivered");
