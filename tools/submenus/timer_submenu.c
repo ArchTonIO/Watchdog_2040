@@ -14,7 +14,7 @@
 #include "tools/submenus/time_utils.h"
 
 void set_timer() {};
-void start_countdown(time_digits *digits);
+bool start_countdown(time_digits *digits);
 
 void enter_timer_submenu() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
@@ -38,8 +38,12 @@ void enter_timer_submenu() {
   ssd1306_show(drivers->oled_screen);
   while (!drivers->joystick->button_pressed)
     joystick_update(drivers->joystick);
-  start_countdown(digits);
-  ssd1306_print(drivers->oled_screen, "Press to stop alarm", 1, 0, false);
+  if (!start_countdown(digits)) {
+    free(digits);
+    return;
+  }
+  ssd1306_print(drivers->oled_screen, " Press to stop alarm ", 0, 0, false);
+  ssd1306_show(drivers->oled_screen);
   joystick_update(drivers->joystick);
   while (!drivers->joystick->button_pressed) {
     joystick_update(drivers->joystick);
@@ -48,9 +52,10 @@ void enter_timer_submenu() {
   free(digits);
 }
 
-void start_countdown(time_digits *digits) {
+bool start_countdown(time_digits *digits) {
   ssd1306_clear(drivers->oled_screen);
   time_digits_show(digits, 28, 23, 2);
+  ssd1306_print(drivers->oled_screen, "Left <- to exit timer", 0, 0, false);
   ssd1306_show(drivers->oled_screen);
   int32_t total_seconds = (digits->hour_tens * 10 + digits->hour_units) *
                               3600 +
@@ -58,6 +63,9 @@ void start_countdown(time_digits *digits) {
                               60 +
                           (digits->second_tens * 10 + digits->second_units);
   while (total_seconds > 0) {
+    joystick_update(drivers->joystick);
+    if (joystick_get_direction(drivers->joystick) == W)
+      return false;
     sleep_ms(1000);
     total_seconds--;
     digits->second_units--;
@@ -87,4 +95,5 @@ void start_countdown(time_digits *digits) {
     time_digits_show(digits, 28, 23, 2);
     ssd1306_show(drivers->oled_screen);
   }
+  return true;
 }
