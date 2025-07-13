@@ -253,14 +253,32 @@ void reset_system() {
 }
 
 void display_battery_status() {
-  uint8_t battery_level = battery_get_percentage(drivers->battery);
-  char battery_str[20];
-  snprintf(battery_str, sizeof(battery_str), "Battery: %u%%", battery_level);
-  str_list *options = list_init();
-  list_append(options, battery_str);
-  options_page *battery_status = options_page_init("Battery status", options);
-  options_page_launch(battery_status);
-  options_page_free(battery_status);
+  ssd1306_clear(drivers->oled_screen);
+  joystick_update(drivers->joystick);
+  while (joystick_get_direction(drivers->joystick) != W) {
+    joystick_update(drivers->joystick);
+    ssd1306_print(drivers->oled_screen, "Battery status", 3, 0, false);
+    ssd1306_print(drivers->oled_screen, "Percentage:     ", 0, 2, false);
+    ssd1306_print(drivers->oled_screen,
+        battery_get_percentage_str(drivers->battery),
+        12,
+        2,
+        false);
+    ssd1306_print(drivers->oled_screen, "Voltage:        ", 0, 3, false);
+    ssd1306_print(drivers->oled_screen,
+        battery_get_voltage_str(drivers->battery),
+        12,
+        3,
+        false);
+    ssd1306_print(drivers->oled_screen, "Crude ADC:      ", 0, 4, false);
+    ssd1306_print(drivers->oled_screen,
+        battery_get_crude_adc_str(drivers->battery),
+        12,
+        4,
+        false);
+    ssd1306_show(drivers->oled_screen);
+    sleep_ms(100);
+  }
 }
 
 void display_joystick_check() {

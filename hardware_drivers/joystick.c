@@ -51,7 +51,6 @@ joystick *joystick_init(pin x_pin,
   new_joystick->button_pressed = false;
   new_joystick->sensitivity = sensitivity;
   new_joystick->axis_rotation = axis_rotation;
-  adc_init();
   adc_gpio_init(x_pin);
   adc_gpio_init(y_pin);
   gpio_init(button_pin);

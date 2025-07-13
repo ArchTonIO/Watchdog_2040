@@ -3,7 +3,13 @@
 
 #include <stdint.h>
 
-extern uint8_t *battery_level_bitmaps[10];
+#include "hardware_drivers/battery.h"
+
+extern uint8_t battery_empty[];
+extern uint8_t battery_1_bar[];
+extern uint8_t battery_2_bars[];
+extern uint8_t battery_3_bars[];
+extern uint8_t battery_4_bars[];
 extern uint8_t microsd_working[];
 extern uint8_t microsd_not_working[];
 extern uint8_t lora_working[];

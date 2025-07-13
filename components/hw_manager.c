@@ -57,12 +57,9 @@ hw_drivers *hardware_drivers_init() {
   // multicore_fifo_push_blocking(SX1278_OK);
   // else
   // multicore_fifo_push_blocking(SX1278_ERR);
-  hw_man->battery = battery_init(VOLTAGE_DIVIDER_RATIO,
-      ADC_MAX_VALUE,
-      RP_2040_VCC_MEASURED_VOLTAGE,
-      BATTERY_SLOPE,
-      MIN_BATTERY_VOLTAGE,
-      MAX_BATTERY_VOLTAGE,
+  hw_man->battery = battery_init(ADC_MAX_VALUE,
+      BATTERY_MIN_VOLTAGE,
+      BATTERY_MAX_VOLTAGE,
       BATTERY_PIN,
       ADC_CHANNEL);
   // if (hw_man->battery->is_working)
@@ -121,7 +118,6 @@ void print_free_heap() {
 uint get_clock_freq_khz(void) { return clock_get_hz(clk_sys) / 1000; }
 
 float get_cpu_temp() {
-  adc_init();
   adc_set_temp_sensor_enabled(true);
   adc_select_input(4);
   uint16_t raw = adc_read();

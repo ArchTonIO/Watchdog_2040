@@ -59,18 +59,8 @@ void check_pheripherals() {
     home_page_inst->en160_status = 0;
 }
 
-uint8_t smooth_out_battery_level() {
-  uint8_t samples = 10;
-  uint16_t sum = 0;
-  for (uint8_t i = 0; i < samples; i++) {
-    sum += battery_get_percentage(drivers->battery);
-    sleep_ms(5);
-  }
-  return sum / samples;
-}
-
 void process_system_state() {
-  home_page_inst->battery_level = smooth_out_battery_level();
+  home_page_inst->battery_level = battery_get_percentage(drivers->battery);
   home_page_inst->alarm_set = drivers->rtc->alarm_set;
   home_page_inst->bpm = 0;  // TODO: implement bpm reading
   home_page_inst->spo2 = 0; // TODO: implement spo2 reading
@@ -81,9 +71,17 @@ void process_system_state() {
 }
 
 uint8_t *get_battery_level_bitmap() {
-  if (home_page_inst->battery_level == 100)
-    home_page_inst->battery_level = 99;
-  return battery_level_bitmaps[home_page_inst->battery_level / 10];
+  if (home_page_inst->battery_level >= 100) {
+    return battery_4_bars;
+  } else if (home_page_inst->battery_level >= 75) {
+    return battery_3_bars;
+  } else if (home_page_inst->battery_level >= 50) {
+    return battery_2_bars;
+  } else if (home_page_inst->battery_level >= 25) {
+    return battery_1_bar;
+  } else {
+    return battery_empty;
+  }
 }
 
 uint8_t *get_sd_status_bitmap() {
@@ -263,20 +261,12 @@ void update_clock(uint8_t start_pix_w, uint8_t start_pix_h, uint8_t spacing) {
 }
 
 void update_texts() {
-  text_area bpm_text = {.text = "BPM",
-      .posx = 0,
-      .posy = 3,
-      .is_inverted = false};
-  text_area bpm_value_text = {.text = " 70", // todo: change with real value
-      .posx = 0,
-      .posy = 4,
-      .is_inverted = false};
   text_area aqi_text = {.text = "AQI",
-      .posx = 13,
+      .posx = 0,
       .posy = 3,
       .is_inverted = false};
   text_area aqi_value_text = {.text = " 1 ", // todo: change with real value
-      .posx = 13,
+      .posx = 0,
       .posy = 4,
       .is_inverted = false};
   text_area ulmp_text = {.text = "ULMP",
@@ -315,8 +305,6 @@ void update_texts() {
       .posx = 5,
       .posy = 7,
       .is_inverted = false};
-  layout_add_text_area(home_page_inst->ly, bpm_text);
-  layout_add_text_area(home_page_inst->ly, bpm_value_text);
   layout_add_text_area(home_page_inst->ly, aqi_text);
   layout_add_text_area(home_page_inst->ly, aqi_value_text);
   layout_add_text_area(home_page_inst->ly, ulmp_text);

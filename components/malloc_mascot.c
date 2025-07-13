@@ -302,13 +302,7 @@ void malloc_explains_you_home_screen() {
       26,
       28,
       0);
-  ssd1306_draw_bitmap(drivers->oled_screen,
-      0,
-      0,
-      battery_level_bitmaps[9],
-      21,
-      16,
-      0);
+  ssd1306_draw_bitmap(drivers->oled_screen, 0, 0, battery_4_bars, 21, 16, 0);
   ssd1306_print_gradually(drivers->oled_screen, "In alto a ", 4, 2, 0);
   ssd1306_print_gradually(drivers->oled_screen, "sinistra trovi", 4, 3, 0);
   ssd1306_print_gradually(drivers->oled_screen, "la percentuale", 4, 4, 0);

@@ -10,6 +10,7 @@
 #include "components/msg_manager/msg_manager.h"
 #include "data_structures/string_list.h"
 #include "device.h"
+#include "hardware/adc.h"
 #include "hardware_drivers/haptics.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/ssd1306.h"
@@ -64,6 +65,7 @@ void create_dir_tree() {
 void sys_setup() {
   gpio_init(25);
   gpio_set_dir(25, true);
+  adc_init();
   stdio_init_all();
   collector_init();
   hardware_drivers_init();

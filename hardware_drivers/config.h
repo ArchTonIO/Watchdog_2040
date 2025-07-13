@@ -66,13 +66,12 @@ lib/no-Os-FatFS-SD-SPI-RPi-Pico/FatFs_SPI/sd_driver/hw_config.c*/
 #define JOYSTICK_SENSITIVITY 0.5f
 
 /*battery settings*/
-#define VOLTAGE_DIVIDER_RATIO 3.125
 #define ADC_MAX_VALUE 4095.0
-#define RP_2040_VCC_MEASURED_VOLTAGE 3.34
-#define BATTERY_PIN 29
+#define BATTERY_MIN_VOLTAGE 3.27
+#define BATTERY_MAX_VOLTAGE 4.20
+#define BATTERY_PIN                                                           \
+  29 // threre is nothing connected to this pin, cause 29 is directly connected
+     // to vsys, and thus to the battery
 #define ADC_CHANNEL 3
-#define BATTERY_SLOPE 111.1
-#define MIN_BATTERY_VOLTAGE 3.3
-#define MAX_BATTERY_VOLTAGE 4.2
 
 #endif
