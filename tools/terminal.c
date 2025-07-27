@@ -1,6 +1,6 @@
-
 #include "terminal.h"
 
+#include <device.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -10,123 +10,202 @@
 #include "pico/stdlib.h"
 
 #include "components/hw_manager.h"
+#include "components/malloc_mascot.h"
+#include "components/sys_paths_manager.h"
 #include "data_structures/string_list.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/ssd1306.h"
+#include "tools/terminal_commands.h"
+#include "tools/text_editor.h"
+#include "tools/virtual_keyboard.h"
+#include "utils/path.h"
 #include "utils/utils.h"
 
-void help();
-void clear();
-void echo();
-void exit();
-void cd();
-void ls();
-void pwd();
-void mkdir();
-void touch();
-void rm();
-void mv();
-void cp();
-void cat();
-void head();
-void tail();
-void grep();
-void top();
-void whoami();
-void ping();
-void nano();
+int8_t dispatch_command(terminal *term, const char *command);
 
-void generate_commands() {
-  command help_cmd;
-  strcpy(help_cmd.name, "help");
-  help_cmd.callback = help;
-  command clear_cmd;
-  strcpy(clear_cmd.name, "clear");
-  clear_cmd.callback = clear;
-  command echo_cmd;
-  strcpy(echo_cmd.name, "echo");
-  echo_cmd.callback = echo;
-  command exit_cmd;
-  strcpy(exit_cmd.name, "exit");
-  exit_cmd.callback = exit;
-  command cd_cmd;
-  strcpy(cd_cmd.name, "cd");
-  cd_cmd.callback = cd;
-  command ls_cmd;
-  strcpy(ls_cmd.name, "ls");
-  ls_cmd.callback = ls;
-  command pwd_cmd;
-  strcpy(pwd_cmd.name, "pwd");
-  pwd_cmd.callback = pwd;
-  command mkdir_cmd;
-  strcpy(mkdir_cmd.name, "mkdir");
-  mkdir_cmd.callback = mkdir;
-  command touch_cmd;
-  strcpy(touch_cmd.name, "touch");
-  touch_cmd.callback = touch;
-  command rm_cmd;
-  strcpy(rm_cmd.name, "rm");
-  rm_cmd.callback = rm;
-  command mv_cmd;
-  strcpy(mv_cmd.name, "mv");
-  mv_cmd.callback = mv;
-  command cp_cmd;
-  strcpy(cp_cmd.name, "cp");
-  cp_cmd.callback = cp;
-  command cat_cmd;
-  strcpy(cat_cmd.name, "cat");
-  cat_cmd.callback = cat;
-  command head_cmd;
-  strcpy(head_cmd.name, "head");
-  head_cmd.callback = head;
-  command tail_cmd;
-  strcpy(tail_cmd.name, "tail");
-  tail_cmd.callback = tail;
-  command grep_cmd;
-  strcpy(grep_cmd.name, "grep");
-  grep_cmd.callback = grep;
-  command top_cmd;
-  strcpy(top_cmd.name, "top");
-  top_cmd.callback = top;
-  command whoami_cmd;
-  strcpy(whoami_cmd.name, "whoami");
-  whoami_cmd.callback = whoami;
-  command ping_cmd;
-  strcpy(ping_cmd.name, "ping");
-  ping_cmd.callback = ping;
-  command nano_cmd;
-  strcpy(nano_cmd.name, "nano");
-  nano_cmd.callback = nano;
+//! mancano le descrizioni dei comandi + capire perche crasha dopo l'output(
+//! probabilmente qualche free), bella
+
+void terminal_bind_std_commands(terminal *term) {
+  terminal_add_command(term,
+      create_command("help", "Show available commands.", __help__));
+  // terminal_add_command(term,
+  //     create_command("clear", "Clear the terminal screen.", __clear__));
+  terminal_add_command(term,
+      create_command("echo", "Print text to the terminal.", __echo__));
+  terminal_add_command(term,
+      create_command("exit", "Exit the terminal.", __exit__));
+  terminal_add_command(term,
+      create_command("cd", "Change current directory.", __cd__));
+  terminal_add_command(term,
+      create_command("ls", "List directory contents.", __ls__));
+  terminal_add_command(term,
+      create_command("pwd", "Print working directory.", __pwd__));
+  terminal_add_command(term,
+      create_command("mkdir", "Create a new directory.", __mkdir__));
+  terminal_add_command(term,
+      create_command("touch", "Create an empty file.", __touch__));
+  terminal_add_command(term,
+      create_command("rm", "Remove files or directories.", __rm__));
+  terminal_add_command(term,
+      create_command("mv", "Move or rename files.", __mv__));
+  terminal_add_command(term,
+      create_command("cp", "Copy files or directories.", __cp__));
+  terminal_add_command(term,
+      create_command("cat", "Show file contents.", __cat__));
+  terminal_add_command(term,
+      create_command("head", "Show first lines of a file.", __head__));
+  terminal_add_command(term,
+      create_command("tail", "Show last lines of a file.", __tail__));
+  terminal_add_command(term,
+      create_command("grep", "Search text in files.", __grep__));
+  terminal_add_command(term,
+      create_command("top", "Show running processes.", __top__));
+  terminal_add_command(term,
+      create_command("whoami", "Show current user.", __whoami__));
+  terminal_add_command(term,
+      create_command("ping", "Ping another ULMP device.", __ping__));
+  terminal_add_command(term,
+      create_command("nano", "Open text editor.", __nano__));
+  terminal_add_command(term,
+      create_command("sensors", "Show hardware sensor data.", __sensors__));
+  terminal_add_command(term,
+      create_command("history", "Show command history.", __history__));
+}
+
+void terminal_add_command(terminal *term, command cmd) {
+  if (term->commands_count < MAX_COMMANDS) {
+    term->commands[term->commands_count] = cmd;
+    term->commands_count++;
+  } else {
+    printf(
+        "[TERMINAL](ERR)Command limit reached. Cannot add more commands.\n");
+  }
 }
 
 terminal *terminal_init() {
   terminal *term = (terminal *)malloc(sizeof(terminal));
   term->history = list_init();
+  term->commands_count = 0;
+  term->current_path = sys_paths->dirs->user_path;
+  term->prefix = (char *)malloc(1);
   strcpy(term->current_command, "");
-  term->keyboard = virtual_keyboard_init();
   return term;
 }
 
-void terminal_launch(terminal *term) {
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_show(drivers->oled_screen);
-  draw_keyboard(term->keyboard);
-  while (true) {
-    char last_char = virtual_keyboard_read(term->keyboard);
-    if (last_char == END)
-      break;
-    else if (last_char == BCK) {
-      if (strlen(term->current_command) > 0)
-        term->current_command[strlen(term->current_command) - 1] = '\0';
-    } else if (last_char != NOW && last_char != NSK) {
-      strncat(term->current_command, &last_char, 1);
-    }
-    ssd1306_clear(drivers->oled_screen);
-    ssd1306_set_cursor(0, 0);
-    ssd1306_print(drivers->oled_screen,
-        term->current_command,
-        FONT_SIZE_1,
-        true);
-    ssd1306_show(drivers->oled_screen);
+void terminal_kill(terminal *term) {
+  if (term) {
+    list_free(term->history);
+    path_free(term->current_path);
+    free(term->prefix);
+    free(term);
   }
+}
+
+void terminal_clear_buffers(terminal *term) {
+  term->stdout_buf[0] = '\0';
+  term->stderr_buf[0] = '\0';
+}
+
+void terminal_display_stdout(terminal *term) {
+  text_editor *editor = text_editor_launch(term->stdout_buf, false);
+  char *buf = text_editor_get_buf(editor);
+  text_editor_kill(editor);
+  free(buf);
+  terminal_clear_buffers(term);
+}
+
+void terminal_display_stderr(terminal *term) {
+  text_editor *editor = text_editor_launch(term->stderr_buf, false);
+  char *buf = text_editor_get_buf(editor);
+  text_editor_kill(editor);
+  free(buf);
+  terminal_clear_buffers(term);
+}
+
+void terminal_update_prefix(terminal *term) {
+  size_t prefix_len = 0;
+  const char *relative_path = NULL;
+  if (strcmp(term->current_path->abs_path,
+          sys_paths->dirs->user_path->abs_path) == 0) {
+    prefix_len = strlen(malloc_memories_inst->username) + strlen(HOSTNAME) +
+                 5 + 1;
+    term->prefix = (char *)realloc(term->prefix, prefix_len);
+    snprintf(term->prefix,
+        prefix_len,
+        "%s@%s:~$ ",
+        malloc_memories_inst->username,
+        HOSTNAME);
+  } else if (strncmp(term->current_path->abs_path,
+                 sys_paths->dirs->home_path->abs_path,
+                 strlen(sys_paths->dirs->home_path->abs_path)) == 0) {
+    relative_path = term->current_path->abs_path +
+                    strlen(sys_paths->dirs->home_path->abs_path);
+    if (relative_path[0] == '/')
+      relative_path++;
+    prefix_len = strlen(malloc_memories_inst->username) + strlen(HOSTNAME) +
+                 strlen(relative_path) + 6 + 1;
+    term->prefix = (char *)realloc(term->prefix, prefix_len);
+    snprintf(term->prefix,
+        prefix_len,
+        "%s@%s:~/%s$ ",
+        malloc_memories_inst->username,
+        HOSTNAME,
+        relative_path);
+  } else {
+    prefix_len = strlen(malloc_memories_inst->username) + strlen(HOSTNAME) +
+                 strlen(term->current_path->abs_path) + 5 + 1;
+    term->prefix = (char *)realloc(term->prefix, prefix_len);
+    snprintf(term->prefix,
+        prefix_len,
+        "%s@%s:%s$ ",
+        malloc_memories_inst->username,
+        HOSTNAME,
+        term->current_path->abs_path);
+  }
+}
+
+void terminal_launch() {
+  virtual_keyboard *keyboard = virtual_keyboard_init();
+  terminal *term = terminal_init();
+  terminal_bind_std_commands(term);
+  while (true) {
+    terminal_update_prefix(term);
+    text_editor *editor = text_editor_launch(term->prefix, false);
+    char *command = text_editor_get_buf(editor);
+    int8_t ret = dispatch_command(term, command);
+    free(command);
+    text_editor_kill(editor);
+    if (ret == -1) {
+      terminal_kill(term);
+      break;
+    }
+  }
+}
+
+int8_t dispatch_command(terminal *term, const char *command) {
+  str_list *slices = string_split(command, ' ');
+  char *prefix = get(slices, 0);
+  char *cmd = get(slices, 1);
+  str_list *args = list_init();
+  if (cmd == NULL || strlen(cmd) == 0) {
+    list_free(args);
+    list_free(slices);
+    return 1;
+  }
+  for (size_t i = 2; i < slices->len; i++) {
+    list_append(args, get(slices, i));
+  }
+  list_append(term->history, cmd);
+  for (size_t i = 0; i < term->commands_count; i++) {
+    if (strcmp(term->commands[i].name, cmd) == 0) {
+      command_params params = {term, args};
+      int8_t ret = term->commands[i].callback(params);
+      list_free(args);
+      list_free(slices);
+      return ret;
+    }
+  }
+  printf("[TERMINAL](ERR)Command not found: %s\n", cmd);
+  return 1;
 }

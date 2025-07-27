@@ -203,3 +203,18 @@ void lora_send_pong() {
   sleep_ms(PACKET_TIMEOUT);
   lora_receive();
 }
+
+/**
+ * @brief Resets the receive buffer to its initial small size to prevent memory
+ * leaks.
+ *
+ * This function should be called after processing a received message to
+ * reclaim memory that was allocated during message reception.
+ */
+void lora_reset_recv_buffer() {
+  if (this_lora->rx->recv_payloads_buf) {
+    free(this_lora->rx->recv_payloads_buf);
+    this_lora->rx->recv_payloads_buf = malloc(16);
+    this_lora->rx->recv_payloads_buf[0] = '\0';
+  }
+}

@@ -111,7 +111,6 @@ uint32_t get_free_heap(void) {
  * @brief prints how much memory is available in the heap.
  */
 void print_free_heap() {
-  collect();
   printf("Available memory: %u bytes\n", get_free_heap());
 }
 

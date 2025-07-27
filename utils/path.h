@@ -26,6 +26,7 @@ bool path_ftouch(path *file);
 bool path_fdelete(path *path);
 bool path_mkdir(path *dir);
 bool path_rmdir(path *dir);
+bool path_rename(path *src, path *dest);
 str_list *path_listdir(path *path);
 bool path_key_value_dump(path *file,
     char mode,
@@ -34,6 +35,7 @@ bool path_key_value_dump(path *file,
 char *path_key_value_get(path *file, const char *key);
 bool path_replace_value_at_key(path *file, const char *key, const char *value);
 bool path_exists(path *path);
+path *path_concat(path *path_1, path *path_2);
 void path_print(const path *path);
 void path_free(path *path);
 

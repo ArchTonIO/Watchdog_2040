@@ -9,6 +9,7 @@
 #include "components/hw_manager.h"
 #include "components/malloc_mascot.h"
 #include "components/msg_manager/msg_manager.h"
+#include "components/sys_paths_manager.h"
 #include "data_structures/string_list.h"
 #include "device.h"
 #include "graphics/bitmaps.h"
@@ -32,10 +33,8 @@ contacts_manager *contacts_manager_init() {
   contacts_manager *contacts_man = (contacts_manager *)malloc(
       sizeof(contacts_manager));
   contacts_man->contacts_count = 0;
-  contacts_man->contacts_addr_file = path_init(
-      string_add(malloc_memories_inst->user_folder, CONTACTS_ADDR_FILE));
-  contacts_man->contacts_names_file = path_init(
-      string_add(malloc_memories_inst->user_folder, CONTACTS_NAMES_FILE));
+  contacts_man->contacts_addr_file = sys_paths->files->contacts_addr_file;
+  contacts_man->contacts_names_file = sys_paths->files->contacts_names_file;
   contacts_man_inst = contacts_man;
   if (path_exists(contacts_man->contacts_addr_file) &&
       path_exists(contacts_man->contacts_names_file))
@@ -69,6 +68,7 @@ void add_contact() {
     sleep_ms(INFO_PAGES_TIMEOUT);
     ssd1306_clear(drivers->oled_screen);
     ssd1306_show(drivers->oled_screen);
+    free(name); // Fix memory leak
     return;
   }
   save_contact(name, addr);
@@ -197,13 +197,17 @@ uint16_t ask_for_contact_addr() {
   char *temp = text_editor_get_buf(editor);
   text_editor_kill(editor);
   if (!is_string_numeric(temp) || strlen(temp) > 5 || strlen(temp) == 0 ||
-      strcmp(temp, malloc_memories_inst->ulmp_addr_str) == 0)
+      strcmp(temp, malloc_memories_inst->ulmp_addr_str) == 0) {
+    free(temp);
     return 0;
+  }
   uint16_t addr = 0;
   if (sscanf(temp, "%hu", &addr) == 1) {
     free(temp);
     return addr;
   }
+  free(temp);
+  return 0;
 }
 
 void dump_contacts_to_sd() {

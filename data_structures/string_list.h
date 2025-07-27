@@ -32,7 +32,7 @@ void list_print(str_list *list);
 void clear(str_list *list);
 uinteger list_len(str_list *list);
 uinteger list_compare(str_list *list1, str_list *list2);
-char *list_concat(str_list *list);
+char *list_concat(str_list *list, char separator);
 str_list *list_extend(str_list *list1, str_list *list2);
 str_list *list_copy(str_list *to_copy);
 str_list *list_reverse(str_list *list);

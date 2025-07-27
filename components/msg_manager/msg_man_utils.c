@@ -12,6 +12,7 @@
 #include "components/msg_manager/contacts_manager.h"
 #include "components/msg_manager/msg_manager.h"
 #include "components/msg_manager/msg_record.h"
+#include "components/sys_paths_manager.h"
 #include "data_structures/string_list.h"
 #include "device.h"
 #include "hardware_drivers/ssd1306.h"
@@ -34,14 +35,13 @@ str_list *get_selectable_options_by_msg_uids(str_list *msg_uids,
 /*scary aah function*/
 void show_read_messages_menu() {
   show_fetching_screen();
-  path *conversations_dir = path_init(
-      string_add(malloc_memories_inst->user_folder, MESSAGES_DIR));
-  str_list *all_files = path_listdir(conversations_dir);
+  str_list *all_files = path_listdir(sys_paths->dirs->messages_path);
   str_list *active_conversations = list_init();
   for (uint16_t i = 0; i < all_files->len; i++) {
-    path *conv_file = path_init(
-        string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
-            get(all_files, i)));
+    path *conv_file_temp = path_init(get(all_files, i));
+    path *conv_file = path_concat(sys_paths->dirs->messages_path,
+        conv_file_temp);
+    path_free(conv_file_temp); // Fix: Use path_free instead of free
     if (strcmp(conv_file->ext, "keys") != 0)
       list_append(active_conversations, conv_file->name);
     path_free(conv_file);
@@ -52,7 +52,6 @@ void show_read_messages_menu() {
     char *selected_contact = options_page_launch(conversations);
     char *selected_contact_copy = strdup(selected_contact);
     if (strcmp(selected_contact, "") == 0) {
-      path_free(conversations_dir);
       list_free(all_files);
       options_page_free(conversations);
       free(selected_contact_copy);
@@ -123,9 +122,10 @@ void show_fetching_screen() {
 
 char *get_displayable_msg_by_uid(uint16_t contact_addr, char *msg_uid) {
   char *contact_name = find_contact_name_by_addr(contact_addr);
-  path *conversation_file = path_init(
-      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
-          contact_name));
+  path *contact_name_file = path_init(contact_name);
+  path *conversation_file = path_concat(sys_paths->dirs->messages_path,
+      contact_name_file);
+  path_free(contact_name_file);
   char *message = path_key_value_get(conversation_file, msg_uid);
   msg_record *record = msg_record_load(message, msg_uid);
   char *displayable_msg = (char *)malloc(
@@ -137,17 +137,22 @@ char *get_displayable_msg_by_uid(uint16_t contact_addr, char *msg_uid) {
       record->message);
   path_free(conversation_file);
   msg_record_free(record);
+  free(message); // Fix memory leak
   return displayable_msg;
 }
 
 str_list *get_stored_msg_uids_by_user(uint16_t contact_addr) {
   char *contact_name = find_contact_name_by_addr(contact_addr);
-  path *conversation_file = path_init(
-      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
-          contact_name));
-  path *keys_file = path_init(
-      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
-          string_add(contact_name, ".keys")));
+  path *contact_name_file = path_init(contact_name);
+  path *conversation_file = path_concat(sys_paths->dirs->messages_path,
+      contact_name_file);
+  path_free(contact_name_file);
+  char *keys_file_str = string_add(contact_name, ".keys");
+  path *keys_file_temp = path_init(keys_file_str);
+  path *keys_file = path_concat(sys_paths->dirs->messages_path,
+      keys_file_temp);
+  free(keys_file_str);
+  path_free(keys_file_temp);
   str_list *keys = path_fread(keys_file);
   str_list *keys_reversed = list_reverse(keys);
   path_free(keys_file);
@@ -162,7 +167,9 @@ str_list *get_chunks_by_msg_uids(str_list *msg_uids, uint8_t chunk_size) {
   for (uint64_t i = 0; i < num_chunks; i++) {
     char index_str[7];
     sprintf(index_str, "%lu", i);
-    list_append(chunks, string_add("chunk: ", index_str));
+    char *chunk_index_str = string_add("chunk: ", index_str);
+    list_append(chunks, chunk_index_str);
+    free(chunk_index_str);
   }
   return chunks;
 }
@@ -185,9 +192,10 @@ str_list *get_selectable_options_by_msg_uids(str_list *msg_uids,
     uint16_t contact_addr) {
   //[<"->" or "<-"> <status str>]<first_n_chars_of_msg>
   char *contact_name = find_contact_name_by_addr(contact_addr);
-  path *conversation_file = path_init(
-      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
-          contact_name));
+  path *contact_name_file = path_init(contact_name);
+  path *conversation_file = path_concat(sys_paths->dirs->messages_path,
+      contact_name_file);
+  path_free(contact_name_file);
   str_list *options = list_init();
   for (uint16_t i = 0; i < msg_uids->len; i++) {
     char *msg_uid = get(msg_uids, i);

@@ -7,6 +7,7 @@
 #include "components/hw_manager.h"
 #include "components/msg_manager/contacts_manager.h"
 #include "components/msg_manager/msg_manager.h"
+#include "components/sys_paths_manager.h"
 #include "data_structures/string_list.h"
 #include "device.h"
 #include "graphics/graphic_primitives.h"
@@ -21,6 +22,7 @@
 #include "tools/submenus/set_time_submenu.h"
 #include "tools/submenus/stopwatch_submenu.h"
 #include "tools/submenus/timer_submenu.h"
+#include "tools/terminal.h"
 #include "tools/text_editor.h"
 #include "utils/path.h"
 #include "utils/utils.h"
@@ -124,7 +126,9 @@ void take_note() {
       true);
   char *note = text_editor_get_buf(name_editor);
   if (note != NULL) {
-    path *note_path = path_init(string_add(NOTES_DIR, name));
+    path *name_path = path_init(name);
+    path *note_path = path_concat(sys_paths->dirs->notes_path, name_path);
+    path_free(name_path);
     path_fwrite(note_path, note, 'w');
     free(note);
     path_free(note_path);
@@ -138,6 +142,8 @@ void read_notes() // todo: implement
 void display_games_menu() // todo: implement
 {}
 
+void enter_terminal() { terminal_launch(); }
+
 void display_tools_menu() {
   str_list *options = list_init();
   list_append(options, "terminal");
@@ -145,7 +151,7 @@ void display_tools_menu() {
   list_append(options, "read notes");
   list_append(options, "games");
   options_page *tools_menu = options_page_init("Tools", options);
-  // attach_callback_to_option(tools_menu, 0, terminal_launch);
+  attach_callback_to_option(tools_menu, 0, enter_terminal);
   attach_callback_to_option(tools_menu, 1, take_note);
   attach_callback_to_option(tools_menu, 2, read_notes);
   attach_callback_to_option(tools_menu, 3, display_games_menu);

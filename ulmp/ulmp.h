@@ -97,5 +97,6 @@ uint8_t lora_send_msg(uint16_t dest_address,
 uint8_t lora_ping(uint16_t dest_address);
 void lora_send_ack(void (*notify)(uint16_t src_address));
 void lora_send_pong();
+void lora_reset_recv_buffer();
 
 #endif

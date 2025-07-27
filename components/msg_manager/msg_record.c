@@ -8,6 +8,7 @@
 #include "components/hw_manager.h"
 #include "components/malloc_mascot.h"
 #include "components/msg_manager/msg_manager.h"
+#include "components/sys_paths_manager.h"
 #include "data_structures/string_list.h"
 #include "device.h"
 #include "utils/path.h"
@@ -16,9 +17,10 @@
 msg_record *
 msg_record_init(uint16_t contact_addr, char *message, uint8_t status) {
   msg_record *record = (msg_record *)malloc(sizeof(msg_record));
-  record->message = (char *)malloc(strlen(message) + 1);
   char *no_lfd_message = string_replace(message, '\n', LFD_REPLACEMENT);
+  record->message = (char *)malloc(strlen(no_lfd_message) + 1);
   strcpy(record->message, no_lfd_message);
+  free(no_lfd_message);
   record->record_uid = gen_random_string(RECORD_UID_LENGTH);
   strncpy(record->contact_name,
       find_contact_name_by_addr(contact_addr),
@@ -61,12 +63,16 @@ msg_record_init(uint16_t contact_addr, char *message, uint8_t status) {
 }
 
 void msg_record_dump(msg_record *record) {
-  path *conversation_file = path_init(
-      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
-          record->contact_name));
-  path *keys_file = path_init(
-      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
-          string_add(record->contact_name, ".keys")));
+  path *contact_file = path_init(record->contact_name);
+  path *conversation_file = path_concat(sys_paths->dirs->messages_path,
+      contact_file);
+  path_free(contact_file);
+  char *keys_file_str = string_add(record->contact_name, ".keys");
+  path *keys_file_temp = path_init(keys_file_str);
+  path *keys_file = path_concat(sys_paths->dirs->messages_path,
+      keys_file_temp);
+  path_free(keys_file_temp); // Fix memory leak
+  free(keys_file_str);
   path_ftouch(conversation_file);
   size_t payload_size = (strlen(record->contact_name) +
                          strlen(record->direction) +
@@ -83,7 +89,9 @@ void msg_record_dump(msg_record *record) {
       record->status_str,
       record->timestamp,
       record->message);
-  path_fwrite(keys_file, string_add(record->record_uid, "\n"), 'a');
+  char *data = string_add(record->record_uid, "\n");
+  path_fwrite(keys_file, data, 'a');
+  free(data);
   path_key_value_dump(conversation_file, 'a', record->record_uid, payload);
   path_free(conversation_file);
   path_free(keys_file);
@@ -135,9 +143,10 @@ msg_record *msg_record_load(char *stringified_record, char *record_uid) {
  * otherwise.
  */
 bool msg_record_flag_as_read(const char *record_uid, char *contact_name) {
-  path *conversation_file = path_init(
-      string_add(string_add(malloc_memories_inst->user_folder, MESSAGES_DIR),
-          contact_name));
+  path *contact_name_file = path_init(contact_name);
+  path *conversation_file = path_concat(sys_paths->dirs->messages_path,
+      contact_name_file);
+  path_free(contact_name_file);
   char *stringified_record = path_key_value_get(conversation_file, record_uid);
   char *read_flagged_record = string_substring_replace(stringified_record,
       "unread",

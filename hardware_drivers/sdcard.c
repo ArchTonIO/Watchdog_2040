@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "components/sys_paths_manager.h"
 #include "data_structures/string_list.h"
 #include "device.h"
 #include "ff.h"
@@ -273,6 +274,19 @@ bool sdcard_delete_file(sdcard *sd, path *file) {
   sd->fr = f_unlink(file->abs_path);
   if (sd->fr != FR_OK) {
     printf("ERROR: Could not delete file (%d)\r\n", sd->fr);
+    return false;
+  }
+  return true;
+}
+
+bool sdcard_rename(sdcard *sd, path *src, path *dest) {
+  if (src->is_dir) {
+    printf("ERROR: Cannot rename a directory (%s)\r\n", src->abs_path);
+    return false;
+  }
+  sd->fr = f_rename(src->abs_path, dest->abs_path);
+  if (sd->fr != FR_OK) {
+    printf("ERROR: Could not rename file (%d)\r\n", sd->fr);
     return false;
   }
   return true;

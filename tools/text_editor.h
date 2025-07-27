@@ -28,6 +28,7 @@ typedef struct {
   char logic_buf[MAX_LOGIC_ROWS][MAX_LOGIC_COLS];
   virtual_keyboard *keyboard;
   bool debug;
+  bool is_terminal_editor;
 } text_editor;
 
 text_editor *text_editor_init(virtual_keyboard *keyboard, bool debug);

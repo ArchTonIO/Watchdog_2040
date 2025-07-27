@@ -187,6 +187,7 @@ void display_received_message(uint16_t src_address) {
       update_conversation_file(src_address,
           msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
           3);
+      lora_reset_recv_buffer();
       return;
     }
     joystick_update(drivers->joystick);
@@ -201,6 +202,7 @@ void display_received_message(uint16_t src_address) {
           4);
       msg_man_inst->received_msgs_count--;
       free(text);
+      lora_reset_recv_buffer();
       if (to_free)
         free(name);
       return;

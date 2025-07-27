@@ -207,9 +207,10 @@ uinteger list_compare(str_list *list1, str_list *list2) {
  * @brief Concatenate all the strings in the list.
  *
  * @param *list The list to concatenate.
+ * @param char separator The separator to use between strings.
  * @return char * The concatenated string.
  */
-char *list_concat(str_list *list) {
+char *list_concat(str_list *list, char separator) {
   if (list->len == 0) {
     char *empty = (char *)malloc(1);
     if (!empty)
@@ -221,16 +222,22 @@ char *list_concat(str_list *list) {
   for (int i = 0; i < list->len; i++) {
     total_length += strlen(get(list, i));
   }
-  total_length += 1;
+  total_length += (list->len - 1) + 1;
   char *total_payload = (char *)malloc(total_length);
   if (!total_payload)
     return NULL;
   char *ptr = total_payload;
   for (int i = 0; i < list->len; i++) {
     char *payload = get(list, i);
-    strcpy(ptr, payload);
-    ptr += strlen(payload);
+    size_t len = strlen(payload);
+    memcpy(ptr, payload, len);
+    ptr += len;
+    if (i < list->len - 1) {
+      *ptr = separator;
+      ptr++;
+    }
   }
+  *ptr = '\0';
   return total_payload;
 }
 

@@ -57,6 +57,10 @@ void text_editor_kill(text_editor *editor) {
   free(editor);
 }
 
+void text_editor_enable_terminal_mode(text_editor *editor) {
+  editor->is_terminal_editor = true;
+}
+
 /**
  * @brief Initialize a new text editor instance
  * @returns a new text editor instance
@@ -88,8 +92,8 @@ void insert_text(text_editor *editor, char *text, bool is_text_placeholder) {
     editor->logic_cursor_col++;
     editor->video_cursor_col++;
   }
-  editor->logic_cursor_row++;
-  editor->video_cursor_row++;
+  // editor->logic_cursor_row++;
+  // editor->video_cursor_row++;
   handle_text_wrapping(editor);
   if (!is_text_placeholder)
     return;
@@ -365,8 +369,12 @@ void write_char(uint8_t col, uint8_t row, char to_write) {
 }
 
 void blink_cursor(text_editor *editor, uint8_t col, uint8_t row) {
-  if (col >= MAX_VIDEO_COLS)
-    col = MAX_VIDEO_COLS - 1;
+  while (col >= MAX_VIDEO_COLS) {
+    col -= MAX_VIDEO_COLS;
+    row++;
+  }
+  if (row >= MAX_VIDEO_ROWS)
+    row = MAX_VIDEO_ROWS - 1;
   if (editor->show_cursor)
     ssd1306_draw_letter_at(drivers->oled_screen,
         col * (CHAR_WIDTH - 2),

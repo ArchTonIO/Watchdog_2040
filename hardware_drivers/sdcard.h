@@ -34,6 +34,7 @@ bool sdcard_replace_value_at_key(sdcard *sd,
     const char *value);
 bool sdcard_file_exists(sdcard *sd, path *file);
 bool sdcard_delete_file(sdcard *sd, path *file);
+bool sdcard_rename(sdcard *sd, path *src, path *dest);
 bool sdcard_touch_file(sdcard *sd, path *file);
 bool sdcard_mkdir(sdcard *sd, path *dir);
 bool sdcard_rmdir(sdcard *sd, path *dir);

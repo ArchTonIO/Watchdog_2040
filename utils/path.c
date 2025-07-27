@@ -8,6 +8,7 @@
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
 #include "hardware_drivers/sdcard.h"
+#include "utils/utils.h"
 
 void generate_parent(path *path);
 
@@ -99,11 +100,24 @@ bool path_mkdir(path *dir) { return sdcard_mkdir(drivers->sd_card, dir); }
 bool path_rmdir(path *dir) { return sdcard_rmdir(drivers->sd_card, dir); }
 
 /**
+ * @brief Renames a file or directory from the source path to the destination
+ * path.
+ *
+ * @param src The source path structure representing the file or directory to
+ * rename.
+ * @param dest The destination path structure representing the new name.
+ * @return true if the rename operation was successful, false otherwise.
+ */
+bool path_rename(path *src, path *dest) {
+  return sdcard_rename(drivers->sd_card, src, dest);
+}
+
+/**
  * @brief Lists the files in a directory at the specified path.
  *
  * @param path The path structure representing the directory.
- * @return A pointer to a string list containing the names of the files in the
- * directory.
+ * @return A pointer to a string list containing the names of the files in
+ * the directory.
  */
 str_list *path_listdir(path *path) {
   return sdcard_list_files(drivers->sd_card, path);
@@ -155,6 +169,15 @@ char *path_key_value_get(path *file, const char *key) {
  */
 bool path_exists(path *path) {
   return sdcard_file_exists(drivers->sd_card, path);
+}
+
+path *path_concat(path *path_1, path *path_2) {
+  char *path_1_slash = string_add(path_1->abs_path, "/");
+  char *new_abs_path = string_add(path_1_slash, path_2->abs_path);
+  path *new_path = path_init(new_abs_path);
+  free(new_abs_path);
+  free(path_1_slash);
+  return new_path;
 }
 
 /**

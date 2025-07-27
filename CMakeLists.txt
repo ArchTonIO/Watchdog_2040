@@ -43,6 +43,7 @@ components/msg_manager/contacts_manager.c
 components/msg_manager/msg_man_utils.c
 components/msg_manager/msg_manager.c
 components/msg_manager/msg_record.c
+components/sys_paths_manager.c
 data_structures/string_list.c
 graphics/bitmaps.c
 graphics/graphic_primitives.c
@@ -63,6 +64,8 @@ tools/submenus/time_utils.c
 tools/submenus/timer_submenu.c
 tools/menus.c
 tools/options_gen.c
+tools/terminal_commands.c
+tools/terminal.c
 tools/text_editor.c
 tools/virtual_keyboard.c
 ulmp/lora_receive.c
