@@ -88,7 +88,7 @@ str_list *string_split(char *str, char delimiter) {
   char delim[2] = {delimiter, '\0'};
   char *token = strtok(copy, delim);
   while (token != NULL) {
-    list_append(result, strdup(token));
+    list_append(result, token);
     token = strtok(NULL, delim);
   }
   free(copy);

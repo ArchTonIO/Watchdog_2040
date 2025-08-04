@@ -300,7 +300,7 @@ bool sdcard_rename(sdcard *sd, path *src, path *dest) {
  * @return true if the file was created or already exists, false otherwise
  */
 bool sdcard_touch_file(sdcard *sd, path *file) {
-  if (!sdcard_file_exists(sd, file->parent))
+  if (!sdcard_file_exists(sd, file))
     return sdcard_write_file(sd, file, "", 'w');
 }
 

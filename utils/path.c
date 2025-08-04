@@ -113,6 +113,23 @@ bool path_rename(path *src, path *dest) {
 }
 
 /**
+ * @brief Copies the contents of a file from the source path to the destination
+ * path.
+ *
+ * @param src The source path structure representing the file to copy.
+ * @param dest The destination path structure representing the new file.
+ * @return true if the copy operation was successful, false otherwise.
+ */
+bool path_fcopy(path *src, path *dest) {
+  str_list *src_content = sdcard_read_file(drivers->sd_card, src);
+  char *concat_content = list_concat(src_content, '\n');
+  bool ret = sdcard_write_file(drivers->sd_card, dest, concat_content, 'w');
+  free(concat_content);
+  list_free(src_content);
+  return ret;
+}
+
+/**
  * @brief Lists the files in a directory at the specified path.
  *
  * @param path The path structure representing the directory.

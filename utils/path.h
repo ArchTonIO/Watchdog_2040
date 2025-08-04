@@ -27,6 +27,7 @@ bool path_fdelete(path *path);
 bool path_mkdir(path *dir);
 bool path_rmdir(path *dir);
 bool path_rename(path *src, path *dest);
+bool path_fcopy(path *src, path *dest);
 str_list *path_listdir(path *path);
 bool path_key_value_dump(path *file,
     char mode,

@@ -6,7 +6,7 @@
 
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
-#include "terminal_commands.h"
+#include "tools/terminal/terminal_commands.h"
 #include "tools/virtual_keyboard.h"
 #include "utils/path.h"
 #define MAX_COMMANDS 100

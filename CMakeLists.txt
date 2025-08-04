@@ -62,10 +62,10 @@ tools/submenus/set_time_submenu.c
 tools/submenus/stopwatch_submenu.c
 tools/submenus/time_utils.c
 tools/submenus/timer_submenu.c
+tools/terminal/terminal_commands.c
+tools/terminal/terminal.c
 tools/menus.c
 tools/options_gen.c
-tools/terminal_commands.c
-tools/terminal.c
 tools/text_editor.c
 tools/virtual_keyboard.c
 ulmp/lora_receive.c

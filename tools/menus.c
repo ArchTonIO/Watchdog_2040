@@ -22,7 +22,7 @@
 #include "tools/submenus/set_time_submenu.h"
 #include "tools/submenus/stopwatch_submenu.h"
 #include "tools/submenus/timer_submenu.h"
-#include "tools/terminal.h"
+#include "tools/terminal/terminal.h"
 #include "tools/text_editor.h"
 #include "utils/path.h"
 #include "utils/utils.h"

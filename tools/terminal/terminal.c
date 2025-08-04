@@ -15,16 +15,13 @@
 #include "data_structures/string_list.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/ssd1306.h"
-#include "tools/terminal_commands.h"
+#include "tools/terminal/terminal_commands.h"
 #include "tools/text_editor.h"
 #include "tools/virtual_keyboard.h"
 #include "utils/path.h"
 #include "utils/utils.h"
 
 int8_t dispatch_command(terminal *term, const char *command);
-
-//! mancano le descrizioni dei comandi + capire perche crasha dopo l'output(
-//! probabilmente qualche free), bella
 
 void terminal_bind_std_commands(terminal *term) {
   terminal_add_command(term,
@@ -60,8 +57,6 @@ void terminal_bind_std_commands(terminal *term) {
   terminal_add_command(term,
       create_command("grep", "Search text in files.", __grep__));
   terminal_add_command(term,
-      create_command("top", "Show running processes.", __top__));
-  terminal_add_command(term,
       create_command("whoami", "Show current user.", __whoami__));
   terminal_add_command(term,
       create_command("ping", "Ping another ULMP device.", __ping__));
@@ -87,7 +82,7 @@ terminal *terminal_init() {
   terminal *term = (terminal *)malloc(sizeof(terminal));
   term->history = list_init();
   term->commands_count = 0;
-  term->current_path = sys_paths->dirs->user_path;
+  term->current_path = path_init(sys_paths->dirs->user_path->abs_path);
   term->prefix = (char *)malloc(1);
   strcpy(term->current_command, "");
   return term;
@@ -124,6 +119,7 @@ void terminal_display_stderr(terminal *term) {
 }
 
 void terminal_update_prefix(terminal *term) {
+
   size_t prefix_len = 0;
   const char *relative_path = NULL;
   if (strcmp(term->current_path->abs_path,
@@ -137,10 +133,10 @@ void terminal_update_prefix(terminal *term) {
         malloc_memories_inst->username,
         HOSTNAME);
   } else if (strncmp(term->current_path->abs_path,
-                 sys_paths->dirs->home_path->abs_path,
-                 strlen(sys_paths->dirs->home_path->abs_path)) == 0) {
+                 sys_paths->dirs->user_path->abs_path,
+                 strlen(sys_paths->dirs->user_path->abs_path)) == 0) {
     relative_path = term->current_path->abs_path +
-                    strlen(sys_paths->dirs->home_path->abs_path);
+                    strlen(sys_paths->dirs->user_path->abs_path);
     if (relative_path[0] == '/')
       relative_path++;
     prefix_len = strlen(malloc_memories_inst->username) + strlen(HOSTNAME) +
@@ -166,7 +162,6 @@ void terminal_update_prefix(terminal *term) {
 }
 
 void terminal_launch() {
-  virtual_keyboard *keyboard = virtual_keyboard_init();
   terminal *term = terminal_init();
   terminal_bind_std_commands(term);
   while (true) {
@@ -196,7 +191,7 @@ int8_t dispatch_command(terminal *term, const char *command) {
   for (size_t i = 2; i < slices->len; i++) {
     list_append(args, get(slices, i));
   }
-  list_append(term->history, cmd);
+  list_append(term->history, command);
   for (size_t i = 0; i < term->commands_count; i++) {
     if (strcmp(term->commands[i].name, cmd) == 0) {
       command_params params = {term, args};
@@ -207,5 +202,7 @@ int8_t dispatch_command(terminal *term, const char *command) {
     }
   }
   printf("[TERMINAL](ERR)Command not found: %s\n", cmd);
+  list_free(args);
+  list_free(slices);
   return 1;
 }
