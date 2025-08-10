@@ -1,14 +1,14 @@
-#include "tools/submenus/set_time_submenu.h"
+#include "apps/time_submenus/set_time_submenu.h"
 
 #include <pico/time.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "apps/time_submenus/time_utils.h"
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
 #include "graphics/bitmaps.h"
 #include "hardware_drivers/ssd1306.h"
-#include "tools/submenus/time_utils.h"
 
 void save_time(time_digits *digits);
 void set_time(time_digits *digits);

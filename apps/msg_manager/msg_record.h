@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "components/msg_manager/contacts_manager.h"
+#include "apps/msg_manager/contacts_manager.h"
 
 #define RECORD_UID_LENGTH 8
 #define LFD_REPLACEMENT '`'

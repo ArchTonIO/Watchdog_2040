@@ -1,15 +1,10 @@
-
-// === PATCHED: lora_receive.c ===
-
 #include "lora_receive.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 #include "data_structures/string_list.h"
-#include "lora_send.h"
 #include "stdint.h"
-#include "stdio.h"
 #include "ulmp.h"
 
 message *deserialize_packet(uint8_t *packet) {

@@ -1,5 +1,3 @@
-// === PATCHED: lora_send.c ===
-
 #include "lora_send.h"
 
 #include <stdlib.h>
@@ -9,7 +7,6 @@
 
 #include "hardware_drivers/sx1278.h"
 #include "stdint.h"
-#include "stdio.h"
 #include "ulmp.h"
 
 uint8_t *serialize_packet(message *msg);

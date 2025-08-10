@@ -8,6 +8,8 @@ typedef struct {
   char user_folder[20];
   uint32_t ulmp_addr;
   char ulmp_addr_str[6];
+  char user_password[20];
+  char user_password_hashed[65];
 } malloc_memories;
 
 void start_malloc_mascot_tutorial();
@@ -17,6 +19,7 @@ void malloc_explains_you_joystick();
 void malloc_explains_you_menu();
 void malloc_explains_you_text_editor();
 void malloc_asks_your_name();
+void malloc_asks_for_password();
 void malloc_explains_you_home_screen();
 void malloc_generates_ulcp_address();
 void malloc_says_goodbye();

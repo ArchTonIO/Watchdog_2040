@@ -7,6 +7,7 @@
 
 #include "data_structures/string_list.h"
 
+bool request_password(const char *placeholder_text);
 char *string_add(char *str1, char *str2);
 uint16_t array_find_max(uint16_t *array, size_t len);
 uint16_t array_find_min(uint16_t *array, size_t len);

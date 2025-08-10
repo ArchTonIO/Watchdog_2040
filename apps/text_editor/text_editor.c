@@ -1,4 +1,4 @@
-#include "tools/text_editor.h"
+#include "apps/text_editor/text_editor.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -7,12 +7,12 @@
 
 #include "pico/stdlib.h"
 
+#include "apps/virtual_keyboard/virtual_keyboard.h"
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
 #include "hardware_drivers/config.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/ssd1306.h"
-#include "tools/virtual_keyboard.h"
 
 void push_video_buf_to_screen(text_editor *editor);
 void write_char(uint8_t col, uint8_t row, char to_write);

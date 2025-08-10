@@ -1,10 +1,12 @@
-#include "tools/submenus/set_alarm_submenu.h"
+#include "apps/time_submenus/set_alarm_submenu.h"
 
 #include <pico/time.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "apps/text_editor/text_editor.h"
+#include "apps/time_submenus/time_utils.h"
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
 #include "graphics/bitmaps.h"
@@ -12,8 +14,6 @@
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/rtc_time.h"
 #include "hardware_drivers/ssd1306.h"
-#include "tools/submenus/time_utils.h"
-#include "tools/text_editor.h"
 
 static char *alarm_message;
 

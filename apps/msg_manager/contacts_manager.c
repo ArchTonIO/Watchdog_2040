@@ -1,4 +1,4 @@
-#include "components/msg_manager/contacts_manager.h"
+#include "apps/msg_manager/contacts_manager.h"
 
 #include <pico/types.h>
 #include <stdio.h>
@@ -6,16 +6,15 @@
 #include <string.h>
 #include <sys/_intsup.h>
 
+#include "apps/msg_manager/msg_manager.h"
+#include "apps/text_editor/text_editor.h"
 #include "components/hw_manager.h"
 #include "components/malloc_mascot.h"
-#include "components/msg_manager/msg_manager.h"
 #include "components/sys_paths_manager.h"
 #include "data_structures/string_list.h"
-#include "device.h"
 #include "graphics/bitmaps.h"
 #include "hardware_drivers/ssd1306.h"
 #include "tools/options_gen.h"
-#include "tools/text_editor.h"
 #include "utils/path.h"
 #include "utils/utils.h"
 

@@ -5,9 +5,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "apps/msg_manager/msg_manager.h"
+#include "apps/time_submenus/set_alarm_submenu.h"
+#include "apps/time_submenus/time_utils.h"
 #include "components/hw_manager.h"
 #include "components/malloc_mascot.h"
-#include "components/msg_manager/msg_manager.h"
 #include "data_structures/string_list.h"
 #include "graphics/bitmaps.h"
 #include "graphics/graphic_primitives.h"
@@ -15,8 +17,6 @@
 #include "hardware_drivers/rtc_time.h"
 #include "hardware_drivers/sdcard.h"
 #include "hardware_drivers/ssd1306.h"
-#include "tools/submenus/set_alarm_submenu.h"
-#include "tools/submenus/time_utils.h"
 
 home_page *home_page_inst;
 

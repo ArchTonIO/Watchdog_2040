@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "tools/virtual_keyboard.h"
+#include "apps/virtual_keyboard/virtual_keyboard.h"
 
 #define MEMSET_FILL 149 /*ascii for bullet - not printable*/
 

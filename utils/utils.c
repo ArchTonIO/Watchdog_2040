@@ -9,7 +9,23 @@
 #include "pico/rand.h"
 #include "pico/stdlib.h"
 
+#include "apps/text_editor/text_editor.h"
+#include "components/malloc_mascot.h"
 #include "data_structures/string_list.h"
+#include "tools/sha_256.h"
+
+bool request_password(const char *placeholder_text) {
+  text_editor *pwd_editor = text_editor_launch(placeholder_text, true);
+  char *buf = text_editor_get_buf(pwd_editor);
+  text_editor_kill(pwd_editor);
+  char *hashed = get_hash(buf);
+  if (strcmp(hashed, malloc_memories_inst->user_password_hashed) != 0) {
+    free(hashed);
+    return false;
+  }
+  free(hashed);
+  return true;
+}
 
 /**
  * @brief Concatenates two strings.

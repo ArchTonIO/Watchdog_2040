@@ -1,5 +1,5 @@
 /*
-An Uncomplicated LoRa Communication Protocol (ULCP)
+An Uncomplicated LoRa Messaging Protocol (ULMP)
 Author: Antonio Del Cogliano
 */
 

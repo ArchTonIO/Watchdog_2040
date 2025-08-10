@@ -1,4 +1,4 @@
-#include "tools/virtual_keyboard.h"
+#include "apps/virtual_keyboard/virtual_keyboard.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -32,7 +32,7 @@ char uppercase_layout[ROWS][COLS] = {
     {'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '|', SPC, LFD},
     {NSK, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', NSK, NSK, BCK},
     {NSK, NSK, 'Z', 'X', 'C', 'V', 'B', 'N', 'M', NSK, NSK, '?', NSK, LOW, SHF},
-    {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', NSK, '+', NSK, NAV, END}};
+    {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', NSK, NAV, END}};
 
 char lowercase_layout[ROWS][COLS] = {
     {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', NSK, SPC, LFD},

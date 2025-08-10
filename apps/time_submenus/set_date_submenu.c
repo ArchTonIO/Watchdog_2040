@@ -1,10 +1,11 @@
-#include "tools/submenus/set_date_submenu.h"
+#include "apps/time_submenus/set_date_submenu.h"
 
 #include <pico/time.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "apps/time_submenus/time_utils.h"
 #include "components/hw_manager.h"
 #include "data_structures/string_list.h"
 #include "graphics/bitmaps.h"
@@ -12,7 +13,6 @@
 #include "hardware_drivers/haptics.h"
 #include "hardware_drivers/joystick.h"
 #include "hardware_drivers/ssd1306.h"
-#include "tools/submenus/time_utils.h"
 
 void set_weekday(date *d);
 void save_date(date *d);

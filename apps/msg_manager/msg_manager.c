@@ -1,4 +1,4 @@
-#include "components/msg_manager/msg_manager.h"
+#include "apps/msg_manager/msg_manager.h"
 
 #include <pico/types.h>
 #include <stdio.h>
@@ -6,16 +6,16 @@
 #include <string.h>
 #include <sys/_intsup.h>
 
+#include "apps/msg_manager/contacts_manager.h"
+#include "apps/msg_manager/msg_man_utils.h"
+#include "apps/msg_manager/msg_record.h"
+#include "apps/text_editor/text_editor.h"
 #include "components/hw_manager.h"
-#include "components/msg_manager/contacts_manager.h"
-#include "components/msg_manager/msg_man_utils.h"
-#include "components/msg_manager/msg_record.h"
 #include "data_structures/string_list.h"
 #include "graphics/bitmaps.h"
 #include "hardware_drivers/haptics.h"
 #include "hardware_drivers/ssd1306.h"
 #include "tools/options_gen.h"
-#include "tools/text_editor.h"
 #include "ulmp/ulmp.h"
 
 msg_manager *msg_man_inst;

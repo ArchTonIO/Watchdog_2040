@@ -35,19 +35,42 @@ add_subdirectory(lib/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(Watchdog_2040
+# APPS SECTION
+apps/AQI/aqi.c
+apps/msg_manager/contacts_manager.c
+apps/msg_manager/msg_man_utils.c
+apps/msg_manager/msg_manager.c
+apps/msg_manager/msg_record.c
+apps/system_submenus/system_submenus.c
+apps/terminal/terminal_commands.c
+apps/terminal/terminal.c
+apps/text_editor/text_editor.c
+apps/time_submenus/set_alarm_submenu.c
+apps/time_submenus/set_date_submenu.c
+apps/time_submenus/set_time_submenu.c
+apps/time_submenus/stopwatch_submenu.c
+apps/time_submenus/time_utils.c
+apps/time_submenus/timer_submenu.c
+apps/virtual_keyboard/virtual_keyboard.c
+
+# BOOT SECTION
 boot/bootup.c
+
+# COMPONENTS SECTION
 components/home_page.c
 components/hw_manager.c
 components/malloc_mascot.c
-components/msg_manager/contacts_manager.c
-components/msg_manager/msg_man_utils.c
-components/msg_manager/msg_manager.c
-components/msg_manager/msg_record.c
 components/sys_paths_manager.c
+
+# DATA STRUCTURES SECTION
 data_structures/string_list.c
+
+# GRAPHICS SECTION
 graphics/bitmaps.c
 graphics/graphic_primitives.c
 graphics/graphs.c
+
+# HARDWARE DRIVERS SECTION
 hardware_drivers/battery.c
 hardware_drivers/ens160.c
 hardware_drivers/haptics.c
@@ -56,23 +79,23 @@ hardware_drivers/rtc_time.c
 hardware_drivers/sdcard.c
 hardware_drivers/ssd1306.c
 hardware_drivers/sx1278.c
-tools/submenus/set_alarm_submenu.c
-tools/submenus/set_date_submenu.c
-tools/submenus/set_time_submenu.c
-tools/submenus/stopwatch_submenu.c
-tools/submenus/time_utils.c
-tools/submenus/timer_submenu.c
-tools/terminal/terminal_commands.c
-tools/terminal/terminal.c
+
+# TOOLS SECTION
+tools/launcher.c
 tools/menus.c
 tools/options_gen.c
-tools/text_editor.c
-tools/virtual_keyboard.c
+tools/sha_256.c
+
+# ULMP SECTION
 ulmp/lora_receive.c
 ulmp/lora_send.c
 ulmp/ulmp.c
+
+# UTILS SECTION
 utils/path.c
 utils/utils.c
+
+# ENTRY POINT
 Watchdog_2040.c
 )
 

@@ -1,4 +1,4 @@
-#include "tools/terminal/terminal_commands.h"
+#include "apps/terminal/terminal_commands.h"
 
 #include <device.h>
 #include <stdbool.h>
@@ -10,19 +10,14 @@
 
 #include "pico/stdlib.h"
 
-#include "components/hw_manager.h"
+#include "apps/text_editor/text_editor.h"
 #include "components/malloc_mascot.h"
 #include "components/sys_paths_manager.h"
 #include "data_structures/string_list.h"
-#include "hardware_drivers/joystick.h"
-#include "hardware_drivers/ssd1306.h"
 #include "terminal.h"
 #include "tools/menus.h"
-#include "tools/text_editor.h"
-#include "tools/virtual_keyboard.h"
 #include "ulmp/ulmp.h"
 #include "utils/path.h"
-#include "utils/utils.h"
 
 command create_command(char *name,
     char *description,

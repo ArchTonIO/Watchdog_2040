@@ -1,4 +1,4 @@
-#include "components/msg_manager/msg_record.h"
+#include "apps/msg_manager/msg_record.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,11 +6,8 @@
 #include <sys/_intsup.h>
 
 #include "components/hw_manager.h"
-#include "components/malloc_mascot.h"
-#include "components/msg_manager/msg_manager.h"
 #include "components/sys_paths_manager.h"
 #include "data_structures/string_list.h"
-#include "device.h"
 #include "utils/path.h"
 #include "utils/utils.h"
 
