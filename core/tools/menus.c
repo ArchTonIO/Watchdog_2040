@@ -80,11 +80,14 @@ DEFINE_LAUNCHER(notifications_launcher,
 
 DEFINE_LAUNCHER(tutorial_launcher,
     "Tutorial menu",
-    {"Page 0", display_tutorial_page},
-    {"Page 1", display_tutorial_page},
-    {"Page 2", display_tutorial_page},
-    {"Page 3", display_tutorial_page},
-    {"Page 4", display_tutorial_page})
+    {"Entry 0", display_tutorial_page},
+    {"Entry 1", display_tutorial_page},
+    {"Entry 2", display_tutorial_page},
+    {"Entry 3", display_tutorial_page},
+    {"Entry 4", display_tutorial_page},
+    {"Entry 5", display_tutorial_page},
+    {"Entry 6", display_tutorial_page},
+    {"Entry 7", display_tutorial_page})
 
 void display_main_menu() { launcher_start(&main_launcher); }
 void display_ulmp_menu() { launcher_start(&ulmp_launcher); }

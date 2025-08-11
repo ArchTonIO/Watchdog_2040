@@ -26,7 +26,7 @@
 #define NOW 0x00 /*no write*/
 
 extern char NEWLINE_PIXELS[];
-extern char BACSPACE_PIXELS[];
+extern char BACKSPACE_PIXELS[];
 extern char UPPERCASE_PIXELS[];
 extern char LOWERCASE_PIXELS[];
 extern char SHIFT_PIXELS[];

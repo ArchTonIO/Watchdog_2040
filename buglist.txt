@@ -6,6 +6,6 @@
 - [solved]   - bug05 - when messagges clearly arrives to the recipient device the sending one keeps telling they were not received, and vice-versa
 - [solved]   - bug06 - loading a non 10-lenght chunk of a conversation will make the system crash (chunk index was not properly parsed since its memory was freed before)
 - [unsolved] - bug07 - messages are not correctly delivered if receiving user is in one of the menu (is interacting with the device outside of home screen)
-- [unsolved] - bug08 - graphics glitches during tutorial
-- [unsolved] - bug09 - joystick W and E are flipped in tutorial
+- [solved]   - bug08 - graphics glitches during tutorial
+- [solved]   - bug09 - joystick W and E are flipped in tutorial
 - [unsolved] - bug10 - if a message arrives when the recipient is displaying the notification screen from the previously arrived message, the new message will not get delivered

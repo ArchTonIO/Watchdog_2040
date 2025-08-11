@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define MIN_ULMP_ADDR 10000
+#define MAX_ULMP_ADDR 65535
+
 typedef struct {
   char username[15];
   char user_folder[20];
