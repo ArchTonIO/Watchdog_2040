@@ -44,9 +44,11 @@ void sys_setup() {
   sys_paths_manager_load();
   msg_manager_init(malloc_memories_inst->ulmp_addr);
   home_page_init();
+  end_loading_screen();
 }
 
 void sys_mainloop() {
+  bool first_run = true;
   uint8_t loops = 0;
   bool ledvalue = false;
   uint8_t screen_up_seconds = 10;
@@ -55,7 +57,8 @@ void sys_mainloop() {
     joystick_update(drivers->joystick);
     check_pheripherals();
     process_system_state();
-    if (joystick_get_direction(drivers->joystick) != C) {
+    if (joystick_get_direction(drivers->joystick) != C || first_run) {
+      first_run = false;
       haptic_short_pulse();
       screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
       while (true) {

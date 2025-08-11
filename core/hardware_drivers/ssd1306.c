@@ -279,7 +279,7 @@ void ssd1306_print(ssd1306 *display,
   while (c = *str) {
     str++;
     if (c == '\n') {
-      display->cursorx = 0;
+      display->cursorx = x * CHAR_WIDTH;
       display->cursory += CHAR_HEIGHT;
       continue;
     }

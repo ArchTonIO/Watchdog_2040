@@ -22,6 +22,20 @@ void alarm_callback();
 void enter_set_alarm_submenu() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
   ssd1306_clear(drivers->oled_screen);
+  if (drivers->rtc->alarm_set) {
+    ssd1306_print(drivers->oled_screen,
+        "Alarm already set !\n\n"
+        "If you want to change\n"
+        "The alarm time or\n"
+        "message,\n"
+        "please unset it first.",
+        0,
+        0,
+        false);
+    ssd1306_show(drivers->oled_screen);
+    sleep_ms(5000);
+    return;
+  }
   time_digits *digits = time_digits_init();
   draw_symbols(set_timedate_incr,
       set_timedate_decr,

@@ -34,16 +34,16 @@ hw_drivers *hardware_drivers_init() {
       SSD1306_HEIGHT,
       SSD1306_ADDR);
   drivers = hw_man;
-  // multicore_launch_core1(display_bootup_screen);
+  multicore_launch_core1(display_bootup_screen);
   hw_man->air_quality_sensor = ens160_init(ENS160_SDA,
       ENS160_SCK,
       ENS160_I2C_PORT,
       ENS160_BAUDRATE,
       ENS160_ADDR);
-  // if (hw_man->air_quality_sensor->is_working)
-  // multicore_fifo_push_blocking(ENS160_OK);
-  // else
-  // multicore_fifo_push_blocking(ENS160_ERR);
+  if (hw_man->air_quality_sensor->is_working)
+    multicore_fifo_push_blocking(ENS160_OK);
+  else
+    multicore_fifo_push_blocking(ENS160_ERR);
   hw_man->lora_module = sx1278_init(SX1278_MOSI,
       SX1278_MISO,
       SX1278_SCK,
@@ -53,19 +53,19 @@ hw_drivers *hardware_drivers_init() {
       SX1278_SPI_BAUDRATE,
       SX1278_TX_POWER,
       NULL);
-  // if (hw_man->lora_module->is_working)
-  // multicore_fifo_push_blocking(SX1278_OK);
-  // else
-  // multicore_fifo_push_blocking(SX1278_ERR);
+  if (hw_man->lora_module->is_working)
+    multicore_fifo_push_blocking(SX1278_OK);
+  else
+    multicore_fifo_push_blocking(SX1278_ERR);
   hw_man->battery = battery_init(ADC_MAX_VALUE,
       BATTERY_MIN_VOLTAGE,
       BATTERY_MAX_VOLTAGE,
       BATTERY_PIN,
       ADC_CHANNEL);
-  // if (hw_man->battery->is_working)
-  // multicore_fifo_push_blocking(BATTERY_OK);
-  // else
-  // multicore_fifo_push_blocking(BATTERY_ERR);
+  if (hw_man->battery->is_working)
+    multicore_fifo_push_blocking(BATTERY_OK);
+  else
+    multicore_fifo_push_blocking(BATTERY_ERR);
   hw_man->joystick = joystick_init(JOYSTICK_X_PIN,
       JOYSTICK_Y_PIN,
       JOYSTICK_X_CHANNEL,
@@ -73,23 +73,27 @@ hw_drivers *hardware_drivers_init() {
       JOYSTICK_BUTTON_PIN,
       JOYSTICK_SENSITIVITY,
       -90);
-  // if (hw_man->joystick->is_working)
-  // multicore_fifo_push_blocking(JOYSTICK_OK);
-  // else
-  // multicore_fifo_push_blocking(JOYSTICK_ERR);
+  if (hw_man->joystick->is_working)
+    multicore_fifo_push_blocking(JOYSTICK_OK);
+  else
+    multicore_fifo_push_blocking(JOYSTICK_ERR);
   hw_man->sd_card = sdcard_init();
   sdcard_mount(hw_man->sd_card);
-  // if (hw_man->sd_card->is_working)
-  // multicore_fifo_push_blocking(SDCARD_OK);
-  // else
-  // multicore_fifo_push_blocking(SDCARD_ERR);
+  if (hw_man->sd_card->is_working)
+    multicore_fifo_push_blocking(SDCARD_OK);
+  else
+    multicore_fifo_push_blocking(SDCARD_ERR);
   hw_man->rtc = rtc_time_init(2025, 5, 9, 4, 20, 37, 00);
-  // multicore_fifo_push_blocking(RTC_OK);
-  // multicore_fifo_push_blocking(CHECKS_END);
-  // wait_for_core1();
-  // multicore_reset_core1();
-  haptics_init(HAPTICS_MOTOR_PIN);
+  multicore_fifo_push_blocking(RTC_OK);
+  multicore_fifo_push_blocking(CHECKS_END);
   return hw_man;
+}
+
+void end_loading_screen() {
+  wait_for_core1();
+  multicore_reset_core1();
+  haptics_init(HAPTICS_MOTOR_PIN);
+  ssd1306_clear(drivers->oled_screen);
 }
 
 void wait_for_core1() {

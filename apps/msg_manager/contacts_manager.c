@@ -211,8 +211,12 @@ uint16_t ask_for_contact_addr() {
 
 void dump_contacts_to_sd() {
   ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen, "Dumping contacts", 0, 0, false);
-  ssd1306_print(drivers->oled_screen, "to MicroSD...", 0, 1, false);
+  ssd1306_print(drivers->oled_screen,
+      "Dumping contacts\n"
+      "to MicroSD ...",
+      0,
+      0,
+      false);
   ssd1306_show(drivers->oled_screen);
   str_list *contacts = get_all_contacts();
   path_fwrite(contacts_man_inst->contacts_names_file, "", 'w');

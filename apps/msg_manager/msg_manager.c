@@ -72,8 +72,12 @@ void read_messages() { show_read_messages_menu(); }
 void send_message_status_update_callback(uint8_t progress) {
   char progress_str[2];
   sprintf(progress_str, "%u", progress);
-  ssd1306_print(drivers->oled_screen, "Message sent", 0, 0, false);
-  ssd1306_print(drivers->oled_screen, "Waiting for ack...", 0, 2, false);
+  ssd1306_print(drivers->oled_screen,
+      "Message sent\n"
+      "Waiting for ack...",
+      0,
+      0,
+      false);
   ssd1306_print(drivers->oled_screen, "Attempts: ", 0, 4, false);
   ssd1306_print(drivers->oled_screen, progress_str, 9, 4, false);
   ssd1306_print(drivers->oled_screen, "/", 10, 4, false);
@@ -229,8 +233,12 @@ void scan_online_contacts() {
 void enable_message_notifications() {
   msg_man_inst->should_notify = true;
   ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen, "Notifications", 0, 0, false);
-  ssd1306_print(drivers->oled_screen, "enabled !", 0, 2, false);
+  ssd1306_print(drivers->oled_screen,
+      "Notifications\n"
+      "enabled",
+      0,
+      0,
+      false);
   ssd1306_show(drivers->oled_screen);
   sleep_ms(INFO_PAGES_TIMEOUT);
   ssd1306_clear(drivers->oled_screen);
@@ -240,8 +248,12 @@ void enable_message_notifications() {
 void disable_message_notifications() {
   msg_man_inst->should_notify = false;
   ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen, "Notifications", 0, 0, false);
-  ssd1306_print(drivers->oled_screen, "disabled !", 0, 2, false);
+  ssd1306_print(drivers->oled_screen,
+      "Notifications\n"
+      "disabled",
+      0,
+      0,
+      false);
   ssd1306_show(drivers->oled_screen);
   sleep_ms(INFO_PAGES_TIMEOUT);
   ssd1306_clear(drivers->oled_screen);

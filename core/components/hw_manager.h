@@ -30,6 +30,7 @@ extern hw_drivers *drivers;
 extern uint8_t __flash_binary_end;
 
 hw_drivers *hardware_drivers_init();
+void end_loading_screen();
 uint32_t get_free_heap();
 void print_free_heap();
 uint get_clock_freq_khz();

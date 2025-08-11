@@ -48,7 +48,7 @@ DEFINE_LAUNCHER(ulmp_launcher,
     {"Read messages", read_messages},
     {"Add contact", add_contact},
     {"Remove contact", remove_contact},
-    {"Dump contacts to MicroSD", dump_contacts_to_sd},
+    {"Dump contacts to SD", dump_contacts_to_sd},
     {"Scan online contacts", scan_online_contacts},
     {"Notifications", display_notifications_menu})
 

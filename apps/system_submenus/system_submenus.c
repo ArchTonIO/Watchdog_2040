@@ -57,13 +57,17 @@ void display_system_info() {
 
 void reset_system() {
   ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen, "RISKY STUFF        ->", 0, 0, false);
-  ssd1306_print(drivers->oled_screen, "Resetting system is", 0, 2, false);
-  ssd1306_print(drivers->oled_screen, "IRREVERSIBLE, data", 0, 3, false);
-  ssd1306_print(drivers->oled_screen, "will be lost, includi", 0, 4, false);
-  ssd1306_print(drivers->oled_screen, "ng contacts and", 0, 5, false);
-  ssd1306_print(drivers->oled_screen, "messages, your ULMP", 0, 6, false);
-  ssd1306_print(drivers->oled_screen, "address will change.", 0, 7, false);
+  ssd1306_print(drivers->oled_screen,
+      "RISKY STUFF        ->\n"
+      "Resetting system is\n"
+      "IRREVERSIBLE, data\n"
+      "will be lost, includi\n"
+      "ng contacts and\n"
+      "messages, your ULMP\n"
+      "address will change.",
+      0,
+      0,
+      false);
   ssd1306_show(drivers->oled_screen);
   sleep_ms(200);
   joystick_update(drivers->joystick);
