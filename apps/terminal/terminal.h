@@ -5,8 +5,8 @@
 #include <stddef.h>
 
 #include "apps/terminal/terminal_commands.h"
-#include "data_structures/string_list.h"
-#include "utils/path.h"
+#include "core/data_structures/string_list.h"
+#include "core/utils/path.h"
 #define MAX_COMMANDS 100
 
 struct terminal {

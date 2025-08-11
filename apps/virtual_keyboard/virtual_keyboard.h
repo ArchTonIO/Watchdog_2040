@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "data_structures/string_list.h"
-#include "hardware_drivers/config.h"
+#include "core/data_structures/string_list.h"
+#include "core/hardware_drivers/config.h"
 
 #define ROWS 4
 #define COLS 15

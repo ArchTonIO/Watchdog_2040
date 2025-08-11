@@ -11,13 +11,13 @@
 #include "pico/stdlib.h"
 
 #include "apps/text_editor/text_editor.h"
-#include "components/malloc_mascot.h"
-#include "components/sys_paths_manager.h"
-#include "data_structures/string_list.h"
+#include "core/components/malloc_mascot.h"
+#include "core/components/sys_paths_manager.h"
+#include "core/data_structures/string_list.h"
+#include "core/tools/menus.h"
+#include "core/ulmp/ulmp.h"
+#include "core/utils/path.h"
 #include "terminal.h"
-#include "tools/menus.h"
-#include "ulmp/ulmp.h"
-#include "utils/path.h"
 
 command create_command(char *name,
     char *description,

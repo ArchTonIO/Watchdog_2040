@@ -5,12 +5,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "components/hw_manager.h"
-#include "data_structures/string_list.h"
-#include "graphics/bitmaps.h"
-#include "graphics/graphic_primitives.h"
-#include "hardware_drivers/haptics.h"
-#include "hardware_drivers/ssd1306.h"
+#include "core/components/hw_manager.h"
+#include "core/data_structures/string_list.h"
+#include "core/graphics/bitmaps.h"
+#include "core/graphics/graphic_primitives.h"
+#include "core/hardware_drivers/haptics.h"
+#include "core/hardware_drivers/ssd1306.h"
 
 time_digits *time_digits_init() {
   update_time(drivers->rtc);

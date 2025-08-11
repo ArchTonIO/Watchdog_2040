@@ -4,14 +4,14 @@
 #include <math.h>
 #include <string.h>
 
-#include "components/hw_manager.h"
+#include "core/components/hw_manager.h"
+#include "core/graphics/graphic_primitives.h"
+#include "core/hardware_drivers/battery.h"
+#include "core/hardware_drivers/joystick.h"
+#include "core/hardware_drivers/ssd1306.h"
+#include "core/tools/options_gen.h"
+#include "core/utils/utils.h"
 #include "device.h"
-#include "graphics/graphic_primitives.h"
-#include "hardware_drivers/battery.h"
-#include "hardware_drivers/joystick.h"
-#include "hardware_drivers/ssd1306.h"
-#include "tools/options_gen.h"
-#include "utils/utils.h"
 
 void display_system_info() {
   str_list *options = list_init();

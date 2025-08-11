@@ -11,14 +11,14 @@
 #include "apps/msg_manager/msg_manager.h"
 #include "apps/msg_manager/msg_record.h"
 #include "apps/text_editor/text_editor.h"
-#include "components/hw_manager.h"
-#include "components/sys_paths_manager.h"
-#include "data_structures/string_list.h"
-#include "hardware_drivers/ssd1306.h"
-#include "tools/options_gen.h"
-#include "ulmp/ulmp.h"
-#include "utils/path.h"
-#include "utils/utils.h"
+#include "core/components/hw_manager.h"
+#include "core/components/sys_paths_manager.h"
+#include "core/data_structures/string_list.h"
+#include "core/hardware_drivers/ssd1306.h"
+#include "core/tools/options_gen.h"
+#include "core/ulmp/ulmp.h"
+#include "core/utils/path.h"
+#include "core/utils/utils.h"
 
 void show_fetching_screen();
 char *get_displayable_msg_by_uid(uint16_t contact_addr, char *msg_uid);

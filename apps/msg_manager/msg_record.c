@@ -5,11 +5,11 @@
 #include <string.h>
 #include <sys/_intsup.h>
 
-#include "components/hw_manager.h"
-#include "components/sys_paths_manager.h"
-#include "data_structures/string_list.h"
-#include "utils/path.h"
-#include "utils/utils.h"
+#include "core/components/hw_manager.h"
+#include "core/components/sys_paths_manager.h"
+#include "core/data_structures/string_list.h"
+#include "core/utils/path.h"
+#include "core/utils/utils.h"
 
 msg_record *
 msg_record_init(uint16_t contact_addr, char *message, uint8_t status) {

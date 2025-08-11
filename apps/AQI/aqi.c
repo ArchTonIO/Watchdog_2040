@@ -1,9 +1,9 @@
 #include "apps/AQI/aqi.h"
 
-#include "components/hw_manager.h"
-#include "graphics/graphs.h"
-#include "hardware_drivers/joystick.h"
-#include "hardware_drivers/ssd1306.h"
+#include "core/components/hw_manager.h"
+#include "core/graphics/graphs.h"
+#include "core/hardware_drivers/joystick.h"
+#include "core/hardware_drivers/ssd1306.h"
 
 void display_air_quality_indexes() {
   graph *g_aqi = graph_init("AQI", 48, 40, 0, 16, 0, 5);

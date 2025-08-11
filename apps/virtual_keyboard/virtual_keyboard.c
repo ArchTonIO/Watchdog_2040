@@ -4,11 +4,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "components/hw_manager.h"
-#include "data_structures/string_list.h"
-#include "hardware_drivers/haptics.h"
-#include "hardware_drivers/joystick.h"
-#include "hardware_drivers/ssd1306.h"
+#include "core/components/hw_manager.h"
+#include "core/data_structures/string_list.h"
+#include "core/hardware_drivers/haptics.h"
+#include "core/hardware_drivers/joystick.h"
+#include "core/hardware_drivers/ssd1306.h"
 
 /**
 If you wish to modify the layout of the keyboard, you can do so by changing the

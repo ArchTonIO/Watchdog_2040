@@ -11,11 +11,11 @@
 
 #include "apps/terminal/terminal_commands.h"
 #include "apps/text_editor/text_editor.h"
-#include "components/malloc_mascot.h"
-#include "components/sys_paths_manager.h"
-#include "data_structures/string_list.h"
-#include "utils/path.h"
-#include "utils/utils.h"
+#include "core/components/malloc_mascot.h"
+#include "core/components/sys_paths_manager.h"
+#include "core/data_structures/string_list.h"
+#include "core/utils/path.h"
+#include "core/utils/utils.h"
 
 int8_t dispatch_command(terminal *term, const char *command);
 

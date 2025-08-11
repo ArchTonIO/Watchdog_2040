@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "graphics/graphic_primitives.h"
+#include "core/graphics/graphic_primitives.h"
 
 #define TIME_SUBMENUS_INPUT_TIMEOUT 100
 

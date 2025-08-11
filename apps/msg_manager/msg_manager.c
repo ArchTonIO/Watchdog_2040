@@ -10,13 +10,13 @@
 #include "apps/msg_manager/msg_man_utils.h"
 #include "apps/msg_manager/msg_record.h"
 #include "apps/text_editor/text_editor.h"
-#include "components/hw_manager.h"
-#include "data_structures/string_list.h"
-#include "graphics/bitmaps.h"
-#include "hardware_drivers/haptics.h"
-#include "hardware_drivers/ssd1306.h"
-#include "tools/options_gen.h"
-#include "ulmp/ulmp.h"
+#include "core/components/hw_manager.h"
+#include "core/data_structures/string_list.h"
+#include "core/graphics/bitmaps.h"
+#include "core/hardware_drivers/haptics.h"
+#include "core/hardware_drivers/ssd1306.h"
+#include "core/tools/options_gen.h"
+#include "core/ulmp/ulmp.h"
 
 msg_manager *msg_man_inst;
 

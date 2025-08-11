@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "data_structures/string_list.h"
-#include "utils/path.h"
+#include "core/data_structures/string_list.h"
+#include "core/utils/path.h"
 
 #define MAX_CONTACT_NAME_LENGTH 30
 #define MAX_CONTACTS 50

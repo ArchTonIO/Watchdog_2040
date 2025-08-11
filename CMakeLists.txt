@@ -31,7 +31,7 @@ project(Watchdog_2040 C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
-add_subdirectory(lib/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
+add_subdirectory(core/lib/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(Watchdog_2040
@@ -54,46 +54,46 @@ apps/time_submenus/timer_submenu.c
 apps/virtual_keyboard/virtual_keyboard.c
 
 # BOOT SECTION
-boot/bootup.c
+core/boot/bootup.c
 
 # COMPONENTS SECTION
-components/home_page.c
-components/hw_manager.c
-components/malloc_mascot.c
-components/sys_paths_manager.c
+core/components/home_page.c
+core/components/hw_manager.c
+core/components/malloc_mascot.c
+core/components/sys_paths_manager.c
 
 # DATA STRUCTURES SECTION
-data_structures/string_list.c
+core/data_structures/string_list.c
 
 # GRAPHICS SECTION
-graphics/bitmaps.c
-graphics/graphic_primitives.c
-graphics/graphs.c
+core/graphics/bitmaps.c
+core/graphics/graphic_primitives.c
+core/graphics/graphs.c
 
 # HARDWARE DRIVERS SECTION
-hardware_drivers/battery.c
-hardware_drivers/ens160.c
-hardware_drivers/haptics.c
-hardware_drivers/joystick.c
-hardware_drivers/rtc_time.c
-hardware_drivers/sdcard.c
-hardware_drivers/ssd1306.c
-hardware_drivers/sx1278.c
+core/hardware_drivers/battery.c
+core/hardware_drivers/ens160.c
+core/hardware_drivers/haptics.c
+core/hardware_drivers/joystick.c
+core/hardware_drivers/rtc_time.c
+core/hardware_drivers/sdcard.c
+core/hardware_drivers/ssd1306.c
+core/hardware_drivers/sx1278.c
 
 # TOOLS SECTION
-tools/launcher.c
-tools/menus.c
-tools/options_gen.c
-tools/sha_256.c
+core/tools/launcher.c
+core/tools/menus.c
+core/tools/options_gen.c
+core/tools/sha_256.c
 
 # ULMP SECTION
-ulmp/lora_receive.c
-ulmp/lora_send.c
-ulmp/ulmp.c
+core/ulmp/lora_receive.c
+core/ulmp/lora_send.c
+core/ulmp/ulmp.c
 
 # UTILS SECTION
-utils/path.c
-utils/utils.c
+core/utils/path.c
+core/utils/utils.c
 
 # ENTRY POINT
 Watchdog_2040.c

@@ -7,13 +7,13 @@
 
 #include "apps/text_editor/text_editor.h"
 #include "apps/time_submenus/time_utils.h"
-#include "components/hw_manager.h"
-#include "data_structures/string_list.h"
-#include "graphics/bitmaps.h"
-#include "hardware_drivers/haptics.h"
-#include "hardware_drivers/joystick.h"
-#include "hardware_drivers/rtc_time.h"
-#include "hardware_drivers/ssd1306.h"
+#include "core/components/hw_manager.h"
+#include "core/data_structures/string_list.h"
+#include "core/graphics/bitmaps.h"
+#include "core/hardware_drivers/haptics.h"
+#include "core/hardware_drivers/joystick.h"
+#include "core/hardware_drivers/rtc_time.h"
+#include "core/hardware_drivers/ssd1306.h"
 
 static char *alarm_message;
 

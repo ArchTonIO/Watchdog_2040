@@ -5,17 +5,17 @@
 #include "pico/stdlib.h"
 
 #include "apps/msg_manager/msg_manager.h"
-#include "components/home_page.h"
-#include "components/hw_manager.h"
-#include "components/malloc_mascot.h"
-#include "components/sys_paths_manager.h"
-#include "data_structures/string_list.h"
+#include "core/components/home_page.h"
+#include "core/components/hw_manager.h"
+#include "core/components/malloc_mascot.h"
+#include "core/components/sys_paths_manager.h"
+#include "core/data_structures/string_list.h"
+#include "core/hardware_drivers/haptics.h"
+#include "core/hardware_drivers/joystick.h"
+#include "core/hardware_drivers/ssd1306.h"
+#include "core/tools/menus.h"
+#include "core/utils/path.h"
 #include "hardware/adc.h"
-#include "hardware_drivers/haptics.h"
-#include "hardware_drivers/joystick.h"
-#include "hardware_drivers/ssd1306.h"
-#include "tools/menus.h"
-#include "utils/path.h"
 
 path *first_boot_file;
 

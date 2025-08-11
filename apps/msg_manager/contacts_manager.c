@@ -8,15 +8,15 @@
 
 #include "apps/msg_manager/msg_manager.h"
 #include "apps/text_editor/text_editor.h"
-#include "components/hw_manager.h"
-#include "components/malloc_mascot.h"
-#include "components/sys_paths_manager.h"
-#include "data_structures/string_list.h"
-#include "graphics/bitmaps.h"
-#include "hardware_drivers/ssd1306.h"
-#include "tools/options_gen.h"
-#include "utils/path.h"
-#include "utils/utils.h"
+#include "core/components/hw_manager.h"
+#include "core/components/malloc_mascot.h"
+#include "core/components/sys_paths_manager.h"
+#include "core/data_structures/string_list.h"
+#include "core/graphics/bitmaps.h"
+#include "core/hardware_drivers/ssd1306.h"
+#include "core/tools/options_gen.h"
+#include "core/utils/path.h"
+#include "core/utils/utils.h"
 
 contacts_manager *contacts_man_inst;
 
