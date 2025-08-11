@@ -2,6 +2,13 @@
 
 ## leakybob
 
+### leakybob [1.5.2] - 11/08/25
+
+feat:
+
+- Makes loading screen display firmware and hardware version
+- Makes loading screen on until the system is fully initialized
+
 ### leakybob [1.5.1] - 11/08/25
 
 feat:
