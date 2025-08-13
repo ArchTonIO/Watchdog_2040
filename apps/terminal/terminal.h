@@ -18,6 +18,7 @@ struct terminal {
   char *prefix;
   char stdout_buf[256];
   char stderr_buf[256];
+  bool on_serial;
 };
 
 terminal *terminal_init();
@@ -27,5 +28,7 @@ void terminal_clear_buffers(terminal *term);
 void terminal_display_stdout(terminal *term);
 void terminal_display_stderr(terminal *term);
 void terminal_add_command(terminal *term, command cmd);
+int8_t dispatch_command(terminal *term, const char *command);
+void terminal_update_prefix(terminal *term);
 
 #endif

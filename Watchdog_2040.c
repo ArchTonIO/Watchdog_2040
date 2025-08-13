@@ -32,7 +32,10 @@ void sys_setup() {
   sys_paths_manager_init();
   // wait_for_user_input();
   first_boot_file = path_init(FIRST_BOOT_FILE);
+  bool should_end_loading_screen = true;
   if (is_first_boot()) {
+    end_loading_screen();
+    should_end_loading_screen = false;
     start_malloc_mascot_tutorial();
     sys_paths_manager_load();
     sys_paths_manager_make();
@@ -44,7 +47,8 @@ void sys_setup() {
   sys_paths_manager_load();
   msg_manager_init(malloc_memories_inst->ulmp_addr);
   home_page_init();
-  end_loading_screen();
+  if (should_end_loading_screen)
+    end_loading_screen();
 }
 
 void sys_mainloop() {

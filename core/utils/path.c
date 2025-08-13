@@ -100,6 +100,16 @@ bool path_mkdir(path *dir) { return sdcard_mkdir(drivers->sd_card, dir); }
 bool path_rmdir(path *dir) { return sdcard_rmdir(drivers->sd_card, dir); }
 
 /**
+ * @brief Removes all of the childs (either files or directories) of a
+ * directory, and the directory itself
+ *
+ * @param dir The path structure representing the directory to remove.
+ * @return true if the directory and its contents were removed successfully,
+ * false otherwise.
+ */
+bool path_rmtree(path *dir) { return sdcard_rmtree(drivers->sd_card, dir); }
+
+/**
  * @brief Renames a file or directory from the source path to the destination
  * path.
  *

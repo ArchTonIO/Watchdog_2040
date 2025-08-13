@@ -7,6 +7,5 @@
 
 void display_main_menu();
 void display_tutorial_menu();
-void display_system_info();
 
 #endif

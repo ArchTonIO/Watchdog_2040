@@ -63,7 +63,7 @@ DEFINE_LAUNCHER(time_launcher,
 
 DEFINE_LAUNCHER(system_launcher,
     "System menu",
-    {"System info", display_system_info},
+    {"System info", display_system_info_wrapped},
     {"Battery status", display_battery_status},
     {"Check joystick", display_joystick_check},
     {"System reset", reset_system})

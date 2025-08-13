@@ -57,11 +57,15 @@ void terminal_bind_std_commands(terminal *term) {
   terminal_add_command(term,
       create_command("ping", "Ping another ULMP device.", __ping__));
   terminal_add_command(term,
-      create_command("nano", "Open text editor.", __nano__));
+      create_command("unano", "Open unano text editor.", __unano__));
   terminal_add_command(term,
-      create_command("sensors", "Show hardware sensor data.", __sensors__));
+      create_command("info", "Show hardware sensor data.", __info__));
   terminal_add_command(term,
       create_command("history", "Show command history.", __history__));
+  terminal_add_command(term,
+      create_command("serial",
+          "Launch terminal over serial port.",
+          __serial__));
 }
 
 void terminal_add_command(terminal *term, command cmd) {
@@ -80,6 +84,7 @@ terminal *terminal_init() {
   term->commands_count = 0;
   term->current_path = path_init(sys_paths->dirs->user_path->abs_path);
   term->prefix = (char *)malloc(1);
+  term->on_serial = false;
   strcpy(term->current_command, "");
   return term;
 }
@@ -99,6 +104,11 @@ void terminal_clear_buffers(terminal *term) {
 }
 
 void terminal_display_stdout(terminal *term) {
+  if (term->on_serial) {
+    printf("%s\n", term->stdout_buf);
+    terminal_clear_buffers(term);
+    return;
+  }
   text_editor *editor = text_editor_launch(term->stdout_buf, false);
   char *buf = text_editor_get_buf(editor);
   text_editor_kill(editor);
@@ -107,6 +117,11 @@ void terminal_display_stdout(terminal *term) {
 }
 
 void terminal_display_stderr(terminal *term) {
+  if (term->on_serial) {
+    printf("%s\n", term->stderr_buf);
+    terminal_clear_buffers(term);
+    return;
+  }
   text_editor *editor = text_editor_launch(term->stderr_buf, false);
   char *buf = text_editor_get_buf(editor);
   text_editor_kill(editor);
@@ -187,7 +202,7 @@ int8_t dispatch_command(terminal *term, const char *command) {
   for (size_t i = 2; i < slices->len; i++) {
     list_append(args, get(slices, i));
   }
-  list_append(term->history, command);
+  // list_append(term->history, command);
   for (size_t i = 0; i < term->commands_count; i++) {
     if (strcmp(term->commands[i].name, cmd) == 0) {
       command_params params = {term, args};

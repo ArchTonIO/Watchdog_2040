@@ -5,15 +5,20 @@
 #include <string.h>
 
 #include "core/components/hw_manager.h"
+#include "core/components/sys_paths_manager.h"
 #include "core/graphics/graphic_primitives.h"
 #include "core/hardware_drivers/battery.h"
 #include "core/hardware_drivers/joystick.h"
 #include "core/hardware_drivers/ssd1306.h"
 #include "core/tools/options_gen.h"
+#include "core/utils/path.h"
 #include "core/utils/utils.h"
 #include "device.h"
+#include "hardware/watchdog.h"
 
-void display_system_info() {
+void display_system_info_wrapped() { display_system_info(false); }
+
+void display_system_info(bool serial_output) {
   str_list *options = list_init();
   uint64_t us_since_boot = to_us_since_boot(get_absolute_time());
   us_since_boot /= 1000000;
@@ -50,6 +55,12 @@ void display_system_info() {
   list_append(options, clock_freq_khz_str);
   list_append(options, "CPU temperature: ");
   list_append(options, cpu_temp_str);
+  if (serial_output) {
+    for (uint8_t i = 0; i < options->len; i++)
+      printf("%s\n", get(options, i));
+    list_free(options);
+    return;
+  }
   options_page *system_info_page = options_page_init("System info", options);
   options_page_launch(system_info_page);
   options_page_free(system_info_page);
@@ -93,6 +104,17 @@ void reset_system() {
   }
   ssd1306_print(drivers->oled_screen, "Resetting system ...", 0, 0, false);
   ssd1306_show(drivers->oled_screen);
+  path_fdelete(sys_paths->files->first_boot_file);
+  path_fdelete(sys_paths->files->user_file);
+  path_rmtree(sys_paths->dirs->home_path);
+  ssd1306_print(drivers->oled_screen,
+      "System reset done!\n"
+      "Rebooting ...",
+      0,
+      0,
+      false);
+  ssd1306_show(drivers->oled_screen);
+  watchdog_enable(3000, 1);
   sleep_ms(3000);
 }
 
