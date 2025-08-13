@@ -10,8 +10,10 @@
 #include "pico/stdlib.h"
 
 #include "apps/text_editor/text_editor.h"
+#include "core/components/hw_manager.h"
 #include "core/components/malloc_mascot.h"
 #include "core/data_structures/string_list.h"
+#include "core/hardware_drivers/ssd1306.h"
 #include "core/tools/sha_256.h"
 
 bool request_password(const char *placeholder_text) {
@@ -21,6 +23,9 @@ bool request_password(const char *placeholder_text) {
   char *hashed = get_hash(buf);
   if (strcmp(hashed, malloc_memories_inst->user_password_hashed) != 0) {
     free(hashed);
+    ssd1306_print(drivers->oled_screen, "Wrong password!", 0, 0, false);
+    ssd1306_show(drivers->oled_screen);
+    sleep_ms(3000);
     return false;
   }
   free(hashed);

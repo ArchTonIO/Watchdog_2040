@@ -2,7 +2,7 @@
 
 ## leakybob
 
-### leakybob [1.9.3] - 13/08/25
+### leakybob [1.10.6] - 13/08/25
 
 feat:
 
@@ -11,6 +11,7 @@ feat:
 - Implements full-working system reset
 - Prints out command with whole description when
   using 'help' command in serial CLI
+- Requires password to enter terminal
 
 fix:
 
@@ -19,8 +20,9 @@ fix:
 
 chore:
 
-- renames 'sensors' command to 'info'
-- renames 'nano' command to 'unano'
+- Renames 'sensors' command to 'info'
+- Renames 'nano' command to 'unano'
+- Moves wrong password message to request_password()
 
 ### leakybob [1.5.2] - 11/08/25
 
