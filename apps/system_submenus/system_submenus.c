@@ -6,6 +6,7 @@
 
 #include "core/components/hw_manager.h"
 #include "core/components/sys_paths_manager.h"
+#include "core/data_structures/string_list.h"
 #include "core/graphics/graphic_primitives.h"
 #include "core/hardware_drivers/battery.h"
 #include "core/hardware_drivers/joystick.h"
