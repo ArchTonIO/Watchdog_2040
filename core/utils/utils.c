@@ -23,6 +23,7 @@ bool request_password(const char *placeholder_text) {
   char *hashed = get_hash(buf);
   if (strcmp(hashed, malloc_memories_inst->user_password_hashed) != 0) {
     free(hashed);
+    free(buf);
     ssd1306_print(drivers->oled_screen, "Wrong password!", 0, 0, false);
     ssd1306_show(drivers->oled_screen);
     sleep_ms(3000);
