@@ -1,9 +1,11 @@
 #include "ssd1306.h"
 
+#include <pico/mutex.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "pico/stdlib.h"
+#include "pico/sync.h"
 
 #include "hardware/i2c.h"
 
@@ -151,6 +153,7 @@ ssd1306 *ssd1306_init(pin sda,
   new_display->cursorx = 0;
   new_display->cursory = 0;
   new_display->animation_timer_fired = false;
+  mutex_init(&new_display->mutex);
   int buf_size = (height / 8) * width + 1;
   new_display->scr = (uint8_t *)malloc(buf_size);
   if (!new_display->scr) {
@@ -403,7 +406,9 @@ void ssd1306_set_cursor(ssd1306 *display, uint8_t x, uint8_t y) {
   display->cursory = CHAR_HEIGHT * y;
 }
 
-void write_cmd(ssd1306 *display, uint8_t cmd) { send2(display, 0x80, cmd); }
+inline void write_cmd(ssd1306 *display, uint8_t cmd) {
+  send2(display, 0x80, cmd);
+}
 
 void send2(ssd1306 *display, uint8_t v1, uint8_t v2) {
   uint8_t buf[2];
@@ -416,4 +421,4 @@ void send_data(ssd1306 *display, uint8_t *data, int nbytes) {
   i2c_write_blocking(display->i2c_port, display->SID, data, nbytes, false);
 }
 
-int pages(ssd1306 *display) { return display->height / 8; }
+inline int pages(ssd1306 *display) { return display->height / 8; }

@@ -12,6 +12,7 @@
 #include "core/data_structures/string_list.h"
 #include "core/hardware_drivers/haptics.h"
 #include "core/hardware_drivers/joystick.h"
+#include "core/hardware_drivers/sdcard.h"
 #include "core/hardware_drivers/ssd1306.h"
 #include "core/tools/menus.h"
 #include "core/utils/path.h"
@@ -57,17 +58,19 @@ void sys_mainloop() {
   bool ledvalue = false;
   uint8_t screen_up_seconds = 10;
   uint32_t screen_up_start;
+  check_pheripherals();
   while (true) {
     joystick_update(drivers->joystick);
-    check_pheripherals();
     process_system_state();
+    update_conversations();
     if (joystick_get_direction(drivers->joystick) != C || first_run) {
       first_run = false;
       haptic_short_pulse();
       screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
       while (true) {
-        check_pheripherals();
+        // check_pheripherals();
         process_system_state();
+        update_conversations();
         display_home_page();
         joystick_update(drivers->joystick);
         if (joystick_get_direction(drivers->joystick) == E) {

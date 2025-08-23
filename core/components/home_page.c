@@ -66,8 +66,6 @@ void process_system_state() {
   home_page_inst->spo2 = 0; // TODO: implement spo2 reading
   home_page_inst->aqi = ens160_read_aqi(drivers->air_quality_sensor);
   home_page_inst->notifications = msg_man_inst->received_msgs_count;
-  process_messages();
-  process_alarm();
 }
 
 uint8_t *get_battery_level_bitmap() {
@@ -346,8 +344,10 @@ void display_home_page() {
   update_clock_bitmaps();
   update_clock(start_pix_w, start_pix_h, spacing);
   update_texts();
+  ssd1306_get_mutex(drivers->oled_screen);
   layout_draw(home_page_inst->ly);
   ssd1306_show(drivers->oled_screen);
+  ssd1306_release_mutex(drivers->oled_screen);
   layout_flush_bitmap_definitions(home_page_inst->ly);
   layout_flush_text_areas(home_page_inst->ly);
 }

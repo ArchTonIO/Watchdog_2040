@@ -7,16 +7,26 @@
 #include "core/ulmp/ulmp.h"
 
 #define INFO_PAGES_TIMEOUT 2000
+#define MAX_CONVERSATION_UPDATES 50
+
+typedef struct {
+  uint16_t contact_addr;
+  char *message;
+  uint8_t status;
+} conversation_update;
 
 typedef struct {
   bool new_msg_arrived;
   bool should_notify;
   uint16_t received_msgs_count;
   lora_instance *ulmp_impl;
+  conversation_update conversation_updates[MAX_CONVERSATION_UPDATES];
+  uint8_t conversation_updates_count;
 } msg_manager;
 
 msg_manager *msg_manager_init(uint16_t my_addr);
 void process_messages();
+void update_conversations();
 void read_messages();
 void send_message();
 void scan_online_contacts();

@@ -10,6 +10,8 @@
 #include "core/hardware_drivers/haptics.h"
 #include "hardware/gpio.h"
 
+uint8_t performing_core = 1;
+
 void haptics_init(pin motor_pin) {
   gpio_init(motor_pin);
   gpio_set_dir(motor_pin, GPIO_OUT);
@@ -31,6 +33,8 @@ void haptics_motor_pulse(uint16_t durations_ms[],
   }
 }
 
+void brrr() { printf("brrrr\n"); }
+
 /**
  *@brief Sends an auto pulse instruction to core 1.
  *An auto pulse is either a 50ms-20ms or 100ms-0ms pulse, depending on
@@ -38,12 +42,22 @@ void haptics_motor_pulse(uint16_t durations_ms[],
  *this is to avoid a cotinous vibration
  *and still feel distinct pulses.
  */
-void haptic_auto_pulse() { core1_push_instruction(AUTO_PULSE); }
+void haptic_auto_pulse() {
+  performing_core == 1 ? core1_push_instruction(AUTO_PULSE) : brrr();
+}
 
-void haptic_micro_pulse() { core1_push_instruction(MICRO_PULSE); }
+void haptic_micro_pulse() {
+  performing_core == 1 ? core1_push_instruction(MICRO_PULSE) : brrr();
+}
 
-void haptic_short_pulse() { core1_push_instruction(SHORT_PULSE); }
+void haptic_short_pulse() {
+  performing_core == 1 ? core1_push_instruction(SHORT_PULSE) : brrr();
+}
 
-void haptic_long_pulse() { core1_push_instruction(LONG_PULSE); }
+void haptic_long_pulse() {
+  performing_core == 1 ? core1_push_instruction(LONG_PULSE) : brrr();
+}
 
-void haptic_double_pulse() { core1_push_instruction(DOUBLE_PULSE); }
+void haptic_double_pulse() {
+  performing_core == 1 ? core1_push_instruction(DOUBLE_PULSE) : brrr();
+}

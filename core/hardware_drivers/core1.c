@@ -7,6 +7,8 @@
 #include "pico/multicore.h"
 #include "pico/stdlib.h"
 
+#include "apps/msg_manager/msg_manager.h"
+#include "apps/time_submenus/set_alarm_submenu.h"
 #include "core/hardware_drivers/haptics.h"
 
 static uint32_t time_now;
@@ -27,6 +29,8 @@ inline void core1_listens_for_instructions() {
 
 static void __core1_listens_for_instructions__() {
   while (true) {
+    process_messages();
+    process_alarm();
     if (multicore_fifo_rvalid())
       dispatch_instruction(multicore_fifo_pop_blocking());
   }
