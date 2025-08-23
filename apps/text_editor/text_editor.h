@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #ifndef TEXT_EDITOR_H
 #define TEXT_EDITOR_H
 

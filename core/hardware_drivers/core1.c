@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #include "core/hardware_drivers/core1.h"
 
 #include <stdbool.h>

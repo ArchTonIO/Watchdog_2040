@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #ifndef TERMINAL_H
 #define TERMINAL_H
 

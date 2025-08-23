@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #ifndef CORE1_H
 #define CORE1_H
 

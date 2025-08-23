@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #include "apps/msg_manager/msg_manager.h"
 
 #include <pico/types.h>

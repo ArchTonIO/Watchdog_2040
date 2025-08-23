@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #include "core/tools/options_gen.h"
 
 #include <stdbool.h>

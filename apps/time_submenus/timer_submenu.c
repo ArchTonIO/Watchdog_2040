@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #include "apps/time_submenus/timer_submenu.h"
 
 #include <pico/time.h>

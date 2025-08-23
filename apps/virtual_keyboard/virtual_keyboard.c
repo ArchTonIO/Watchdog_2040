@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #include "apps/virtual_keyboard/virtual_keyboard.h"
 
 #include <stdbool.h>

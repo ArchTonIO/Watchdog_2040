@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #ifndef DIRECTORIES_MANAGER_H
 #define DIRECTORIES_MANAGER_H
 

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #ifndef VIRTUAL_KEYBOARD_H
 #define VIRTUAL_KEYBOARD_H
 

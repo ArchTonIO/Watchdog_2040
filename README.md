@@ -1,6 +1,10 @@
 
 # Watchdog_2040
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ## The Transport Layer
 
 The LoRa transport layer I built for this project was named **`ULMP`**: **Uncomplicated LoRa Messaging Protocol.**

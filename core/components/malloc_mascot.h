@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #ifndef MALLOC_MASCOT_H
 #define MALLOC_MASCOT_H
 

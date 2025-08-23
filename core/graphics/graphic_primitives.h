@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #ifndef GRAPHIC_PRIMITIVES_H
 #define GRAPHIC_PRIMITIVES_H
 

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 /*
 An Uncomplicated LoRa Messaging Protocol (ULMP)
 Author: Antonio Del Cogliano

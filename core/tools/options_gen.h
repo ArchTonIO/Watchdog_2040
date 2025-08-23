@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #ifndef OPTIONS_GEN_H
 #define OPTIONS_GEN_H
 

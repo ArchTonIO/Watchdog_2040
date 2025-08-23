@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #ifndef SDCARD_H
 #define SDCARD_H
 #include <stdbool.h>

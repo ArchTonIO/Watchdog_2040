@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #include "core/components/sys_paths_manager.h"
 
 #include <stdlib.h>
