@@ -52,6 +52,7 @@ msg_manager *msg_manager_init(uint16_t my_addr) {
   msg_man->should_notify = true;
   msg_man->received_msgs_count = 0;
   msg_man->ulmp_impl = lora_init(my_addr, drivers->lora_module);
+  msg_man->conversation_updates_count = 0;
   contacts_manager_init();
   lora_receive();
   msg_man_inst = msg_man;
@@ -65,6 +66,46 @@ void process_messages() {
   lora_send_ack(notify);
   lora_send_pong();
   sleep_ms(10);
+}
+
+/**
+ *@brief push a new conversation update to the conversation_updates array, this
+ *operation should be done by core1, in the hope that core0 will then update
+ *the conversations file using the array later on
+ *@param update The conversation update to push.
+ */
+void push_conversation_update(conversation_update update) {
+  if (msg_man_inst->conversation_updates_count >= MAX_CONVERSATION_UPDATES) {
+    msg_man_inst->conversation_updates_count = 0;
+    return;
+  }
+  msg_man_inst->conversation_updates[msg_man_inst
+          ->conversation_updates_count] = update;
+  msg_man_inst->conversation_updates_count++;
+}
+
+/**
+ * @brief Updates the conversations based on the conversation_updates array.
+ * This action should be done by core0 only as it has ownership over the
+ * microsd interface
+ */
+void update_conversations() {
+  for (uint8_t i = 0; i < msg_man_inst->conversation_updates_count; i++) {
+    update_conversation_file(
+        msg_man_inst->conversation_updates[i].contact_addr,
+        msg_man_inst->conversation_updates[i].message,
+        msg_man_inst->conversation_updates[i].status);
+    free(msg_man_inst->conversation_updates[i].message);
+  }
+  msg_man_inst->conversation_updates_count = 0;
+}
+
+void update_conversation_file(uint16_t contact_addr,
+    char *message,
+    uint8_t status) {
+  msg_record *record = msg_record_init(contact_addr, message, status);
+  msg_record_dump(record);
+  msg_record_free(record);
 }
 
 void read_messages() { show_read_messages_menu(); }
@@ -104,21 +145,15 @@ void send_message() {
   free(msg);
 }
 
-void update_conversation_file(uint16_t contact_addr,
-    char *message,
-    uint8_t status) {
-  msg_record *record = msg_record_init(contact_addr, message, status);
-  msg_record_dump(record);
-  msg_record_free(record);
-}
-
 void notify(uint16_t src_address) {
   msg_man_inst->new_msg_arrived = true;
   msg_man_inst->received_msgs_count++;
   if (!msg_man_inst->should_notify)
     return;
   haptic_double_pulse();
+  ssd1306_get_mutex(drivers->oled_screen);
   display_received_message(src_address);
+  ssd1306_release_mutex(drivers->oled_screen);
 }
 
 char *compose_message() {
@@ -188,9 +223,10 @@ void display_received_message(uint16_t src_address) {
       ssd1306_show(drivers->oled_screen);
       if (to_free)
         free(name);
-      update_conversation_file(src_address,
-          msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
-          3);
+      push_conversation_update((conversation_update){
+          .contact_addr = src_address,
+          .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
+          .status = 3});
       lora_reset_recv_buffer();
       return;
     }
@@ -201,9 +237,10 @@ void display_received_message(uint16_t src_address) {
           false);
       char *text = text_editor_get_buf(editor);
       text_editor_kill(editor);
-      update_conversation_file(src_address,
-          msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
-          4);
+      push_conversation_update((conversation_update){
+          .contact_addr = src_address,
+          .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
+          .status = 4});
       msg_man_inst->received_msgs_count--;
       free(text);
       lora_reset_recv_buffer();

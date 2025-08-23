@@ -8,15 +8,18 @@
 #include <string.h>
 #include <sys/reent.h>
 
+#include "pico/stdio_usb.h"
 #include "pico/stdlib.h"
 
+#include "apps/system_submenus/system_submenus.h"
 #include "apps/text_editor/text_editor.h"
 #include "core/components/malloc_mascot.h"
 #include "core/components/sys_paths_manager.h"
 #include "core/data_structures/string_list.h"
-#include "core/tools/menus.h"
 #include "core/ulmp/ulmp.h"
 #include "core/utils/path.h"
+#include "core/utils/utils.h"
+#include "device.h"
 #include "terminal.h"
 
 command create_command(char *name,
@@ -39,12 +42,19 @@ command create_command(char *name,
  */
 int8_t __help__(command_params params) {
   terminal *term = params.term;
+  if (term->on_serial) {
+    for (size_t i = 0; i < term->commands_count; i++)
+      printf("> %s: %s\n",
+          term->commands[i].name,
+          term->commands[i].description);
+    return 0;
+  }
   char *output = malloc(256);
-  snprintf(output, 256, "Available commands:\n");
+  snprintf(output, 256, "Available commands:\n\n");
   for (size_t i = 0; i < term->commands_count; i++) {
     snprintf(output + strlen(output),
         256 - strlen(output),
-        "%s\n",
+        "> %s\n",
         term->commands[i].name);
   }
   strcpy(term->stdout_buf, output);
@@ -258,12 +268,15 @@ int8_t __touch__(command_params params) {
  * @return 0 on success, 1 on error, -1 to exit the terminal.
  */
 int8_t __rm__(command_params params) {
+  bool recursive = false;
   if (params.args->len < 1) {
     strcpy(params.term->stderr_buf, "Usage: rm <file>\n");
     terminal_display_stderr(params.term);
     return 1;
   }
-  char *file = get(params.args, 0);
+  if (params.args->len > 1 && strcmp(get(params.args, 0), "-r") == 0)
+    recursive = true;
+  char *file = get(params.args, recursive ? 1 : 0);
   path *file_path = path_init(file);
   path *full_path = path_concat(params.term->current_path, file_path);
   path_free(file_path);
@@ -273,6 +286,18 @@ int8_t __rm__(command_params params) {
     terminal_display_stderr(params.term);
     path_free(full_path);
     return 1;
+  }
+  if (recursive && full_path->is_dir) {
+    if (path_rmtree(full_path)) {
+      path_free(full_path);
+      return 0;
+    } else {
+      strcpy(params.term->stderr_buf, "Failed to remove directory: ");
+      strcat(params.term->stderr_buf, file);
+      terminal_display_stderr(params.term);
+      path_free(full_path);
+      return 1;
+    }
   }
   if (path_fdelete(full_path)) {
     path_free(full_path);
@@ -612,9 +637,11 @@ int8_t __ping__(command_params params) {
  * arguments.
  * @return 0 on success, 1 on error, -1 to exit the terminal.
  */
-int8_t __nano__(command_params params) {
+int8_t __unano__(command_params params) {
+  if (params.term->on_serial)
+    printf("unano will now open up in the device display");
   if (params.args->len < 1) {
-    strcpy(params.term->stderr_buf, "Usage: nano <file>\n");
+    strcpy(params.term->stderr_buf, "Usage: unano <file>\n");
     terminal_display_stderr(params.term);
     return 1;
   }
@@ -649,8 +676,8 @@ int8_t __nano__(command_params params) {
  * @param params The command parameters containing the terminal instance.
  * @return 0 on success, 1 on error, -1 to exit the terminal.
  */
-int8_t __sensors__(command_params params) {
-  display_system_info();
+int8_t __info__(command_params params) {
+  display_system_info(params.term->on_serial);
   return 0;
 }
 
@@ -666,4 +693,38 @@ int8_t __history__(command_params params) {
   terminal_display_stdout(params.term);
   free(history_content);
   return 0;
+}
+
+int8_t __serial__(command_params params) {
+  if (params.term->on_serial) {
+    strcpy(params.term->stdout_buf, "You are already using serial CLI");
+    terminal_display_stdout(params.term);
+    return 0;
+  }
+  strcpy(params.term->stdout_buf, "Exit this message to enter serial CLI");
+  terminal_display_stdout(params.term);
+  params.term->on_serial = true;
+  while (!stdio_usb_connected()) {
+    sleep_ms(100);
+  }
+  printf("%s %s - serial CLI\n", DEVICE_NAME, FIRMWARE_VERSION);
+  printf("Type 'help' to see available commands.\n\n");
+  char buf[64];
+  int8_t ret;
+  setvbuf(stdin, buf, _IOFBF, sizeof(buf));
+  while (1) {
+    printf("%s", params.term->prefix);
+    fgets(buf, sizeof(buf), stdin);
+    char *buf_no_lfd = string_remove_linefeed(buf);
+    char *buf_w_prefix = string_add(params.term->prefix, buf_no_lfd);
+    ret = dispatch_command(params.term, buf_w_prefix);
+    free(buf_w_prefix);
+    free(buf_no_lfd);
+    terminal_update_prefix(params.term);
+    if (ret == -1) {
+      printf("Exiting serial CLI...\n");
+      params.term->on_serial = false;
+      return 0;
+    }
+  }
 }

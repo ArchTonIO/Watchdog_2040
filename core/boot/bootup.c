@@ -6,6 +6,7 @@
 
 #include "core/components/hw_manager.h"
 #include "core/graphics/bitmaps.h"
+#include "core/hardware_drivers/core1.h"
 #include "core/hardware_drivers/ssd1306.h"
 #include "device.h"
 

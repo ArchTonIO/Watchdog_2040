@@ -2,6 +2,28 @@
 
 ## leakybob
 
+### leakybob [1.10.6] - 13/08/25
+
+feat:
+
+- Implements path_rmtree
+- Implements serial CLI with the 'serial' command
+- Implements full-working system reset
+- Prints out command with whole description when
+  using 'help' command in serial CLI
+- Requires password to enter terminal
+
+fix:
+
+- Makes early call to end_loading_screen() when first boot
+  to avoid race condition for the screen between the two cores
+
+chore:
+
+- Renames 'sensors' command to 'info'
+- Renames 'nano' command to 'unano'
+- Moves wrong password message to request_password()
+
 ### leakybob [1.5.2] - 11/08/25
 
 feat:

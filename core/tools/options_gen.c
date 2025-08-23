@@ -74,6 +74,7 @@ char *options_page_launch(options_page *page) {
   sleep_ms(INTERAC_TIMEOUT);
   ssd1306_clear(drivers->oled_screen);
   while (1) {
+    ssd1306_get_mutex(drivers->oled_screen);
     ssd1306_print(drivers->oled_screen,
         page->title,
         (uint8_t)((MAX_X_CHARS - strlen(page->title)) / 2),
@@ -98,6 +99,7 @@ char *options_page_launch(options_page *page) {
       }
     }
     ssd1306_show(drivers->oled_screen);
+    ssd1306_release_mutex(drivers->oled_screen);
     joystick_update(drivers->joystick);
     uint8_t joystick_dir = joystick_get_direction(drivers->joystick);
     if (joystick_dir == N) {
@@ -116,8 +118,10 @@ char *options_page_launch(options_page *page) {
         page->options[page->selected_option].callback();
       else
         return page->options[page->selected_option].name;
+      ssd1306_get_mutex(drivers->oled_screen);
       ssd1306_clear(drivers->oled_screen);
       ssd1306_show(drivers->oled_screen);
+      ssd1306_release_mutex(drivers->oled_screen);
     } else if (joystick_dir == W) {
       haptic_short_pulse();
       return "";

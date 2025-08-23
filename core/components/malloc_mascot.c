@@ -23,15 +23,15 @@ malloc_memories *malloc_memories_inst = NULL;
 
 void start_malloc_mascot_tutorial() {
   malloc_memories *memories = malloc_memories_init();
-  malloc_greets_you();
-  malloc_explains_you_joystick();
-  malloc_explains_you_menu();
-  malloc_explains_you_text_editor();
+  // malloc_greets_you();
+  // malloc_explains_you_joystick();
+  // malloc_explains_you_menu();
+  // malloc_explains_you_text_editor();
   malloc_asks_your_name();
   malloc_asks_for_password();
-  malloc_explains_you_home_screen();
+  // malloc_explains_you_home_screen();
   malloc_generates_ulcp_address();
-  malloc_says_goodbye();
+  // malloc_says_goodbye();
 }
 
 malloc_memories *malloc_memories_init() {
@@ -650,177 +650,177 @@ uint16_t malloc_get_ulcp_address() {
 }
 
 void malloc_generates_ulcp_address() {
-  ssd1306_draw_bitmap(drivers->oled_screen,
-      0,
-      19,
-      malloc_the_mascot,
-      22,
-      28,
-      0);
-  ssd1306_print_gradually(drivers->oled_screen,
-      "Bene, direi che\n"
-      "per ora non ho\n"
-      "altro da dirti",
-      4,
-      2,
-      0);
-  sleep_ms(100);
-  ssd1306_print_gradually(drivers->oled_screen,
-      "...Ma ho un\n"
-      "regalino per te!",
-      4,
-      5,
-      0);
-  right_to_continue();
-  clear_text_area_reduced();
-  ssd1306_draw_bitmap(drivers->oled_screen,
-      0,
-      19,
-      malloc_with_both_eyes,
-      26,
-      28,
-      0);
-  ssd1306_print_gradually(drivers->oled_screen,
-      "Il tuo indirizzo\n"
-      "ULMP!",
-      4,
-      2,
-      0);
-  sleep_ms(50);
-  ssd1306_draw_bitmap(drivers->oled_screen,
-      0,
-      19,
-      malloc_with_pointy_eyes,
-      26,
-      28,
-      0);
-  ssd1306_print_gradually(drivers->oled_screen,
-      "Fammi fare un po\n"
-      "di spazio sullo \n"
-      "schermo e spiego",
-      4,
-      4,
-      0);
-  right_to_continue();
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_draw_bitmap(drivers->oled_screen,
-      0,
-      19,
-      malloc_with_glasses,
-      26,
-      28,
-      0);
-  ssd1306_print_gradually(drivers->oled_screen,
-      "Il tuo indirizzo\n"
-      "ULMP e' un\n"
-      "identificativo\n"
-      "univoco che\n"
-      "ti permette di\n"
-      "inviare e\n"
-      "ricevere",
-      4,
-      0,
-      0);
-  right_to_continue();
-  clear_text_area();
-  ssd1306_print_gradually(drivers->oled_screen,
-      "messaggi a e da\n"
-      "chiunque abbia\n"
-      "un Watchdog_2040\n"
-      "(o successivi)\n"
-      "e si trovi nel\n"
-      "raggio di\n"
-      "trasmissione",
-      4,
-      0,
-      0);
-  right_to_continue();
-  clear_text_area();
-  ssd1306_print_gradually(drivers->oled_screen,
-      "Si tratta di un\n"
-      "numero che va\n"
-      "da 10000 a 65535\n"
-      "e che viene\n"
-      "generato in modo\n"
-      "randomico.",
-      4,
-      0,
-      0);
-  right_to_continue();
-  clear_text_area();
-  ssd1306_draw_bitmap(drivers->oled_screen,
-      0,
-      19,
-      malloc_with_glasses,
-      26,
-      28,
-      0);
-  ssd1306_print_gradually(drivers->oled_screen,
-      "Il protocollo di\n"
-      "comunicazione\n"
-      "(transport\n"
-      "layer) che\n"
-      "ho inventato non\n"
-      "ha bisogno di\n"
-      "internet",
-      4,
-      0,
-      0);
-  right_to_continue();
-  clear_text_area();
-  ssd1306_print_gradually(drivers->oled_screen, "e si chiama:", 4, 0, 0);
-  ssd1306_print_gradually(drivers->oled_screen,
-      "U(ncomplicated)\n"
-      "L(oRa)\n"
-      "M(messaging)\n"
-      "P(rotocol)",
-      4,
-      2,
-      0);
-  right_to_continue();
-  clear_text_area();
-  ssd1306_draw_bitmap(drivers->oled_screen,
-      0,
-      19,
-      malloc_with_both_eyes,
-      26,
-      28,
-      0);
+  // ssd1306_draw_bitmap(drivers->oled_screen,
+  //     0,
+  //     19,
+  //     malloc_the_mascot,
+  //     22,
+  //     28,
+  //     0);
+  // ssd1306_print_gradually(drivers->oled_screen,
+  //     "Bene, direi che\n"
+  //     "per ora non ho\n"
+  //     "altro da dirti",
+  //     4,
+  //     2,
+  //     0);
+  // sleep_ms(100);
+  // ssd1306_print_gradually(drivers->oled_screen,
+  //     "...Ma ho un\n"
+  //     "regalino per te!",
+  //     4,
+  //     5,
+  //     0);
+  // right_to_continue();
+  // clear_text_area_reduced();
+  // ssd1306_draw_bitmap(drivers->oled_screen,
+  //     0,
+  //     19,
+  //     malloc_with_both_eyes,
+  //     26,
+  //     28,
+  //     0);
+  // ssd1306_print_gradually(drivers->oled_screen,
+  //     "Il tuo indirizzo\n"
+  //     "ULMP!",
+  //     4,
+  //     2,
+  //     0);
+  // sleep_ms(50);
+  // ssd1306_draw_bitmap(drivers->oled_screen,
+  //     0,
+  //     19,
+  //     malloc_with_pointy_eyes,
+  //     26,
+  //     28,
+  //     0);
+  // ssd1306_print_gradually(drivers->oled_screen,
+  //     "Fammi fare un po\n"
+  //     "di spazio sullo \n"
+  //     "schermo e spiego",
+  //     4,
+  //     4,
+  //     0);
+  // right_to_continue();
+  // ssd1306_clear(drivers->oled_screen);
+  // ssd1306_draw_bitmap(drivers->oled_screen,
+  //     0,
+  //     19,
+  //     malloc_with_glasses,
+  //     26,
+  //     28,
+  //     0);
+  // ssd1306_print_gradually(drivers->oled_screen,
+  //     "Il tuo indirizzo\n"
+  //     "ULMP e' un\n"
+  //     "identificativo\n"
+  //     "univoco che\n"
+  //     "ti permette di\n"
+  //     "inviare e\n"
+  //     "ricevere",
+  //     4,
+  //     0,
+  //     0);
+  // right_to_continue();
+  // clear_text_area();
+  // ssd1306_print_gradually(drivers->oled_screen,
+  //     "messaggi a e da\n"
+  //     "chiunque abbia\n"
+  //     "un Watchdog_2040\n"
+  //     "(o successivi)\n"
+  //     "e si trovi nel\n"
+  //     "raggio di\n"
+  //     "trasmissione",
+  //     4,
+  //     0,
+  //     0);
+  // right_to_continue();
+  // clear_text_area();
+  // ssd1306_print_gradually(drivers->oled_screen,
+  //     "Si tratta di un\n"
+  //     "numero che va\n"
+  //     "da 10000 a 65535\n"
+  //     "e che viene\n"
+  //     "generato in modo\n"
+  //     "randomico.",
+  //     4,
+  //     0,
+  //     0);
+  // right_to_continue();
+  // clear_text_area();
+  // ssd1306_draw_bitmap(drivers->oled_screen,
+  //     0,
+  //     19,
+  //     malloc_with_glasses,
+  //     26,
+  //     28,
+  //     0);
+  // ssd1306_print_gradually(drivers->oled_screen,
+  //     "Il protocollo di\n"
+  //     "comunicazione\n"
+  //     "(transport\n"
+  //     "layer) che\n"
+  //     "ho inventato non\n"
+  //     "ha bisogno di\n"
+  //     "internet",
+  //     4,
+  //     0,
+  //     0);
+  // right_to_continue();
+  // clear_text_area();
+  // ssd1306_print_gradually(drivers->oled_screen, "e si chiama:", 4, 0, 0);
+  // ssd1306_print_gradually(drivers->oled_screen,
+  //     "U(ncomplicated)\n"
+  //     "L(oRa)\n"
+  //     "M(messaging)\n"
+  //     "P(rotocol)",
+  //     4,
+  //     2,
+  //     0);
+  // right_to_continue();
+  // clear_text_area();
+  // ssd1306_draw_bitmap(drivers->oled_screen,
+  //     0,
+  //     19,
+  //     malloc_with_both_eyes,
+  //     26,
+  //     28,
+  //     0);
   char *addr_str = malloc(6);
   sprintf(addr_str, "%d", malloc_get_ulcp_address());
-  ssd1306_print_gradually(drivers->oled_screen,
-      "Ma basta parlare\n"
-      "di me!, ecco il\n"
-      "tuo indirizzo\n"
-      "ULMP:",
-      4,
-      0,
-      0);
-  ssd1306_print_gradually(drivers->oled_screen, addr_str, 9, 3, 0);
-  ssd1306_print_gradually(drivers->oled_screen,
-      "Rimarra' scritto\n"
-      "In basso alla\n"
-      "home screen",
-      4,
-      4,
-      0);
-  right_to_continue();
-  clear_text_area();
-  ssd1306_draw_bitmap(drivers->oled_screen,
-      0,
-      19,
-      malloc_with_both_eyes,
-      26,
-      28,
-      0);
-  ssd1306_print_gradually(drivers->oled_screen,
-      "in caso ne\n"
-      "avessi bisogno",
-      4,
-      0,
-      0);
-  right_to_continue();
-  clear_text_area();
+  // ssd1306_print_gradually(drivers->oled_screen,
+  //     "Ma basta parlare\n"
+  //     "di me!, ecco il\n"
+  //     "tuo indirizzo\n"
+  //     "ULMP:",
+  //     4,
+  //     0,
+  //     0);
+  // ssd1306_print_gradually(drivers->oled_screen, addr_str, 9, 3, 0);
+  // ssd1306_print_gradually(drivers->oled_screen,
+  //     "Rimarra' scritto\n"
+  //     "In basso alla\n"
+  //     "home screen",
+  //     4,
+  //     4,
+  //     0);
+  // right_to_continue();
+  // clear_text_area();
+  // ssd1306_draw_bitmap(drivers->oled_screen,
+  //     0,
+  //     19,
+  //     malloc_with_both_eyes,
+  //     26,
+  //     28,
+  //     0);
+  // ssd1306_print_gradually(drivers->oled_screen,
+  //     "in caso ne\n"
+  //     "avessi bisogno",
+  //     4,
+  //     0,
+  //     0);
+  // right_to_continue();
+  // clear_text_area();
 }
 
 void malloc_says_goodbye() {

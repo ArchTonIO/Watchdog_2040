@@ -5,6 +5,7 @@
 #include "apps/AQI/aqi.h"
 #include "apps/msg_manager/contacts_manager.h"
 #include "apps/msg_manager/msg_manager.h"
+#include "apps/notes/notes.h"
 #include "apps/system_submenus/system_submenus.h"
 #include "apps/terminal/terminal.h"
 #include "apps/time_submenus/set_alarm_submenu.h"
@@ -39,6 +40,7 @@ DEFINE_LAUNCHER(main_launcher,
     {"Terminal", terminal_launch},
     {"Air quality indexes", display_air_quality_indexes},
     {"System", display_system_menu},
+    {"Notes", enter_notes_submenu},
     {"Games", display_games_menu},
     {"Malloc", display_malloc_menu})
 
@@ -63,7 +65,7 @@ DEFINE_LAUNCHER(time_launcher,
 
 DEFINE_LAUNCHER(system_launcher,
     "System menu",
-    {"System info", display_system_info},
+    {"System info", display_system_info_wrapped},
     {"Battery status", display_battery_status},
     {"Check joystick", display_joystick_check},
     {"System reset", reset_system})

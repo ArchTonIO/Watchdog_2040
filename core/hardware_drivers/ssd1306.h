@@ -1,6 +1,7 @@
 #ifndef SSD1306_H
 #define SSD1306_H
 
+#include <pico/mutex.h>
 #include <stdint.h>
 
 #include "config.h"
@@ -44,6 +45,7 @@ typedef struct {
   volatile bool animation_timer_fired;
   int cursorx;
   int cursory;
+  mutex_t mutex;
 } ssd1306;
 
 ssd1306 *ssd1306_init(pin sda,
@@ -80,5 +82,11 @@ void ssd1306_set_cursor(ssd1306 *display, uint8_t x, uint8_t y);
 void ssd1306_invert(ssd1306 *display, uint8_t invert);
 void ssd1306_show(ssd1306 *display);
 void ssd1306_clear(ssd1306 *display);
+inline void ssd1306_get_mutex(ssd1306 *display) {
+  mutex_enter_blocking(&display->mutex);
+}
+inline void ssd1306_release_mutex(ssd1306 *display) {
+  mutex_exit(&display->mutex);
+}
 
 #endif

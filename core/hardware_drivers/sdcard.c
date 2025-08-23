@@ -340,6 +340,28 @@ bool sdcard_rmdir(sdcard *sd, path *dir) {
   return true;
 }
 
+bool sdcard_rmtree(sdcard *sd, path *dir) {
+  if (dir->is_dir == false) {
+    printf("ERROR: The path '%s' is not a directory.\r\n", dir->abs_path);
+    return false;
+  }
+  str_list *files = sdcard_list_files(sd, dir);
+  for (uint16_t i = 0; i < files->len; i++) {
+    char *file_name = get(files, i);
+    path *file_path = path_init(file_name);
+    path *full_path = path_concat(dir, file_path);
+    if (full_path->is_dir) {
+      sdcard_rmtree(sd, full_path);
+    } else {
+      sdcard_delete_file(sd, full_path);
+    }
+    path_free(full_path);
+    path_free(file_path);
+  }
+  list_free(files);
+  return sdcard_rmdir(sd, dir);
+}
+
 /**
  * @brief Check if a path is a directory.
  *
