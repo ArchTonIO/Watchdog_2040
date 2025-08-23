@@ -82,8 +82,8 @@ void push_conversation_update(conversation_update update) {
     msg_man_inst->conversation_updates_count = 0;
     return;
   }
-  msg_man_inst->conversation_updates[msg_man_inst
-          ->conversation_updates_count] = update;
+  msg_man_inst->conversation_updates
+      [msg_man_inst->conversation_updates_count] = update;
   msg_man_inst->conversation_updates_count++;
 }
 
@@ -153,7 +153,9 @@ void notify(uint16_t src_address) {
   msg_man_inst->received_msgs_count++;
   if (!msg_man_inst->should_notify)
     return;
+  haptics_switch_performing_core();
   haptic_double_pulse();
+  haptics_switch_performing_core();
   ssd1306_get_mutex(drivers->oled_screen);
   display_received_message(src_address);
   ssd1306_release_mutex(drivers->oled_screen);
@@ -234,7 +236,9 @@ void display_received_message(uint16_t src_address) {
       return;
     }
     joystick_update(drivers->joystick);
+    sleep_ms(100);
     if (joystick_get_direction(drivers->joystick) == E) {
+      printf("moved joystick\n");
       text_editor *editor = text_editor_launch(
           msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
           false);

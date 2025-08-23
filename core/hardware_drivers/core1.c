@@ -14,10 +14,6 @@
 #include "apps/time_submenus/set_alarm_submenu.h"
 #include "core/hardware_drivers/haptics.h"
 
-static uint32_t time_now;
-static uint32_t time_from_last_haptic_instruction;
-static uint32_t last_haptic_instruction_time;
-
 void dispatch_instruction(uint8_t data);
 void dispatch_haptic(uint8_t data);
 static void __core1_listens_for_instructions__();
@@ -44,35 +40,7 @@ void dispatch_instruction(uint8_t data) {
     dispatch_haptic(data);
 }
 
-void dispatch_haptic(uint8_t data) {
-  time_now = to_ms_since_boot(get_absolute_time());
-  if (last_haptic_instruction_time != 0)
-    time_from_last_haptic_instruction = time_now -
-                                        last_haptic_instruction_time;
-  last_haptic_instruction_time = time_now;
-  switch (data) {
-  case 0x01:
-    if (time_from_last_haptic_instruction < 151)
-      haptics_motor_pulse((uint16_t[]){50}, (uint16_t[]){20}, 1);
-    else
-      haptics_motor_pulse((uint16_t[]){100}, (uint16_t[]){0}, 1);
-    break;
-  case 0x03:
-    haptics_motor_pulse((uint16_t[]){50}, (uint16_t[]){20}, 1);
-    break;
-  case 0x05:
-    haptics_motor_pulse((uint16_t[]){120}, (uint16_t[]){0}, 1);
-    break;
-  case 0x07:
-    haptics_motor_pulse((uint16_t[]){1000}, (uint16_t[]){0}, 1);
-    break;
-  case 0x09:
-    haptics_motor_pulse((uint16_t[]){200, 400}, (uint16_t[]){100, 0}, 2);
-    break;
-  default:
-    break;
-  }
-}
+inline void dispatch_haptic(uint8_t data) { haptic_pulse(data); }
 
 inline void core1_reset() { multicore_reset_core1(); }
 inline void core1_launch(void (*entry)(void)) {

@@ -19,5 +19,7 @@ void haptic_micro_pulse();
 void haptic_short_pulse();
 void haptic_long_pulse();
 void haptic_double_pulse();
+void haptic_pulse(uint8_t pulse_type);
+void haptics_switch_performing_core();
 
 #endif
