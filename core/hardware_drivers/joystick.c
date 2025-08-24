@@ -11,6 +11,7 @@
 #include "pico/stdlib.h"
 
 #include "config.h"
+#include "core/hardware_drivers/haptics.h"
 #include "core/utils/utils.h"
 #include "hardware/adc.h"
 
@@ -183,10 +184,13 @@ uint8_t joystick_get_direction(joystick *stick) {
 bool joystick_check_long_press(joystick *stick, uint16_t interval_ms) {
   joystick_update(stick);
   if (stick->button_pressed) {
+    haptic_short_pulse();
     sleep_ms(interval_ms);
     joystick_update(stick);
-    if (stick->button_pressed)
+    if (stick->button_pressed) {
+      haptic_short_pulse();
       return true;
+    }
   }
   return false;
 }
