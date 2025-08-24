@@ -4,6 +4,7 @@
 #ifndef CORE1_H
 #define CORE1_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 /*instructions set for haptic feedback [1-9]*/
@@ -29,13 +30,23 @@
 #define CHECKS_END 0x2b
 #define CORE_1_OP_DONE 0x2d
 
-/*instructions set for ulmp operations [55-]*/
-#define SHOW_NOTIFICATION 0x37
+/*instructions set for display bootup screen [55-]*/
+#define SHOW_BOOTUP 0x37
 
-void core1_launch(void (*entry)(void));
-void core1_listens_for_instructions();
+#define MAX_SCHEDULER_CALLBACKS 10
+
+typedef struct {
+  void (*callbacks[MAX_SCHEDULER_CALLBACKS])(void);
+  uint8_t callbacks_count;
+  bool start_flag;
+} core1_scheduler;
+
+core1_scheduler *core1_scheduler_init();
+void core1_scheduler_add_callback(void (*callback)(void));
+void core1_scheduler_set_start_flag(bool start_flag);
+
+void core1_spin();
 void core1_push_instruction(uint8_t data);
 void core1_await();
-void core1_reset();
 
 #endif

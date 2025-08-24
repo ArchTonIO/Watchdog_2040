@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "apps/msg_manager/msg_manager.h"
+#include "apps/time_submenus/set_alarm_submenu.h"
 #include "core/boot/bootup.h"
 #include "core/data_structures/string_list.h"
 #include "core/hardware_drivers/battery.h"
@@ -35,7 +37,11 @@ hw_drivers *hardware_drivers_init() {
       SSD1306_HEIGHT,
       SSD1306_ADDR);
   drivers = hw_man;
-  core1_launch(display_bootup_screen);
+  haptics_init(HAPTICS_MOTOR_PIN);
+  core1_scheduler_init();
+  core1_spin();
+  sleep_ms(1000);
+  core1_push_instruction(SHOW_BOOTUP);
   hw_man->air_quality_sensor = ens160_init(ENS160_SDA,
       ENS160_SCK,
       ENS160_I2C_PORT,
@@ -90,13 +96,7 @@ hw_drivers *hardware_drivers_init() {
   return hw_man;
 }
 
-void end_loading_screen() {
-  core1_await();
-  core1_reset();
-  haptics_init(HAPTICS_MOTOR_PIN);
-  core1_listens_for_instructions();
-  ssd1306_clear(drivers->oled_screen);
-}
+void end_loading_screen() { core1_await(); }
 
 uint32_t get_total_heap(void) {
   extern char __StackLimit, __bss_end__;

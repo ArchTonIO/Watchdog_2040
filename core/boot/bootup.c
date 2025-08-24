@@ -84,6 +84,7 @@ void display_running_checks(uint32_t fifo_data) {
 }
 
 void display_bootup_screen() {
+  ssd1306_get_mutex(drivers->oled_screen);
   ssd1306_print(drivers->oled_screen,
       "INITIALIZING\n"
       "HARDWARE DRIVERS...",
@@ -97,5 +98,7 @@ void display_bootup_screen() {
     display_running_checks(fifo_data);
   }
   display_splash_screen();
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_release_mutex(drivers->oled_screen);
   multicore_fifo_push_blocking(CORE_1_OP_DONE);
 }

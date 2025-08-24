@@ -8,14 +8,15 @@
 #include "pico/stdlib.h"
 
 #include "apps/msg_manager/msg_manager.h"
+#include "apps/time_submenus/set_alarm_submenu.h"
 #include "core/components/home_page.h"
 #include "core/components/hw_manager.h"
 #include "core/components/malloc_mascot.h"
 #include "core/components/sys_paths_manager.h"
 #include "core/data_structures/string_list.h"
+#include "core/hardware_drivers/core1.h"
 #include "core/hardware_drivers/haptics.h"
 #include "core/hardware_drivers/joystick.h"
-#include "core/hardware_drivers/sdcard.h"
 #include "core/hardware_drivers/ssd1306.h"
 #include "core/tools/menus.h"
 #include "core/utils/path.h"
@@ -34,7 +35,6 @@ void sys_setup() {
   stdio_init_all();
   hardware_drivers_init();
   sys_paths_manager_init();
-  // wait_for_user_input();
   first_boot_file = path_init(FIRST_BOOT_FILE);
   bool should_end_loading_screen = true;
   if (is_first_boot()) {
@@ -55,7 +55,14 @@ void sys_setup() {
     end_loading_screen();
 }
 
+void attach_background_routines() {
+  core1_scheduler_add_callback(process_messages);
+  core1_scheduler_add_callback(process_alarm);
+  core1_scheduler_set_start_flag(true);
+}
+
 void sys_mainloop() {
+  attach_background_routines();
   bool first_run = true;
   uint8_t loops = 0;
   bool ledvalue = false;
@@ -71,7 +78,6 @@ void sys_mainloop() {
       haptic_short_pulse();
       screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
       while (true) {
-        // check_pheripherals();
         process_system_state();
         update_conversations();
         display_home_page();

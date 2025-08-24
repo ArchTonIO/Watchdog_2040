@@ -9,7 +9,6 @@
 #include <stdlib.h>
 
 #include "apps/msg_manager/msg_manager.h"
-#include "apps/time_submenus/set_alarm_submenu.h"
 #include "apps/time_submenus/time_utils.h"
 #include "core/components/hw_manager.h"
 #include "core/components/malloc_mascot.h"
@@ -20,6 +19,7 @@
 #include "core/hardware_drivers/rtc_time.h"
 #include "core/hardware_drivers/sdcard.h"
 #include "core/hardware_drivers/ssd1306.h"
+#include "core/hardware_drivers/sx1278.h"
 
 home_page *home_page_inst;
 
@@ -50,12 +50,10 @@ void check_pheripherals() {
     home_page_inst->sd_status = 1;
   else
     home_page_inst->sd_status = 0;
-
   if (drivers->lora_module->is_working)
     home_page_inst->sx1278_status = 1;
   else
     home_page_inst->sx1278_status = 0;
-
   if (drivers->air_quality_sensor->is_working)
     home_page_inst->en160_status = 1;
   else
@@ -65,8 +63,6 @@ void check_pheripherals() {
 void process_system_state() {
   home_page_inst->battery_level = battery_get_percentage(drivers->battery);
   home_page_inst->alarm_set = drivers->rtc->alarm_set;
-  home_page_inst->bpm = 0;  // TODO: implement bpm reading
-  home_page_inst->spo2 = 0; // TODO: implement spo2 reading
   home_page_inst->aqi = ens160_read_aqi(drivers->air_quality_sensor);
   home_page_inst->notifications = msg_man_inst->received_msgs_count;
 }

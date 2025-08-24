@@ -8,7 +8,6 @@
 #include <string.h>
 
 #include "pico/stdlib.h"
-#include "pico/sync.h"
 
 #include "hardware/i2c.h"
 
@@ -127,7 +126,7 @@ void ssd1306_invert(ssd1306 *display, uint8_t invert) {
   write_cmd(display, SET_NORM_INV | (invert & 1));
 }
 
-/*
+/**
  * @brief Initialize the display
  * @param sda: the sda pin
  * @param sck: the sck pin
@@ -197,7 +196,7 @@ ssd1306 *ssd1306_init(pin sda,
   return new_display;
 }
 
-/*
+/**
  * @brief Draw a pixel at the specified position
  * The origin is the top left corner of the display (0, 0),
  * x and y progress to the right and down respectively
@@ -228,7 +227,7 @@ void ssd1306_draw_pixel(ssd1306 *display, int16_t x, int16_t y, int color) {
   }
 }
 
-/*
+/**
  * @brief Draw a character at the specified position,
  * every character is 6 pixels wide and 8 pixels tall
  *
@@ -261,18 +260,18 @@ void ssd1306_draw_letter_at(ssd1306 *display,
   }
 }
 
-/*
+/**
  * @brief Print a string to the display at the specified position,
  * every character is 6 pixels wide and 8 pixels tall
 
  * @param display: the display to print to
  * @param str: the string to print
  * @param x: the x position of the first character (CHAR_WIDTH will be
- multiplied by this value)
+ * multiplied by this value)
  * @param y: the y position of the first character (CHAR_HEIGHT will be
- multiplied by this value)
+ * multiplied by this value)
  * @param reversed: whether to print the string in reversed colors (thus making
- it black fg in white bg)
+ * it black fg in white bg)
  */
 void ssd1306_print(ssd1306 *display,
     const char *str,
@@ -323,7 +322,7 @@ void ssd1306_print_gradually(ssd1306 *display,
   }
 }
 
-/*
+/**
  * @brief Draw a bitmap at the specified position
  * The bitmap is a 1bpp monochrome bitmap, the width and height are in pixels
  *
@@ -356,14 +355,13 @@ void ssd1306_draw_bitmap(ssd1306 *display,
   }
 }
 
-/*
+/**
  * @brief Show the display buffer on the screen,
  * (display buffer is the buffer that holds the pixel data)
  *
  * @param display: the display to show
  */
 void ssd1306_show(ssd1306 *display) {
-
   write_cmd(display, SET_MEM_ADDR);
   write_cmd(display, 0b01);
   write_cmd(display, SET_COL_ADDR);
@@ -385,7 +383,7 @@ void init_i2c(ssd1306 *display) {
   gpio_pull_up(display->sck);
 }
 
-/*
+/**
  * @brief Clear the display buffer
  *
  * @param display: the display to clear
@@ -396,7 +394,7 @@ void ssd1306_clear(ssd1306 *display) {
     memset(display->scr, 0, buf_size);
 }
 
-/*
+/**
  * @brief Set the cursor position
  * @param display: the display to set the cursor position for
  * @param x: the x position of the cursor in characters coordinates (CHAR_WIDTH
@@ -420,7 +418,7 @@ void send2(ssd1306 *display, uint8_t v1, uint8_t v2) {
   send_data(display, buf, 2);
 }
 
-void send_data(ssd1306 *display, uint8_t *data, int nbytes) {
+inline void send_data(ssd1306 *display, uint8_t *data, int nbytes) {
   i2c_write_blocking(display->i2c_port, display->SID, data, nbytes, false);
 }
 
