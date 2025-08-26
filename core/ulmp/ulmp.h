@@ -42,7 +42,7 @@ Author: Antonio Del Cogliano
       PAYLOAD_MAX_SIZE) /*-2 for start and end packets*/
 
 /*The number of retries for sending a transaction*/
-#define MAX_SENDING_ATTEMPTS 5
+#define MAX_SENDING_ATTEMPTS 10
 
 /*Packet types*/
 #define PING 0x00

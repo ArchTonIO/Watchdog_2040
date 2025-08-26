@@ -122,10 +122,12 @@ void send_message_status_update_callback(uint8_t progress) {
       0,
       0,
       false);
+  char max_sending_attempts_buf[3];
+  sprintf(max_sending_attempts_buf, "%u", MAX_SENDING_ATTEMPTS);
   ssd1306_print(drivers->oled_screen, "Attempts: ", 0, 4, false);
   ssd1306_print(drivers->oled_screen, progress_str, 9, 4, false);
   ssd1306_print(drivers->oled_screen, "/", 10, 4, false);
-  ssd1306_print(drivers->oled_screen, "5", 11, 4, false);
+  ssd1306_print(drivers->oled_screen, max_sending_attempts_buf, 11, 4, false);
   ssd1306_show(drivers->oled_screen);
 }
 
