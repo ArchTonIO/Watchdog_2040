@@ -7,9 +7,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "apps/msg_manager/msg_manager.h"
-#include "apps/time_submenus/set_alarm_submenu.h"
-#include "core/boot/bootup.h"
 #include "core/data_structures/string_list.h"
 #include "core/hardware_drivers/battery.h"
 #include "core/hardware_drivers/config.h"

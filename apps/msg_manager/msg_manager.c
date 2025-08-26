@@ -156,6 +156,13 @@ void notify(uint16_t src_address) {
   haptics_switch_performing_core();
   haptic_double_pulse();
   haptics_switch_performing_core();
+  if (!ssd1306_was_mutex_support_enabled(drivers->oled_screen)) {
+    push_conversation_update((conversation_update){.contact_addr = src_address,
+        .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
+        .status = 3});
+    lora_reset_recv_buffer();
+    return;
+  }
   ssd1306_get_mutex(drivers->oled_screen);
   display_received_message(src_address);
   ssd1306_release_mutex(drivers->oled_screen);

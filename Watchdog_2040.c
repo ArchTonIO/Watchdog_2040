@@ -28,6 +28,12 @@ bool is_first_boot() { return (!path_exists(first_boot_file)); }
 
 void write_first_boot_file() { path_ftouch(first_boot_file); }
 
+void attach_background_routines() {
+  core1_scheduler_add_callback(process_messages);
+  core1_scheduler_add_callback(process_alarm);
+  core1_scheduler_set_start_flag(true);
+}
+
 void sys_setup() {
   gpio_init(25);
   gpio_set_dir(25, true);
@@ -53,26 +59,21 @@ void sys_setup() {
   home_page_init();
   if (should_end_loading_screen)
     end_loading_screen();
-}
-
-void attach_background_routines() {
-  core1_scheduler_add_callback(process_messages);
-  core1_scheduler_add_callback(process_alarm);
-  core1_scheduler_set_start_flag(true);
+  attach_background_routines();
+  check_pheripherals();
 }
 
 void sys_mainloop() {
-  attach_background_routines();
   bool first_run = true;
   uint8_t loops = 0;
   bool ledvalue = false;
   uint8_t screen_up_seconds = 10;
   uint32_t screen_up_start;
-  check_pheripherals();
   while (true) {
     joystick_update(drivers->joystick);
     process_system_state();
     update_conversations();
+    ssd1306_enable_mutex_support(drivers->oled_screen);
     if (joystick_get_direction(drivers->joystick) != C || first_run) {
       first_run = false;
       haptic_short_pulse();

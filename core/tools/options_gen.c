@@ -75,6 +75,7 @@ void attach_callback_to_option(options_page *page,
  */
 char *options_page_launch(options_page *page) {
   sleep_ms(INTERAC_TIMEOUT);
+  ssd1306_enable_mutex_support(drivers->oled_screen);
   ssd1306_clear(drivers->oled_screen);
   while (1) {
     ssd1306_get_mutex(drivers->oled_screen);
@@ -117,16 +118,20 @@ char *options_page_launch(options_page *page) {
         page->selected_option = page->num_options - 1;
     } else if (joystick_dir == E) {
       haptic_short_pulse();
-      if (page->options[page->selected_option].callback != NULL)
+      if (page->options[page->selected_option].callback != NULL) {
+        ssd1306_disable_mutex_support(drivers->oled_screen);
         page->options[page->selected_option].callback();
-      else
+      } else {
+        ssd1306_disable_mutex_support(drivers->oled_screen);
         return page->options[page->selected_option].name;
+      }
       ssd1306_get_mutex(drivers->oled_screen);
       ssd1306_clear(drivers->oled_screen);
       ssd1306_show(drivers->oled_screen);
       ssd1306_release_mutex(drivers->oled_screen);
     } else if (joystick_dir == W) {
       haptic_short_pulse();
+      ssd1306_disable_mutex_support(drivers->oled_screen);
       return "";
     }
     handle_scroll(page);

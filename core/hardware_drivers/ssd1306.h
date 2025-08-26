@@ -5,6 +5,7 @@
 #define SSD1306_H
 
 #include <pico/mutex.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "config.h"
@@ -45,9 +46,9 @@ typedef struct {
   uint8_t height;
   uint8_t SID;
   uint8_t *scr;
-  volatile bool animation_timer_fired;
   int cursorx;
   int cursory;
+  bool mutex_support_enabled;
   mutex_t mutex;
 } ssd1306;
 
@@ -90,6 +91,25 @@ inline void ssd1306_get_mutex(ssd1306 *display) {
 }
 inline void ssd1306_release_mutex(ssd1306 *display) {
   mutex_exit(&display->mutex);
+}
+inline void ssd1306_enable_mutex_support(ssd1306 *display) {
+  display->mutex_support_enabled = true;
+}
+inline void ssd1306_disable_mutex_support(ssd1306 *display) {
+  display->mutex_support_enabled = false;
+}
+
+/**
+ * @brief Informs if mutex support was enabled
+ * by display-involving running code.
+ * Usually needed when code on core0 is using the display
+ * and core1 needs to know if this code is using mutex or not to
+ * access the display (often for some screen real time notification system)
+ * @retval true if mutex support was enabled
+ * @retval false if mutex support was not enabled
+ */
+inline bool ssd1306_was_mutex_support_enabled(ssd1306 *display) {
+  return display->mutex_support_enabled;
 }
 
 #endif

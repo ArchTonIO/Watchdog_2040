@@ -4,6 +4,7 @@
 #include "ssd1306.h"
 
 #include <pico/mutex.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -154,7 +155,7 @@ ssd1306 *ssd1306_init(pin sda,
   new_display->SID = SID;
   new_display->cursorx = 0;
   new_display->cursory = 0;
-  new_display->animation_timer_fired = false;
+  new_display->mutex_support_enabled = false;
   mutex_init(&new_display->mutex);
   int buf_size = (height / 8) * width + 1;
   new_display->scr = (uint8_t *)malloc(buf_size);
