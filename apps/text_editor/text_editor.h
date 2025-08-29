@@ -25,7 +25,7 @@ typedef struct {
   uint8_t video_cursor_col;
   uint8_t video_cursor_row;
   uint8_t logic_cursor_col;
-  uint8_t logic_cursor_row;
+  uint16_t logic_cursor_row;
   bool placeholder_text_present;
   char video_buf[MAX_VIDEO_ROWS][MAX_VIDEO_COLS];
   char logic_buf[MAX_LOGIC_ROWS][MAX_LOGIC_COLS];

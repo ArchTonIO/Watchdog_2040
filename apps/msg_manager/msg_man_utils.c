@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Antonio Del Cogliano
 
-
 #include "apps/msg_manager/msg_man_utils.h"
 
 #include <pico/types.h>
@@ -64,7 +63,8 @@ void show_read_messages_menu() {
       show_fetching_screen();
       uint16_t contact_addr = find_contact_addr_by_name(selected_contact_copy);
       str_list *message_uids = get_stored_msg_uids_by_user(contact_addr);
-      str_list *chunks = get_chunks_by_msg_uids(message_uids, 10);
+      str_list *chunks = get_chunks_by_msg_uids(message_uids,
+          MESSAGES_CHUNK_SIZE);
       options_page *chunks_page = options_page_init("1 chunk = 10 msg",
           chunks);
       char *selected_chunk = options_page_launch(chunks_page);
@@ -80,7 +80,7 @@ void show_read_messages_menu() {
       free(selected_chunk_copy);
       str_list *message_uids_chunk = get_msg_uids_by_chunk(message_uids,
           chunk_index,
-          10);
+          MESSAGES_CHUNK_SIZE);
       list_free(message_uids);
       while (true) {
         show_fetching_screen();

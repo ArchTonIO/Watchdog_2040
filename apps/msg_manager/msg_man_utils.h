@@ -10,6 +10,8 @@
 #include "core/data_structures/string_list.h"
 #include "core/ulmp/ulmp.h"
 
+#define MESSAGES_CHUNK_SIZE 10
+
 void show_read_messages_menu();
 
 #endif

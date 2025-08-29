@@ -290,8 +290,8 @@ void handle_backspace(text_editor *editor) {
 void print_logic_buf(text_editor *editor) {
   printf("\n");
   char to_print = '\0';
-  for (uint8_t i = 0; i < MAX_LOGIC_ROWS; i++) {
-    for (uint8_t j = 0; j < MAX_LOGIC_COLS; j++) {
+  for (uint16_t i = 0; i < MAX_LOGIC_ROWS; i++) {
+    for (uint16_t j = 0; j < MAX_LOGIC_COLS; j++) {
       if (editor->logic_buf[i][j] == '\n')
         to_print = MEMSET_FILL;
       else
