@@ -8,6 +8,7 @@
 #include <string.h>
 #include <sys/_intsup.h>
 
+#include "apps/msg_manager/contacts_manager.h"
 #include "core/components/hw_manager.h"
 #include "core/components/sys_paths_manager.h"
 #include "core/data_structures/string_list.h"

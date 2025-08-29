@@ -201,11 +201,11 @@ void display_sent_message_status(uint8_t status, uint16_t dest_addr) {
 
 void display_received_message(uint16_t src_address) {
   char *name = find_contact_name_by_addr(src_address);
-  bool to_free = false;
+  bool unknown = false;
   if (name == NULL) {
     name = (char *)malloc(20 * sizeof(char));
-    sprintf(name, "Unknown (%u)", src_address);
-    to_free = true;
+    sprintf(name, "Unknown(%u)", src_address);
+    unknown = true;
   }
   uint8_t persistency = 10;
   uint32_t start;
@@ -235,32 +235,33 @@ void display_received_message(uint16_t src_address) {
         persistency) {
       ssd1306_clear(drivers->oled_screen);
       ssd1306_show(drivers->oled_screen);
-      if (to_free)
+      if (unknown)
         free(name);
-      push_conversation_update((conversation_update){
-          .contact_addr = src_address,
-          .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
-          .status = 3});
+      else
+        push_conversation_update((conversation_update){
+            .contact_addr = src_address,
+            .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
+            .status = 3});
       lora_reset_recv_buffer();
       return;
     }
     joystick_update(drivers->joystick);
     sleep_ms(100);
     if (joystick_get_direction(drivers->joystick) == E) {
-      printf("moved joystick\n");
       text_editor *editor = text_editor_launch(
           msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
           false);
       char *text = text_editor_get_buf(editor);
       text_editor_kill(editor);
-      push_conversation_update((conversation_update){
-          .contact_addr = src_address,
-          .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
-          .status = 4});
+      if (!unknown)
+        push_conversation_update((conversation_update){
+            .contact_addr = src_address,
+            .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
+            .status = 4});
       msg_man_inst->received_msgs_count--;
       free(text);
       lora_reset_recv_buffer();
-      if (to_free)
+      if (unknown)
         free(name);
       return;
     }

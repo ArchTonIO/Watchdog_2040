@@ -10,4 +10,4 @@
 - [solved]   - bug09 - joystick W and E are flipped in tutorial
 - [solved]   - bug10 - if a message arrives when the recipient is displaying the notification screen from the previously arrived message, the new message will not get delivered
 - [solved]   - bug11 - memory leak when password requests to access terminal returns false (wrong password)
-- [unsolved] - bug12 - messages from uknown address are not properly saved
+- [solved]   - bug12 - messages from uknown address are not properly saved
