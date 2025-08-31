@@ -37,7 +37,7 @@ add_subdirectory(core/lib/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
 add_executable(Watchdog_2040
 # APPS SECTION
 apps/AQI/aqi.c
-apps/msg_manager/contacts_manager.c
+apps/msg_manager/contacts.c
 apps/msg_manager/msg_man_utils.c
 apps/msg_manager/msg_manager.c
 apps/msg_manager/msg_record.c

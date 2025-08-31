@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Antonio Del Cogliano
 
-
 #include "apps/notes/notes.h"
 
 #include <string.h>
@@ -17,7 +16,7 @@
 void take_note();
 void edit_or_delete_note(const char *note_name);
 void open_existing_note(const char *note_name);
-bool note_already_exists(const char *note_name);
+bool note_exists(const char *note_name);
 
 void enter_notes_submenu() {
   str_list *notes = list_init();
@@ -49,7 +48,7 @@ void take_note() {
       true);
   char *title_buf = text_editor_get_buf(name_editor);
   text_editor_kill(name_editor);
-  if (note_already_exists(title_buf)) {
+  if (note_exists(title_buf)) {
     free(title_buf);
     ssd1306_print(drivers->oled_screen,
         "[ERR] note with this\nname already exists!",
@@ -121,7 +120,7 @@ void open_existing_note(const char *note_name) {
   free(buf);
 }
 
-bool note_already_exists(const char *note_name) {
+bool note_exists(const char *note_name) {
   str_list *existing_notes = path_listdir(sys_paths->dirs->notes_path);
   for (size_t i = 0; i < existing_notes->len; i++)
     if (strcmp(get(existing_notes, i), note_name) == 0) {

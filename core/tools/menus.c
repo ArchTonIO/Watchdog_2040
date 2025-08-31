@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Antonio Del Cogliano
 
-
 #include <stdbool.h>
 #include <stdio.h>
 
 #include "apps/AQI/aqi.h"
-#include "apps/msg_manager/contacts_manager.h"
+#include "apps/msg_manager/contacts.h"
 #include "apps/msg_manager/msg_manager.h"
 #include "apps/notes/notes.h"
 #include "apps/system_submenus/system_submenus.h"
@@ -51,9 +50,7 @@ DEFINE_LAUNCHER(ulmp_launcher,
     "ULMP menu",
     {"Send message", send_message},
     {"Read messages", read_messages},
-    {"Add contact", add_contact},
-    {"Remove contact", remove_contact},
-    {"Dump contacts to SD", dump_contacts_to_sd},
+    {"Contacts", enter_contacts_submenu},
     {"Scan online contacts", scan_online_contacts},
     {"Notifications", display_notifications_menu})
 
