@@ -115,12 +115,7 @@ void show_read_messages_menu() {
   }
 }
 
-void show_fetching_screen() {
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen, "Fetching...", 0, 0, false);
-  ssd1306_show(drivers->oled_screen);
-  ssd1306_clear(drivers->oled_screen);
-}
+void show_fetching_screen() { print_loading("Fetching data..."); }
 
 char *get_displayable_msg_by_uid(uint16_t contact_addr, char *msg_uid) {
   char *contact_name = get_contact_name_by_addr_threadsafe(contact_addr);
