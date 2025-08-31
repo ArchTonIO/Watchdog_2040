@@ -11,6 +11,7 @@
 #include <string.h>
 #include <sys/reent.h>
 
+#include "pico/bootrom.h"
 #include "pico/stdio_usb.h"
 #include "pico/stdlib.h"
 
@@ -23,6 +24,7 @@
 #include "core/utils/path.h"
 #include "core/utils/utils.h"
 #include "device.h"
+#include "hardware/watchdog.h"
 #include "terminal.h"
 
 command create_command(char *name,
@@ -730,4 +732,18 @@ int8_t __ser__(command_params params) {
       return 0;
     }
   }
+}
+
+int8_t __reboot__(command_params params) {
+  strcpy(params.term->stdout_buf, "Rebooting...");
+  terminal_display_stdout(params.term);
+  watchdog_reboot(0, 0, 0);
+  return 0;
+}
+
+int8_t __bootsel__(command_params params) {
+  strcpy(params.term->stdout_buf, "Rebooting to BOOTSEL mode...");
+  terminal_display_stdout(params.term);
+  reset_usb_boot(0, 0);
+  return 0;
 }

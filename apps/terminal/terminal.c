@@ -67,6 +67,10 @@ void terminal_bind_std_commands(terminal *term) {
       create_command("history", "Show command history.", __history__));
   terminal_add_command(term,
       create_command("ser", "Launch terminal over serial port.", __ser__));
+  terminal_add_command(term,
+      create_command("reboot", "Reboot the device.", __reboot__));
+  terminal_add_command(term,
+      create_command("bootsel", "Reboot to BOOTSEL mode.", __bootsel__));
 }
 
 void terminal_add_command(terminal *term, command cmd) {

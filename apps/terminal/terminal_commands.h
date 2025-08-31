@@ -48,5 +48,7 @@ int8_t __unano__(command_params params);
 int8_t __info__(command_params params);
 int8_t __history__(command_params params);
 int8_t __ser__(command_params params);
+int8_t __reboot__(command_params params);
+int8_t __bootsel__(command_params params);
 
 #endif
