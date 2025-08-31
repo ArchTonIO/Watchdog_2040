@@ -30,7 +30,7 @@ void display_sent_message_status(uint8_t result, uint16_t dest_addr);
 void update_conversation_file(uint16_t contact_addr,
     char *message,
     uint8_t status);
-void display_received_message(uint16_t src_address);
+void display_received_message(char *name, uint16_t src_address);
 str_list *get_stored_msg_uids_by_user(uint16_t contact_addr);
 str_list *get_chunks_by_msg_uids(str_list *msg_uids, uint8_t chunk_size);
 str_list *get_msg_uids_by_chunk(str_list *msg_uids,
@@ -97,9 +97,10 @@ void push_conversation_update(conversation_update update) {
  * microsd interface
  */
 void update_conversations() {
+  bool should_clear = false;
   if (msg_man_inst->conversation_updates_count > 0) {
     print_loading("Updating\nconversations...");
-    ssd1306_clear(drivers->oled_screen);
+    should_clear = true;
   }
 
   for (uint8_t i = 0; i < msg_man_inst->conversation_updates_count; i++) {
@@ -110,6 +111,10 @@ void update_conversations() {
     free(msg_man_inst->conversation_updates[i].message);
   }
   msg_man_inst->conversation_updates_count = 0;
+  if (should_clear) {
+    ssd1306_clear(drivers->oled_screen);
+    ssd1306_show(drivers->oled_screen);
+  }
 }
 
 void update_conversation_file(uint16_t contact_addr,
@@ -160,10 +165,17 @@ void send_message() {
 }
 
 void notify(uint16_t src_address) {
+  char *name = get_contact_name_by_addr_threadsafe(src_address);
+  if (name == NULL) {
+    free(name);
+    return;
+  }
   msg_man_inst->new_msg_arrived = true;
   msg_man_inst->received_msgs_count++;
-  if (!msg_man_inst->should_notify)
+  if (!msg_man_inst->should_notify) {
+    free(name);
     return;
+  }
   haptics_switch_performing_core();
   haptic_double_pulse();
   haptics_switch_performing_core();
@@ -172,11 +184,13 @@ void notify(uint16_t src_address) {
         .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
         .status = 3});
     lora_reset_recv_buffer();
+    free(name);
     return;
   }
   ssd1306_get_mutex(drivers->oled_screen);
-  display_received_message(src_address);
+  display_received_message(name, src_address);
   ssd1306_release_mutex(drivers->oled_screen);
+  free(name);
 }
 
 char *compose_message() {
@@ -209,15 +223,7 @@ void display_sent_message_status(uint8_t status, uint16_t dest_addr) {
   sleep_ms(INFO_PAGES_TIMEOUT);
 }
 
-void display_received_message(uint16_t src_address) {
-  char *name = get_contact_name_by_addr_threadsafe(src_address);
-  bool unknown = false;
-  if (name == NULL) {
-    free(name);
-    name = (char *)malloc(20 * sizeof(char));
-    sprintf(name, "Unknown(%u)", src_address);
-    unknown = true;
-  }
+void display_received_message(char *name, uint16_t src_address) {
   uint8_t persistency = 10;
   uint32_t start;
   start = to_us_since_boot(get_absolute_time()) / 1000000;
@@ -246,12 +252,10 @@ void display_received_message(uint16_t src_address) {
         persistency) {
       ssd1306_clear(drivers->oled_screen);
       ssd1306_show(drivers->oled_screen);
-      free(name);
-      if (!unknown)
-        push_conversation_update((conversation_update){
-            .contact_addr = src_address,
-            .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
-            .status = 3});
+      push_conversation_update((conversation_update){
+          .contact_addr = src_address,
+          .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
+          .status = 3});
       lora_reset_recv_buffer();
       return;
     }
@@ -263,14 +267,12 @@ void display_received_message(uint16_t src_address) {
           false);
       char *text = text_editor_get_buf(editor);
       text_editor_kill(editor);
-      if (!unknown)
-        push_conversation_update((conversation_update){
-            .contact_addr = src_address,
-            .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
-            .status = 4});
+      push_conversation_update((conversation_update){
+          .contact_addr = src_address,
+          .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
+          .status = 4});
       msg_man_inst->received_msgs_count--;
       free(text);
-      free(name);
       lora_reset_recv_buffer();
       return;
     }
