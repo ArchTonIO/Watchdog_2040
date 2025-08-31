@@ -9,7 +9,7 @@
 #include <string.h>
 #include <sys/_intsup.h>
 
-#include "apps/msg_manager/contacts_manager.h"
+#include "apps/msg_manager/contacts.h"
 #include "apps/msg_manager/msg_man_utils.h"
 #include "apps/msg_manager/msg_record.h"
 #include "apps/text_editor/text_editor.h"
@@ -20,6 +20,7 @@
 #include "core/hardware_drivers/ssd1306.h"
 #include "core/tools/options_gen.h"
 #include "core/ulmp/ulmp.h"
+#include "core/utils/utils.h"
 
 msg_manager *msg_man_inst;
 
@@ -56,8 +57,11 @@ msg_manager *msg_manager_init(uint16_t my_addr) {
   msg_man->received_msgs_count = 0;
   msg_man->ulmp_impl = lora_init(my_addr, drivers->lora_module);
   msg_man->conversation_updates_count = 0;
-  contacts_manager_init();
   lora_receive();
+  contacts_list_init();
+  str_list *contacts = get_all_contacts();
+  contacts_list_update(contacts);
+  list_free(contacts);
   msg_man_inst = msg_man;
   return msg_man;
 }
@@ -93,6 +97,11 @@ void push_conversation_update(conversation_update update) {
  * microsd interface
  */
 void update_conversations() {
+  if (msg_man_inst->conversation_updates_count > 0) {
+    print_loading("Updating\nconversations...");
+    ssd1306_clear(drivers->oled_screen);
+  }
+
   for (uint8_t i = 0; i < msg_man_inst->conversation_updates_count; i++) {
     update_conversation_file(
         msg_man_inst->conversation_updates[i].contact_addr,
@@ -179,7 +188,7 @@ char *compose_message() {
 
 void display_sent_message_status(uint8_t status, uint16_t dest_addr) {
   ssd1306_clear(drivers->oled_screen);
-  char *name = find_contact_name_by_addr(dest_addr);
+  char *name = get_contact_name_by_addr(dest_addr);
   ssd1306_print(drivers->oled_screen, "Message status:", 0, 0, false);
   ssd1306_print(drivers->oled_screen, "sent to", 4, 2, false);
   ssd1306_print(drivers->oled_screen, "recv by", 4, 4, false);
@@ -196,13 +205,15 @@ void display_sent_message_status(uint8_t status, uint16_t dest_addr) {
     ssd1306_print(drivers->oled_screen, "[NO]", 0, 4, false);
   }
   ssd1306_show(drivers->oled_screen);
+  free(name);
   sleep_ms(INFO_PAGES_TIMEOUT);
 }
 
 void display_received_message(uint16_t src_address) {
-  char *name = find_contact_name_by_addr(src_address);
+  char *name = get_contact_name_by_addr_threadsafe(src_address);
   bool unknown = false;
   if (name == NULL) {
+    free(name);
     name = (char *)malloc(20 * sizeof(char));
     sprintf(name, "Unknown(%u)", src_address);
     unknown = true;
@@ -235,9 +246,8 @@ void display_received_message(uint16_t src_address) {
         persistency) {
       ssd1306_clear(drivers->oled_screen);
       ssd1306_show(drivers->oled_screen);
-      if (unknown)
-        free(name);
-      else
+      free(name);
+      if (!unknown)
         push_conversation_update((conversation_update){
             .contact_addr = src_address,
             .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
@@ -260,9 +270,8 @@ void display_received_message(uint16_t src_address) {
             .status = 4});
       msg_man_inst->received_msgs_count--;
       free(text);
+      free(name);
       lora_reset_recv_buffer();
-      if (unknown)
-        free(name);
       return;
     }
   }
@@ -273,7 +282,7 @@ void scan_online_contacts() {
   str_list *results = list_init();
   uint16_t addr;
   for (uint8_t i = 0; i < contacts->len; i++) {
-    addr = find_contact_addr_by_name(get(contacts, i));
+    addr = get_contact_addr_by_name(get(contacts, i));
     if (lora_ping(addr) == 0)
       list_append(results, get(contacts, i));
     sleep_ms(10);

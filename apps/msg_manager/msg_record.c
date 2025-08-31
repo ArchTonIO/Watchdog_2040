@@ -8,7 +8,7 @@
 #include <string.h>
 #include <sys/_intsup.h>
 
-#include "apps/msg_manager/contacts_manager.h"
+#include "apps/msg_manager/contacts.h"
 #include "core/components/hw_manager.h"
 #include "core/components/sys_paths_manager.h"
 #include "core/data_structures/string_list.h"
@@ -23,9 +23,9 @@ msg_record_init(uint16_t contact_addr, char *message, uint8_t status) {
   strcpy(record->message, no_lfd_message);
   free(no_lfd_message);
   record->record_uid = gen_random_string(RECORD_UID_LENGTH);
-  strncpy(record->contact_name,
-      find_contact_name_by_addr(contact_addr),
-      MAX_CONTACT_NAME_LENGTH);
+  char *contact_name = get_contact_name_by_addr(contact_addr);
+  strncpy(record->contact_name, contact_name, MAX_CONTACT_NAME_LENGTH);
+  free(contact_name);
   record->status = status;
   switch (status) {
   case 0:

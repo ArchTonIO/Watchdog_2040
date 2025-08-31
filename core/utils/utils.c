@@ -27,13 +27,77 @@ bool request_password(const char *placeholder_text) {
   if (strcmp(hashed, malloc_memories_inst->user_password_hashed) != 0) {
     free(hashed);
     free(buf);
-    ssd1306_print(drivers->oled_screen, "Wrong password!", 0, 0, false);
-    ssd1306_show(drivers->oled_screen);
-    sleep_ms(3000);
+    print_usr_error("Wrong password");
     return false;
   }
   free(hashed);
   return true;
+}
+
+void print_log(const char *message, uint16_t persistency, bool autoclear) {
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_print(drivers->oled_screen, message, 0, 0, false);
+  ssd1306_show(drivers->oled_screen);
+  sleep_ms(persistency);
+  if (autoclear) {
+    ssd1306_clear(drivers->oled_screen);
+    ssd1306_show(drivers->oled_screen);
+  }
+}
+
+/**
+ * @brief Prints an info message to the OLED display.
+ *
+ * @param message The message to print.
+ */
+void print_info(const char *message) {
+  char *to_print = string_add("[INFO]\n_______\n", message);
+  print_log(to_print, 2000, true);
+  free(to_print);
+}
+
+/**
+ * @brief Prints a user error message to the OLED display.
+ *
+ * @param message The message to print.
+ */
+void print_usr_error(const char *message) {
+  char *to_print = string_add("[USER ERROR]\n_______\n", message);
+  print_log(to_print, 2000, true);
+  free(to_print);
+}
+
+/**
+ * @brief Prints a system error message to the OLED display.
+ *
+ * @param message The message to print.
+ */
+void print_sys_error(const char *message) {
+  char *to_print = string_add("[SYSTEM ERROR]\n_______\n", message);
+  print_log(to_print, 2000, true);
+  free(to_print);
+}
+
+/**
+ * @brief Prints a debug message to the OLED display.
+ *
+ * @param message The message to print.
+ */
+void print_debug(const char *message) {
+  char *to_print = string_add("[DEBUG]\n_______\n", message);
+  print_log(to_print, 2000, true);
+  free(to_print);
+}
+
+/**
+ * @brief Prints a loading message to the OLED display.
+ *
+ * @param message The message to print.
+ */
+void print_loading(const char *message) {
+  char *to_print = string_add("[LOADING]\n_______\n", message);
+  print_log(to_print, 0, false);
+  free(to_print);
 }
 
 /**
@@ -96,7 +160,7 @@ bool is_string_alpha(char *str) {
   return true;
 }
 
-void wait_for_user_input() {
+void wait_for_serial_input() {
   while (!stdio_usb_connected()) {
     sleep_ms(100);
   }

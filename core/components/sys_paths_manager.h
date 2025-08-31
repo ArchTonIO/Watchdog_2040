@@ -42,8 +42,6 @@ typedef struct {
   path *first_boot_file;
   path *user_file;
   path *malloc_memories_file;
-  path *contacts_addr_file;
-  path *contacts_names_file;
   path *log_file;
   path *config_file;
 } sys_files;

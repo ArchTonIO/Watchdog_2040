@@ -9,7 +9,7 @@
 #include <string.h>
 #include <sys/_intsup.h>
 
-#include "apps/msg_manager/contacts_manager.h"
+#include "apps/msg_manager/contacts.h"
 #include "apps/msg_manager/msg_manager.h"
 #include "apps/msg_manager/msg_record.h"
 #include "apps/text_editor/text_editor.h"
@@ -61,7 +61,8 @@ void show_read_messages_menu() {
     options_page_free(conversations);
     while (true) {
       show_fetching_screen();
-      uint16_t contact_addr = find_contact_addr_by_name(selected_contact_copy);
+      uint16_t contact_addr = get_contact_addr_by_name_threadsafe(
+          selected_contact_copy);
       str_list *message_uids = get_stored_msg_uids_by_user(contact_addr);
       str_list *chunks = get_chunks_by_msg_uids(message_uids,
           MESSAGES_CHUNK_SIZE);
@@ -122,7 +123,7 @@ void show_fetching_screen() {
 }
 
 char *get_displayable_msg_by_uid(uint16_t contact_addr, char *msg_uid) {
-  char *contact_name = find_contact_name_by_addr(contact_addr);
+  char *contact_name = get_contact_name_by_addr_threadsafe(contact_addr);
   path *contact_name_file = path_init(contact_name);
   path *conversation_file = path_concat(sys_paths->dirs->messages_path,
       contact_name_file);
@@ -138,12 +139,13 @@ char *get_displayable_msg_by_uid(uint16_t contact_addr, char *msg_uid) {
       record->message);
   path_free(conversation_file);
   msg_record_free(record);
-  free(message); // Fix memory leak
+  free(message);
+  free(contact_name);
   return displayable_msg;
 }
 
 str_list *get_stored_msg_uids_by_user(uint16_t contact_addr) {
-  char *contact_name = find_contact_name_by_addr(contact_addr);
+  char *contact_name = get_contact_name_by_addr_threadsafe(contact_addr);
   path *contact_name_file = path_init(contact_name);
   path *conversation_file = path_concat(sys_paths->dirs->messages_path,
       contact_name_file);
@@ -159,6 +161,7 @@ str_list *get_stored_msg_uids_by_user(uint16_t contact_addr) {
   path_free(keys_file);
   path_free(conversation_file);
   list_free(keys);
+  free(contact_name);
   return keys_reversed;
 }
 
@@ -192,7 +195,7 @@ str_list *get_msg_uids_by_chunk(str_list *msg_uids,
 str_list *get_selectable_options_by_msg_uids(str_list *msg_uids,
     uint16_t contact_addr) {
   //[<"->" or "<-"> <status str>]<first_n_chars_of_msg>
-  char *contact_name = find_contact_name_by_addr(contact_addr);
+  char *contact_name = get_contact_name_by_addr_threadsafe(contact_addr);
   path *contact_name_file = path_init(contact_name);
   path *conversation_file = path_concat(sys_paths->dirs->messages_path,
       contact_name_file);
@@ -219,5 +222,6 @@ str_list *get_selectable_options_by_msg_uids(str_list *msg_uids,
     msg_record_free(record);
   }
   path_free(conversation_file);
+  free(contact_name);
   return options;
 }

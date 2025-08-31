@@ -17,8 +17,8 @@ void sys_paths_manager_load_files();
 void sys_paths_manager_mkdirs();
 void sys_paths_manager_ftouch();
 
+/* load all files and directories paths into the sys_paths structure*/
 void sys_paths_manager_load() {
-  /* load all files and directories paths into the sys_paths structure*/
   if (!sys_paths->load_executed) {
     sys_paths_manager_load_dirs();
     sys_paths_manager_load_files();
@@ -26,8 +26,8 @@ void sys_paths_manager_load() {
   }
 }
 
+/* create all necessary system directories and files*/
 void sys_paths_manager_make() {
-  /* create all necessary system directories and files*/
   sys_paths_manager_mkdirs();
   sys_paths_manager_ftouch();
 }
@@ -114,14 +114,10 @@ void sys_paths_manager_mkdirs() {
 
 void sys_paths_manager_load_files() {
   path *malloc_memories_file = path_init(MALLOC_MEMORIES_FILE);
-  path *contacts_addr_file = path_init(CONTACTS_ADDR_FILE);
-  path *contacts_names_file = path_init(CONTACTS_NAMES_FILE);
   path *log_file = path_init(LOG_FILE);
   path *config_file = path_init(CONFIG_FILE);
   path *temp_files[] = {
       malloc_memories_file,
-      contacts_addr_file,
-      contacts_names_file,
       log_file,
       config_file,
   };
@@ -130,12 +126,6 @@ void sys_paths_manager_load_files() {
   sys_paths->files->malloc_memories_file = path_concat(
       sys_paths->dirs->malloc_mascot_path,
       malloc_memories_file);
-  sys_paths->files->contacts_addr_file = path_concat(
-      sys_paths->dirs->contacts_path,
-      contacts_addr_file);
-  sys_paths->files->contacts_names_file = path_concat(
-      sys_paths->dirs->contacts_path,
-      contacts_names_file);
   sys_paths->files->log_file = path_concat(sys_paths->dirs->logs_path,
       log_file);
   sys_paths->files->config_file = path_concat(sys_paths->dirs->config_path,
@@ -149,8 +139,6 @@ void sys_paths_manager_ftouch() {
       sys_paths->files->first_boot_file,
       sys_paths->files->user_file,
       sys_paths->files->malloc_memories_file,
-      sys_paths->files->contacts_addr_file,
-      sys_paths->files->contacts_names_file,
       sys_paths->files->log_file,
       sys_paths->files->config_file,
   };
