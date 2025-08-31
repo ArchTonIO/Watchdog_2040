@@ -91,7 +91,7 @@ int8_t __echo__(command_params params) {
  * @param params The command parameters containing the terminal instance.
  * @return -1 to exit the terminal.
  */
-int8_t __exit__(command_params params) { return -1; }
+int8_t __esc__(command_params params) { return -1; }
 
 /**
  * @brief Changes the current working directory.
@@ -698,7 +698,7 @@ int8_t __history__(command_params params) {
   return 0;
 }
 
-int8_t __serial__(command_params params) {
+int8_t __ser__(command_params params) {
   if (params.term->on_serial) {
     strcpy(params.term->stdout_buf, "You are already using serial CLI");
     terminal_display_stdout(params.term);

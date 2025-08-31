@@ -29,7 +29,7 @@ command create_command(char *name,
 int8_t __help__(command_params params);
 int8_t __clear__(command_params params);
 int8_t __echo__(command_params params);
-int8_t __exit__(command_params params);
+int8_t __esc__(command_params params);
 int8_t __cd__(command_params params);
 int8_t __ls__(command_params params);
 int8_t __pwd__(command_params params);
@@ -47,6 +47,6 @@ int8_t __ping__(command_params params);
 int8_t __unano__(command_params params);
 int8_t __info__(command_params params);
 int8_t __history__(command_params params);
-int8_t __serial__(command_params params);
+int8_t __ser__(command_params params);
 
 #endif

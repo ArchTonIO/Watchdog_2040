@@ -30,7 +30,7 @@ void terminal_bind_std_commands(terminal *term) {
   terminal_add_command(term,
       create_command("echo", "Print text to the terminal.", __echo__));
   terminal_add_command(term,
-      create_command("exit", "Exit the terminal.", __exit__));
+      create_command("esc", "Exit the terminal.", __esc__));
   terminal_add_command(term,
       create_command("cd", "Change current directory.", __cd__));
   terminal_add_command(term,
@@ -66,9 +66,7 @@ void terminal_bind_std_commands(terminal *term) {
   terminal_add_command(term,
       create_command("history", "Show command history.", __history__));
   terminal_add_command(term,
-      create_command("serial",
-          "Launch terminal over serial port.",
-          __serial__));
+      create_command("ser", "Launch terminal over serial port.", __ser__));
 }
 
 void terminal_add_command(terminal *term, command cmd) {
@@ -207,7 +205,7 @@ int8_t dispatch_command(terminal *term, const char *command) {
   for (size_t i = 2; i < slices->len; i++) {
     list_append(args, get(slices, i));
   }
-  // list_append(term->history, command);
+  list_append(term->history, command);
   for (size_t i = 0; i < term->commands_count; i++) {
     if (strcmp(term->commands[i].name, cmd) == 0) {
       command_params params = {term, args};
