@@ -172,12 +172,12 @@ void wait_for_serial_input() {
 }
 
 str_list *string_split(char *str, char delimiter) {
-  str_list *result = list_init();
+  str_list *result = str_list_init();
   char *copy = strdup(str);
   char delim[2] = {delimiter, '\0'};
   char *token = strtok(copy, delim);
   while (token != NULL) {
-    list_append(result, token);
+    str_list_append(result, token);
     token = strtok(NULL, delim);
   }
   free(copy);

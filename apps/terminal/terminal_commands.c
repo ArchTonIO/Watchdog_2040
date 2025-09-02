@@ -81,7 +81,7 @@ int8_t __echo__(command_params params) {
     terminal_display_stderr(params.term);
     return 1;
   }
-  char *text = get(params.args, 0);
+  char *text = str_list_get(params.args, 0);
   strcpy(params.term->stdout_buf, text);
   terminal_display_stdout(params.term);
   return 0;
@@ -109,7 +109,7 @@ int8_t __cd__(command_params params) {
         sys_paths->dirs->user_path->abs_path);
     return 0;
   }
-  char *dir = get(params.args, 0);
+  char *dir = str_list_get(params.args, 0);
   if (strcmp(dir, "..") == 0) {
     if (strcmp(params.term->current_path->abs_path, HOME_DIR) == 0) {
       return 0;
@@ -152,7 +152,7 @@ int8_t __ls__(command_params params) {
   char *target_dir = NULL;
   bool need_to_free_target = false;
   for (uinteger i = 0; i < params.args->len; i++) {
-    char *arg = get(params.args, i);
+    char *arg = str_list_get(params.args, i);
     if (strcmp(arg, "-a") == 0)
       show_hidden = true;
     else if (arg[0] != '-')
@@ -176,18 +176,18 @@ int8_t __ls__(command_params params) {
     }
   }
   str_list *files = path_listdir(target_path);
-  str_list *to_show = list_init();
+  str_list *to_show = str_list_init();
   for (uinteger i = 0; i < files->len; i++) {
-    char *file = get(files, i);
+    char *file = str_list_get(files, i);
     if (show_hidden || file[0] != '.')
-      list_append(to_show, file);
+      str_list_append(to_show, file);
   }
-  char *content = list_concat(to_show, '\n');
+  char *content = str_list_concat(to_show, '\n');
   strcpy(params.term->stdout_buf, content);
   terminal_display_stdout(params.term);
   free(content);
-  list_free(files);
-  list_free(to_show);
+  str_list_free(files);
+  str_list_free(to_show);
   if (need_to_free_target)
     path_free(target_path);
   return 0;
@@ -218,7 +218,7 @@ int8_t __mkdir__(command_params params) {
     terminal_display_stderr(params.term);
     return 1;
   }
-  char *dir = get(params.args, 0);
+  char *dir = str_list_get(params.args, 0);
   path *dirpath = path_init(dir);
   path *new_dir = path_concat(params.term->current_path, dirpath);
   path_free(dirpath);
@@ -247,7 +247,7 @@ int8_t __touch__(command_params params) {
     terminal_display_stderr(params.term);
     return 1;
   }
-  char *file = get(params.args, 0);
+  char *file = str_list_get(params.args, 0);
   path *file_path = path_init(file);
   path *new_file = path_concat(params.term->current_path, file_path);
   path_free(file_path);
@@ -279,9 +279,9 @@ int8_t __rm__(command_params params) {
     terminal_display_stderr(params.term);
     return 1;
   }
-  if (params.args->len > 1 && strcmp(get(params.args, 0), "-r") == 0)
+  if (params.args->len > 1 && strcmp(str_list_get(params.args, 0), "-r") == 0)
     recursive = true;
-  char *file = get(params.args, recursive ? 1 : 0);
+  char *file = str_list_get(params.args, recursive ? 1 : 0);
   path *file_path = path_init(file);
   path *full_path = path_concat(params.term->current_path, file_path);
   path_free(file_path);
@@ -329,8 +329,8 @@ int8_t __mv__(command_params params) {
     terminal_display_stderr(params.term);
     return 1;
   }
-  char *src = get(params.args, 0);
-  char *dest = get(params.args, 1);
+  char *src = str_list_get(params.args, 0);
+  char *dest = str_list_get(params.args, 1);
   path *src_path = path_init(src);
   path *dest_path = path_init(dest);
   path *full_src_path = path_concat(params.term->current_path, src_path);
@@ -372,8 +372,8 @@ int8_t __cp__(command_params params) {
     terminal_display_stderr(params.term);
     return 1;
   }
-  char *src = get(params.args, 0);
-  char *dest = get(params.args, 1);
+  char *src = str_list_get(params.args, 0);
+  char *dest = str_list_get(params.args, 1);
   path *src_path = path_init(src);
   path *dest_path = path_init(dest);
   path *full_src_path = path_concat(params.term->current_path, src_path);
@@ -417,7 +417,7 @@ int8_t __cat__(command_params params) {
     terminal_display_stderr(params.term);
     return 1;
   }
-  char *file = get(params.args, 0);
+  char *file = str_list_get(params.args, 0);
   path *file_path = path_init(file);
   path *full_path = path_concat(params.term->current_path, file_path);
   path_free(file_path);
@@ -436,11 +436,11 @@ int8_t __cat__(command_params params) {
     path_free(full_path);
     return 1;
   }
-  char *content = list_concat(lines, ' ');
+  char *content = str_list_concat(lines, ' ');
   strcpy(params.term->stdout_buf, content);
   terminal_display_stdout(params.term);
   free(content);
-  list_free(lines);
+  str_list_free(lines);
   path_free(full_path);
   return 0;
 }
@@ -458,10 +458,10 @@ int8_t __head__(command_params params) {
     terminal_display_stderr(params.term);
     return 1;
   }
-  char *file = get(params.args, 0);
+  char *file = str_list_get(params.args, 0);
   int n = 10;
   if (params.args->len > 1) {
-    n = atoi(get(params.args, 1));
+    n = atoi(str_list_get(params.args, 1));
   }
   path *file_path = path_init(file);
   path *full_path = path_concat(params.term->current_path, file_path);
@@ -481,11 +481,11 @@ int8_t __head__(command_params params) {
     path_free(full_path);
     return 1;
   }
-  char *content = list_concat(lines, ' ');
+  char *content = str_list_concat(lines, ' ');
   strcpy(params.term->stdout_buf, content);
   terminal_display_stdout(params.term);
   free(content);
-  list_free(lines);
+  str_list_free(lines);
   path_free(full_path);
   return 0;
 }
@@ -503,10 +503,10 @@ int8_t __tail__(command_params params) {
     terminal_display_stderr(params.term);
     return 1;
   }
-  char *file = get(params.args, 0);
+  char *file = str_list_get(params.args, 0);
   int n = 10;
   if (params.args->len > 1) {
-    n = atoi(get(params.args, 1));
+    n = atoi(str_list_get(params.args, 1));
   }
   path *file_path = path_init(file);
   path *full_path = path_concat(params.term->current_path, file_path);
@@ -526,11 +526,11 @@ int8_t __tail__(command_params params) {
     path_free(full_path);
     return 1;
   }
-  char *content = list_concat(lines, ' ');
+  char *content = str_list_concat(lines, ' ');
   strcpy(params.term->stdout_buf, content);
   terminal_display_stdout(params.term);
   free(content);
-  list_free(lines);
+  str_list_free(lines);
   path_free(full_path);
   return 0;
 }
@@ -548,8 +548,8 @@ int8_t __grep__(command_params params) {
     terminal_display_stderr(params.term);
     return 1;
   }
-  char *pattern = get(params.args, 0);
-  char *file = get(params.args, 1);
+  char *pattern = str_list_get(params.args, 0);
+  char *file = str_list_get(params.args, 1);
   path *file_path = path_init(file);
   path *full_path = path_concat(params.term->current_path, file_path);
   path_free(file_path);
@@ -568,19 +568,19 @@ int8_t __grep__(command_params params) {
     path_free(full_path);
     return 1;
   }
-  str_list *matched_lines = list_init();
+  str_list *matched_lines = str_list_init();
   for (uinteger i = 0; i < lines->len; i++) {
-    char *line = get(lines, i);
+    char *line = str_list_get(lines, i);
     if (strstr(line, pattern) != NULL) {
-      list_append(matched_lines, line);
+      str_list_append(matched_lines, line);
     }
   }
-  char *content = list_concat(matched_lines, '\n');
+  char *content = str_list_concat(matched_lines, '\n');
   strcpy(params.term->stdout_buf, content);
   terminal_display_stdout(params.term);
   free(content);
-  list_free(lines);
-  list_free(matched_lines);
+  str_list_free(lines);
+  str_list_free(matched_lines);
   path_free(full_path);
   return 0;
 }
@@ -609,7 +609,7 @@ int8_t __ping__(command_params params) {
     terminal_display_stderr(params.term);
     return 1;
   }
-  char *host = get(params.args, 0);
+  char *host = str_list_get(params.args, 0);
   uint16_t host_numeric = 0;
   if (sscanf(host, "%hu", &host_numeric) != 1) {
     strcpy(params.term->stderr_buf, "Invalid host address\n");
@@ -650,7 +650,7 @@ int8_t __unano__(command_params params) {
     terminal_display_stderr(params.term);
     return 1;
   }
-  path *file_path = path_init(get(params.args, 0));
+  path *file_path = path_init(str_list_get(params.args, 0));
   path *full_path = path_concat(params.term->current_path, file_path);
   path_free(file_path);
   if (!path_exists(full_path)) {
@@ -663,13 +663,13 @@ int8_t __unano__(command_params params) {
     return 0;
   }
   str_list *lines = path_fread(full_path);
-  char *concat_lines = list_concat(lines, ' ');
+  char *concat_lines = str_list_concat(lines, ' ');
   text_editor *editor = text_editor_launch(concat_lines, false);
   char *buf = text_editor_get_buf(editor);
   text_editor_kill(editor);
   path_fwrite(full_path, buf, 'w');
   free(concat_lines);
-  list_free(lines);
+  str_list_free(lines);
   path_free(full_path);
   free(buf);
   return 0;
@@ -693,7 +693,7 @@ int8_t __info__(command_params params) {
  * @return 0 on success, 1 on error, -1 to exit the terminal.
  */
 int8_t __history__(command_params params) {
-  char *history_content = list_concat(params.term->history, '\n');
+  char *history_content = str_list_concat(params.term->history, '\n');
   strcpy(params.term->stdout_buf, history_content);
   terminal_display_stdout(params.term);
   free(history_content);

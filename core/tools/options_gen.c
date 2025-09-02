@@ -31,7 +31,7 @@ options_page *options_page_init(char *title, str_list *options) {
   page->selected_option = 0;
   page->title = title;
   for (uint8_t i = 0; i < options->len; i++) {
-    char *original = get(options, i);
+    char *original = str_list_get(options, i);
     size_t len = strlen(original);
     char *formatted = (char *)malloc(MAX_X_CHARS + 1);
     size_t copy_len = len > (MAX_X_CHARS - 2) ? (MAX_X_CHARS - 2) : len;
@@ -150,6 +150,6 @@ void options_page_free(options_page *page) {
   for (uint8_t i = 0; i < page->num_options; i++) {
     free(page->options[i].display_name);
   }
-  list_free(page->options_list);
+  str_list_free(page->options_list);
   free(page);
 }

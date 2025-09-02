@@ -83,7 +83,7 @@ void terminal_add_command(terminal *term, command cmd) {
 
 terminal *terminal_init() {
   terminal *term = (terminal *)malloc(sizeof(terminal));
-  term->history = list_init();
+  term->history = str_list_init();
   term->commands_count = 0;
   term->current_path = path_init(sys_paths->dirs->user_path->abs_path);
   term->prefix = (char *)malloc(1);
@@ -94,7 +94,7 @@ terminal *terminal_init() {
 
 void terminal_kill(terminal *term) {
   if (term) {
-    list_free(term->history);
+    str_list_free(term->history);
     path_free(term->current_path);
     free(term->prefix);
     free(term);
@@ -196,29 +196,29 @@ void terminal_launch() {
 
 int8_t dispatch_command(terminal *term, const char *command) {
   str_list *slices = string_split(command, ' ');
-  char *prefix = get(slices, 0);
-  char *cmd = get(slices, 1);
-  str_list *args = list_init();
+  char *prefix = str_list_get(slices, 0);
+  char *cmd = str_list_get(slices, 1);
+  str_list *args = str_list_init();
   if (cmd == NULL || strlen(cmd) == 0) {
-    list_free(args);
-    list_free(slices);
+    str_list_free(args);
+    str_list_free(slices);
     return 1;
   }
   for (size_t i = 2; i < slices->len; i++) {
-    list_append(args, get(slices, i));
+    str_list_append(args, str_list_get(slices, i));
   }
-  list_append(term->history, command);
+  str_list_append(term->history, command);
   for (size_t i = 0; i < term->commands_count; i++) {
     if (strcmp(term->commands[i].name, cmd) == 0) {
       command_params params = {term, args};
       int8_t ret = term->commands[i].callback(params);
-      list_free(args);
-      list_free(slices);
+      str_list_free(args);
+      str_list_free(slices);
       return ret;
     }
   }
   printf("[TERMINAL](ERR)Command not found: %s\n", cmd);
-  list_free(args);
-  list_free(slices);
+  str_list_free(args);
+  str_list_free(slices);
   return 1;
 }

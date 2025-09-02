@@ -61,7 +61,7 @@ msg_manager *msg_manager_init(uint16_t my_addr) {
   contacts_list_init();
   str_list *contacts = get_all_contacts();
   contacts_list_update(contacts);
-  list_free(contacts);
+  str_list_free(contacts);
   msg_man_inst = msg_man;
   return msg_man;
 }
@@ -281,18 +281,18 @@ void display_received_message(char *name, uint16_t src_address) {
 
 void scan_online_contacts() {
   str_list *contacts = get_all_contacts();
-  str_list *results = list_init();
+  str_list *results = str_list_init();
   uint16_t addr;
   for (uint8_t i = 0; i < contacts->len; i++) {
-    addr = get_contact_addr_by_name(get(contacts, i));
+    addr = get_contact_addr_by_name(str_list_get(contacts, i));
     if (lora_ping(addr) == 0)
-      list_append(results, get(contacts, i));
+      str_list_append(results, str_list_get(contacts, i));
     sleep_ms(10);
   }
   options_page *page = options_page_init("Online contacts", results);
   char *name = options_page_launch(page);
   options_page_free(page);
-  list_free(contacts);
+  str_list_free(contacts);
 }
 
 void enable_message_notifications() {

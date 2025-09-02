@@ -53,9 +53,9 @@ void launcher_add_application(launcher *self,
   */
 void launcher_start(launcher *self) {
   haptic_auto_pulse();
-  str_list *options = list_init();
+  str_list *options = str_list_init();
   for (int i = 0; i < self->apps_count; i++) {
-    list_append(options, self->applications[i].name);
+    str_list_append(options, self->applications[i].name);
   }
   options_page *launcher_page = options_page_init(self->name, options);
   for (int i = 0; i < self->apps_count; i++) {

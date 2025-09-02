@@ -18,7 +18,7 @@ struct lnode {
  *
  * @return str_list * A pointer to the doubly linked list.
  */
-str_list *list_init() {
+str_list *str_list_init() {
   str_list *newlist = (str_list *)malloc(sizeof(str_list));
   newlist->len = 0;
   newlist->head = NULL;
@@ -32,7 +32,7 @@ str_list *list_init() {
  * @param *list The list to append to.
  * @param *value The value to append.
  */
-void list_append(str_list *list, char *value) {
+void str_list_append(str_list *list, char *value) {
   if (list->len >= MAX_LIST_LEN) {
     printf("%s\n", MAX_LEN_REACHED_STR);
     return;
@@ -69,7 +69,7 @@ void list_append(str_list *list, char *value) {
  * @param *value The value you are looking the index for.
  * @return integer The index of that value in the list.
  */
-integer list_index_of(str_list *list, char *value) {
+integer str_list_index_of(str_list *list, char *value) {
   struct lnode *cursor = list->head;
   uinteger index = 0;
   while (cursor != NULL) {
@@ -89,7 +89,7 @@ integer list_index_of(str_list *list, char *value) {
  * @param index The index of the element, supports negative indexing.
  * @return char * The string at that index.
  */
-char *get(str_list *list, integer index) {
+char *str_list_get(str_list *list, integer index) {
   struct lnode *cursor = list->head;
   if (index < 0) {
     index = list->len + index;
@@ -111,8 +111,8 @@ char *get(str_list *list, integer index) {
  * @param index The index of the element.
  * @return the value that was removed
  */
-char *pop(str_list *list, integer index) {
-  char *value = get(list, index);
+char *str_list_pop(str_list *list, integer index) {
+  char *value = str_list_get(list, index);
   struct lnode *cursor = list->head;
   while (cursor != NULL) {
     if (strcmp(cursor->value, value) == 0) {
@@ -152,7 +152,7 @@ char *pop(str_list *list, integer index) {
  *
  * @param *list The list to print.
  */
-void list_print(str_list *list) {
+void str_list_print(str_list *list) {
   struct lnode *cursor = list->head;
   uinteger i = 0;
   printf("lenght: %d\n", list->len);
@@ -168,10 +168,10 @@ void list_print(str_list *list) {
  *
  * @param *list The list to clear.
  */
-void clear(str_list *list) {
+void str_list_clear(str_list *list) {
   uinteger len = list->len;
   for (integer i = len - 1; i > -1; i--) {
-    pop(list, i);
+    str_list_pop(list, i);
   }
 }
 
@@ -180,7 +180,7 @@ void clear(str_list *list) {
  *
  * @param *list The list.
  */
-uinteger list_len(str_list *list) { return list->len; }
+uinteger str_list_len(str_list *list) { return list->len; }
 
 /**
  * @brief Compare two lists of strings.
@@ -189,14 +189,14 @@ uinteger list_len(str_list *list) { return list->len; }
  * @param *list2, the second list of strings.
  * @return 0 if the list are identical, 1 otherwise
  */
-uinteger list_compare(str_list *list1, str_list *list2) {
+uinteger str_list_compare(str_list *list1, str_list *list2) {
   if (list1->len != list2->len) {
     return 1;
   }
   uinteger matches = 0;
   for (uinteger i = 0; i < list1->len; i++) {
     for (uinteger j = 0; j < list2->len; j++) {
-      if (strcmp(get(list1, i), get(list2, j)) == 0) {
+      if (strcmp(str_list_get(list1, i), str_list_get(list2, j)) == 0) {
         matches++;
       }
     }
@@ -214,7 +214,7 @@ uinteger list_compare(str_list *list1, str_list *list2) {
  * @param char separator The separator to use between strings.
  * @return char * The concatenated string.
  */
-char *list_concat(str_list *list, char separator) {
+char *str_list_concat(str_list *list, char separator) {
   if (list->len == 0) {
     char *empty = (char *)malloc(1);
     if (!empty)
@@ -224,7 +224,7 @@ char *list_concat(str_list *list, char separator) {
   }
   size_t total_length = 0;
   for (int i = 0; i < list->len; i++) {
-    total_length += strlen(get(list, i));
+    total_length += strlen(str_list_get(list, i));
   }
   total_length += (list->len - 1) + 1;
   char *total_payload = (char *)malloc(total_length);
@@ -232,7 +232,7 @@ char *list_concat(str_list *list, char separator) {
     return NULL;
   char *ptr = total_payload;
   for (int i = 0; i < list->len; i++) {
-    char *payload = get(list, i);
+    char *payload = str_list_get(list, i);
     size_t len = strlen(payload);
     memcpy(ptr, payload, len);
     ptr += len;
@@ -252,13 +252,13 @@ char *list_concat(str_list *list, char separator) {
  * @param *list2 The second list.
  * @return str_list * The new list.
  */
-str_list *list_extend(str_list *list1, str_list *list2) {
-  str_list *newlist = list_init();
+str_list *str_list_extend(str_list *list1, str_list *list2) {
+  str_list *newlist = str_list_init();
   for (uinteger i = 0; i < list1->len; i++) {
-    list_append(newlist, get(list1, i));
+    str_list_append(newlist, str_list_get(list1, i));
   }
   for (uinteger i = 0; i < list2->len; i++) {
-    list_append(newlist, get(list2, i));
+    str_list_append(newlist, str_list_get(list2, i));
   }
   return newlist;
 }
@@ -269,10 +269,10 @@ str_list *list_extend(str_list *list1, str_list *list2) {
  * @param *to_copy The list to copy.
  * @return str_list * The new list.
  */
-str_list *list_copy(str_list *to_copy) {
-  str_list *newlist = list_init();
+str_list *str_list_copy(str_list *to_copy) {
+  str_list *newlist = str_list_init();
   for (uinteger i = 0; i < to_copy->len; i++) {
-    list_append(newlist, get(to_copy, i));
+    str_list_append(newlist, str_list_get(to_copy, i));
   }
   return newlist;
 }
@@ -282,10 +282,10 @@ str_list *list_copy(str_list *to_copy) {
  * @param *list The list to reverse.
  * @return str_list * The new reversed list.
  */
-str_list *list_reverse(str_list *list) {
-  str_list *newlist = list_init();
+str_list *str_list_reverse(str_list *list) {
+  str_list *newlist = str_list_init();
   for (integer i = list->len - 1; i >= 0; i--) {
-    list_append(newlist, get(list, i));
+    str_list_append(newlist, str_list_get(list, i));
   }
   return newlist;
 }
@@ -295,7 +295,7 @@ str_list *list_reverse(str_list *list) {
  *
  * @param *list The list to delete.
  */
-void list_free(str_list *list) {
+void str_list_free(str_list *list) {
   struct lnode *cursor = list->head;
   while (cursor != NULL) {
     struct lnode *next = cursor->next;

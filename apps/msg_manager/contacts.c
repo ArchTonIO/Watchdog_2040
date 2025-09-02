@@ -61,7 +61,7 @@ void contacts_list_update(str_list *contacts_from_dir) {
   if (contacts_from_dir->len > MAX_CONTACTS)
     print_sys_error("Too many contacts to\nhandle, UB may occur");
   for (size_t i = 0; i < contacts_from_dir->len; i++) {
-    char *contact_name = get(contacts_from_dir, i);
+    char *contact_name = str_list_get(contacts_from_dir, i);
     uint16_t contact_address = get_contact_addr_by_name(contact_name);
     strcpy(clist->contacts[clist->contacts_count].name, contact_name);
     clist->contacts[clist->contacts_count].address = contact_address;
@@ -74,15 +74,15 @@ void contacts_list_update(str_list *contacts_from_dir) {
  * edit or delete contacts.
  */
 void enter_contacts_submenu() {
-  str_list *contacts = list_init();
+  str_list *contacts = str_list_init();
   str_list *existing_contacts;
   str_list *options;
   options_page *contacts_page;
   bool contacts_modified = false;
-  list_append(contacts, "+ add contact");
+  str_list_append(contacts, "+ add contact");
   while (true) {
     existing_contacts = get_all_contacts();
-    options = list_extend(contacts, existing_contacts);
+    options = str_list_extend(contacts, existing_contacts);
     contacts_page = options_page_init("Contacts menu", options);
     char *buf = options_page_launch(contacts_page);
     if (strcmp(buf, "+ add contact") == 0) {
@@ -94,15 +94,15 @@ void enter_contacts_submenu() {
       edit_or_delete_contact(buf);
       contacts_modified = true;
     }
-    list_free(existing_contacts);
+    str_list_free(existing_contacts);
     options_page_free(contacts_page);
   }
   if (contacts_modified) {
     print_loading("Updating contacts\nsnapshot...");
     contacts_list_update(existing_contacts);
   }
-  list_free(contacts);
-  list_free(existing_contacts);
+  str_list_free(contacts);
+  str_list_free(existing_contacts);
   options_page_free(contacts_page);
 }
 
@@ -143,9 +143,9 @@ bool address_is_valid(uint16_t addr) {
 }
 
 void edit_or_delete_contact(char *name) {
-  str_list *options = list_init();
-  list_append(options, "edit");
-  list_append(options, "delete");
+  str_list *options = str_list_init();
+  str_list_append(options, "edit");
+  str_list_append(options, "delete");
   options_page *editordelete_page = options_page_init(name, options);
   char *buf = options_page_launch(editordelete_page);
   if (strcmp(buf, "edit") == 0) {
@@ -153,9 +153,9 @@ void edit_or_delete_contact(char *name) {
     edit_contact(name);
   } else if (strcmp(buf, "delete") == 0) {
     sleep_ms(200);
-    str_list *options = list_init();
-    list_append(options, "yes");
-    list_append(options, "no");
+    str_list *options = str_list_init();
+    str_list_append(options, "yes");
+    str_list_append(options, "no");
     options_page *yesno_page = options_page_init("Are you sure?", options);
     char *yesno_buf = options_page_launch(yesno_page);
     if (strcmp(yesno_buf, "no") == 0 || strcmp(yesno_buf, "") == 0) {
@@ -172,9 +172,9 @@ void edit_or_delete_contact(char *name) {
 }
 
 void edit_contact(char *name) {
-  str_list *options = list_init();
-  list_append(options, "name");
-  list_append(options, "address");
+  str_list *options = str_list_init();
+  str_list_append(options, "name");
+  str_list_append(options, "address");
   options_page *name_or_address_page = options_page_init("Edit contact",
       options);
   char *buf = options_page_launch(name_or_address_page);
@@ -264,9 +264,9 @@ uint16_t get_contact_addr_by_name(char *name) {
     return 0;
   }
   str_list *fcontent = path_fread(full_path);
-  char *addr_str = get(fcontent, 0);
+  char *addr_str = str_list_get(fcontent, 0);
   addr = atoi(addr_str);
-  list_free(fcontent);
+  str_list_free(fcontent);
   path_free(full_path);
   return addr;
 }
@@ -282,30 +282,30 @@ uint16_t get_contact_addr_by_name(char *name) {
 char *get_contact_name_by_addr(uint16_t addr) {
   str_list *contacts = get_all_contacts();
   if (contacts->len == 0) {
-    list_free(contacts);
+    str_list_free(contacts);
     return NULL;
   }
   char *name = NULL;
   path *full_path = NULL;
   str_list *fcontent = NULL;
   for (size_t i = 0; i < contacts->len; i++) {
-    name = get(contacts, i);
+    name = str_list_get(contacts, i);
     full_path = get_contact_full_path(name);
     fcontent = path_fread(full_path);
     uint16_t found_addr;
-    char *addr_str = get(fcontent, 0);
+    char *addr_str = str_list_get(fcontent, 0);
     found_addr = atoi(addr_str);
     if (found_addr == addr) {
       char *ret = strdup(name);
-      list_free(fcontent);
+      str_list_free(fcontent);
       path_free(full_path);
-      list_free(contacts);
+      str_list_free(contacts);
       return ret;
     }
-    list_free(fcontent);
+    str_list_free(fcontent);
     path_free(full_path);
   }
-  list_free(contacts);
+  str_list_free(contacts);
   return NULL;
 }
 
@@ -316,9 +316,9 @@ char *get_contact_name_by_addr(uint16_t addr) {
  * @return A list of contact names, if any.
  */
 str_list *get_all_contacts_threadsafe() {
-  str_list *contacts = list_init();
+  str_list *contacts = str_list_init();
   for (size_t i = 0; i < clist->contacts_count; i++)
-    list_append(contacts, clist->contacts[i].name);
+    str_list_append(contacts, clist->contacts[i].name);
   return contacts;
 }
 
@@ -390,11 +390,11 @@ uint16_t ask_for_contact_addr() {
 bool contact_exists(const char *name) {
   str_list *contacts = get_all_contacts();
   for (size_t i = 0; i < contacts->len; i++)
-    if (strcmp(get(contacts, i), name) == 0) {
-      list_free(contacts);
+    if (strcmp(str_list_get(contacts, i), name) == 0) {
+      str_list_free(contacts);
       return true;
     }
-  list_free(contacts);
+  str_list_free(contacts);
   return false;
 }
 

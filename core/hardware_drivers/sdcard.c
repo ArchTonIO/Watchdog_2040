@@ -81,7 +81,7 @@ bool sdcard_write_file(sdcard *sd,
  * @return A list of strings, each representing a line in the file
  */
 str_list *sdcard_read_file(sdcard *sd, path *file) {
-  str_list *lines = list_init();
+  str_list *lines = str_list_init();
   sd->fr = f_open(&sd->fil, file->abs_path, FA_READ);
   if (sd->fr != FR_OK) {
     printf("ERROR: Could not open file (%d)\r\n", sd->fr);
@@ -90,7 +90,7 @@ str_list *sdcard_read_file(sdcard *sd, path *file) {
   while (f_gets(sd->buf, sizeof(sd->buf), &sd->fil)) {
     char *line = (char *)malloc(strlen(sd->buf) + 1);
     strcpy(line, sd->buf);
-    list_append(lines, line);
+    str_list_append(lines, line);
     free(line);
   }
   sd->fr = f_close(&sd->fil);
@@ -109,7 +109,7 @@ str_list *sdcard_read_file(sdcard *sd, path *file) {
  */
 str_list *sdcard_list_files(sdcard *sd, path *directory) {
 
-  str_list *files = list_init();
+  str_list *files = str_list_init();
   DIR dir;
   FILINFO fno;
   sd->fr = f_opendir(&dir, directory->abs_path);
@@ -123,7 +123,7 @@ str_list *sdcard_list_files(sdcard *sd, path *directory) {
       break;
     char *file = (char *)malloc(strlen(fno.fname) + 1);
     strcpy(file, fno.fname);
-    list_append(files, file);
+    str_list_append(files, file);
     free(file);
   }
   sd->fr = f_closedir(&dir);
@@ -180,9 +180,9 @@ bool sdcard_replace_value_at_key(sdcard *sd,
     const char *value) {
   bool found = false;
   str_list *lines = sdcard_read_file(sd, file);
-  str_list *new_lines = list_init();
+  str_list *new_lines = str_list_init();
   for (uint16_t i = 0; i < lines->len; i++) {
-    char *line = strdup(get(lines, i));
+    char *line = strdup(str_list_get(lines, i));
     char *delimiter = strchr(line, '~');
     if (delimiter != NULL) {
       *delimiter = '\0';
@@ -190,11 +190,11 @@ bool sdcard_replace_value_at_key(sdcard *sd,
         size_t new_len = strlen(key) + strlen(value) + 3;
         char *new_line = (char *)malloc(new_len);
         snprintf(new_line, new_len, "%s~%s\n", key, value);
-        list_append(new_lines, new_line);
+        str_list_append(new_lines, new_line);
         free(new_line);
         found = true;
       } else {
-        list_append(new_lines, get(lines, i));
+        str_list_append(new_lines, str_list_get(lines, i));
       }
       free(line);
     }
@@ -202,15 +202,15 @@ bool sdcard_replace_value_at_key(sdcard *sd,
   char *new_file_content = (char *)malloc(1);
   new_file_content[0] = '\0';
   for (uint16_t i = 0; i < new_lines->len; i++) {
-    char *line = get(new_lines, i);
+    char *line = str_list_get(new_lines, i);
     size_t new_len = strlen(new_file_content) + strlen(line) + 1;
     new_file_content = (char *)realloc(new_file_content, new_len);
     strcat(new_file_content, line);
   }
   sdcard_write_file(sd, file, new_file_content, 'w');
   free(new_file_content);
-  list_free(lines);
-  list_free(new_lines);
+  str_list_free(lines);
+  str_list_free(new_lines);
   return found;
 }
 
@@ -229,17 +229,17 @@ char *sdcard_read_value_from_file(sdcard *sd, path *file, const char *key) {
   char sep = '~';
   str_list *lines = sdcard_read_file(sd, file);
   for (uint16_t i = 0; i < lines->len; i++) {
-    char *line = get(lines, i);
+    char *line = str_list_get(lines, i);
     char *delimiter = strchr(line, sep);
     *delimiter = '\0';
     if (strcmp(line, key) == 0) {
       char *value = (char *)malloc(strlen(delimiter + 1) + 1);
       strcpy(value, delimiter + 1);
-      list_free(lines);
+      str_list_free(lines);
       return value;
     }
   }
-  list_free(lines);
+  str_list_free(lines);
   return NULL;
 }
 
@@ -253,11 +253,11 @@ char *sdcard_read_value_from_file(sdcard *sd, path *file, const char *key) {
 bool sdcard_file_exists(sdcard *sd, path *file) {
   str_list *files = sdcard_list_files(sd, file->parent);
   bool found = false;
-  if (list_index_of(files, file->full_name) == -1)
+  if (str_list_index_of(files, file->full_name) == -1)
     found = false;
   else
     found = true;
-  list_free(files);
+  str_list_free(files);
   return found;
 }
 
@@ -350,7 +350,7 @@ bool sdcard_rmtree(sdcard *sd, path *dir) {
   }
   str_list *files = sdcard_list_files(sd, dir);
   for (uint16_t i = 0; i < files->len; i++) {
-    char *file_name = get(files, i);
+    char *file_name = str_list_get(files, i);
     path *file_path = path_init(file_name);
     path *full_path = path_concat(dir, file_path);
     if (full_path->is_dir) {
@@ -361,7 +361,7 @@ bool sdcard_rmtree(sdcard *sd, path *dir) {
     path_free(full_path);
     path_free(file_path);
   }
-  list_free(files);
+  str_list_free(files);
   return sdcard_rmdir(sd, dir);
 }
 

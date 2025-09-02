@@ -27,19 +27,19 @@ typedef struct {
   struct lnode *tail;
 } str_list;
 
-str_list *list_init();
-void list_append(str_list *list, char *value);
-integer list_index_of(str_list *list, char *value);
-char *get(str_list *list, integer index);
-char *pop(str_list *list, integer index);
-void list_print(str_list *list);
-void clear(str_list *list);
-uinteger list_len(str_list *list);
-uinteger list_compare(str_list *list1, str_list *list2);
-char *list_concat(str_list *list, char separator);
-str_list *list_extend(str_list *list1, str_list *list2);
-str_list *list_copy(str_list *to_copy);
-str_list *list_reverse(str_list *list);
-void list_free(str_list *list);
+str_list *str_list_init();
+void str_list_append(str_list *list, char *value);
+integer str_list_index_of(str_list *list, char *value);
+char *str_list_get(str_list *list, integer index);
+char *str_list_pop(str_list *list, integer index);
+void str_list_print(str_list *list);
+void str_list_clear(str_list *list);
+uinteger str_list_len(str_list *list);
+uinteger str_list_compare(str_list *list1, str_list *list2);
+char *str_list_concat(str_list *list, char separator);
+str_list *str_list_extend(str_list *list1, str_list *list2);
+str_list *str_list_copy(str_list *to_copy);
+str_list *str_list_reverse(str_list *list);
+void str_list_free(str_list *list);
 
 #endif

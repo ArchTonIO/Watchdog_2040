@@ -18,14 +18,14 @@ void open_existing_note(const char *note_name);
 bool note_exists(const char *note_name);
 
 void enter_notes_submenu() {
-  str_list *notes = list_init();
+  str_list *notes = str_list_init();
   str_list *existing_notes;
   str_list *options;
   options_page *notes_page;
-  list_append(notes, "+ new note");
+  str_list_append(notes, "+ new note");
   while (true) {
     existing_notes = path_listdir(sys_paths->dirs->notes_path);
-    options = list_extend(notes, existing_notes);
+    options = str_list_extend(notes, existing_notes);
     notes_page = options_page_init("Notes menu", options);
     char *buf = options_page_launch(notes_page);
     if (strcmp(buf, "+ new note") == 0)
@@ -34,11 +34,11 @@ void enter_notes_submenu() {
       break;
     else
       edit_or_delete_note(buf);
-    list_free(existing_notes);
+    str_list_free(existing_notes);
     options_page_free(notes_page);
   }
-  list_free(notes);
-  list_free(existing_notes);
+  str_list_free(notes);
+  str_list_free(existing_notes);
   options_page_free(notes_page);
 }
 
@@ -66,9 +66,9 @@ void take_note() {
 }
 
 void edit_or_delete_note(const char *note_name) {
-  str_list *options = list_init();
-  list_append(options, "edit");
-  list_append(options, "delete");
+  str_list *options = str_list_init();
+  str_list_append(options, "edit");
+  str_list_append(options, "delete");
   options_page *editordelete_page = options_page_init((char *)note_name,
       options);
   char *buf = options_page_launch(editordelete_page);
@@ -76,9 +76,9 @@ void edit_or_delete_note(const char *note_name) {
     open_existing_note(note_name);
   else if (strcmp(buf, "delete") == 0) {
     sleep_ms(200);
-    str_list *yesno = list_init();
-    list_append(yesno, "yes");
-    list_append(yesno, "no");
+    str_list *yesno = str_list_init();
+    str_list_append(yesno, "yes");
+    str_list_append(yesno, "no");
     options_page *yesno_page = options_page_init("Are you sure?", yesno);
     char *yesno_buf = options_page_launch(yesno_page);
     if (strcmp(yesno_buf, "no") == 0 || strcmp(yesno_buf, "") == 0) {
@@ -100,14 +100,14 @@ void open_existing_note(const char *note_name) {
   path *note_path = path_init(note_name);
   path *note_full_path = path_concat(sys_paths->dirs->notes_path, note_path);
   str_list *note_content = path_fread(note_full_path);
-  char *note_content_str = list_concat(note_content, '\n');
+  char *note_content_str = str_list_concat(note_content, '\n');
   text_editor *note_editor = text_editor_launch(note_content_str, false);
   char *buf = text_editor_get_buf(note_editor);
   text_editor_kill(note_editor);
   path_fwrite(note_full_path, buf, 'w');
   path_free(note_path);
   path_free(note_full_path);
-  list_free(note_content);
+  str_list_free(note_content);
   free(note_content_str);
   free(buf);
 }
@@ -115,10 +115,10 @@ void open_existing_note(const char *note_name) {
 bool note_exists(const char *note_name) {
   str_list *existing_notes = path_listdir(sys_paths->dirs->notes_path);
   for (size_t i = 0; i < existing_notes->len; i++)
-    if (strcmp(get(existing_notes, i), note_name) == 0) {
-      list_free(existing_notes);
+    if (strcmp(str_list_get(existing_notes, i), note_name) == 0) {
+      str_list_free(existing_notes);
       return true;
     }
-  list_free(existing_notes);
+  str_list_free(existing_notes);
   return false;
 }

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Antonio Del Cogliano
 
-
 #include "apps/system_submenus/system_submenus.h"
 
 #include <math.h>
@@ -23,7 +22,7 @@
 void display_system_info_wrapped() { display_system_info(false); }
 
 void display_system_info(bool serial_output) {
-  str_list *options = list_init();
+  str_list *options = str_list_init();
   uint64_t us_since_boot = to_us_since_boot(get_absolute_time());
   us_since_boot /= 1000000;
   char uptime_str[20];
@@ -43,26 +42,26 @@ void display_system_info(bool serial_output) {
       "%u kHz",
       clock_freq_khz);
   snprintf(cpu_temp_str, sizeof(cpu_temp_str), "%.2f C", cpu_temp);
-  list_append(options, "Device:");
-  list_append(options, DEVICE_NAME);
-  list_append(options, "Hardware version:");
-  list_append(options, HARDWARE_VERSION);
-  list_append(options, "Firmware version:");
-  list_append(options, FIRMWARE_VERSION);
-  list_append(options, "Free heap memory: ");
-  list_append(options, free_heap_str);
-  list_append(options, "Used flash memory: ");
-  list_append(options, used_flash_str);
-  list_append(options, "System uptime: ");
-  list_append(options, uptime_str);
-  list_append(options, "Clock frequency: ");
-  list_append(options, clock_freq_khz_str);
-  list_append(options, "CPU temperature: ");
-  list_append(options, cpu_temp_str);
+  str_list_append(options, "Device:");
+  str_list_append(options, DEVICE_NAME);
+  str_list_append(options, "Hardware version:");
+  str_list_append(options, HARDWARE_VERSION);
+  str_list_append(options, "Firmware version:");
+  str_list_append(options, FIRMWARE_VERSION);
+  str_list_append(options, "Free heap memory: ");
+  str_list_append(options, free_heap_str);
+  str_list_append(options, "Used flash memory: ");
+  str_list_append(options, used_flash_str);
+  str_list_append(options, "System uptime: ");
+  str_list_append(options, uptime_str);
+  str_list_append(options, "Clock frequency: ");
+  str_list_append(options, clock_freq_khz_str);
+  str_list_append(options, "CPU temperature: ");
+  str_list_append(options, cpu_temp_str);
   if (serial_output) {
     for (uint8_t i = 0; i < options->len; i++)
-      printf("%s\n", get(options, i));
-    list_free(options);
+      printf("%s\n", str_list_get(options, i));
+    str_list_free(options);
     return;
   }
   options_page *system_info_page = options_page_init("System info", options);
@@ -90,9 +89,9 @@ void reset_system() {
     joystick_update(drivers->joystick);
     sleep_ms(100);
   }
-  str_list *options = list_init();
-  list_append(options, "Yes");
-  list_append(options, "No");
+  str_list *options = str_list_init();
+  str_list_append(options, "Yes");
+  str_list_append(options, "No");
   options_page *yesno_page = options_page_init("Are you sure?", options);
   char *answer = options_page_launch(yesno_page);
   if (strcmp(answer, "Yes") != 0) {
@@ -185,8 +184,8 @@ void display_joystick_check() {
 }
 
 void display_tutorial_page() {
-  str_list *options = list_init();
-  list_append(options, "...");
+  str_list *options = str_list_init();
+  str_list_append(options, "...");
   options_page *tutorial_page = options_page_init("Tutorial Page", options);
   options_page_launch(tutorial_page);
   options_page_free(tutorial_page);
