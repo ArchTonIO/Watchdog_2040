@@ -8,8 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pico/stdlib.h"
-
+#include "hardware/gpio.h"
 #include "hardware/i2c.h"
 
 // clang-format off
@@ -282,7 +281,7 @@ void ssd1306_print(ssd1306 *display,
   display->cursorx = x * CHAR_WIDTH;
   display->cursory = y * CHAR_HEIGHT;
   char c;
-  while (c = *str) {
+  while ((c = *str)) {
     str++;
     if (c == '\n') {
       display->cursorx = x * CHAR_WIDTH;
@@ -306,7 +305,7 @@ void ssd1306_print_gradually(ssd1306 *display,
   display->cursorx = x * CHAR_WIDTH;
   display->cursory = y * CHAR_HEIGHT;
   char c;
-  while (c = *str) {
+  while ((c = *str)) {
     str++;
     if (c == '\n') {
       display->cursorx = x * CHAR_WIDTH;

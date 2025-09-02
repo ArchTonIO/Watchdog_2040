@@ -17,7 +17,9 @@ void sys_paths_manager_load_files();
 void sys_paths_manager_mkdirs();
 void sys_paths_manager_ftouch();
 
-/* load all files and directories paths into the sys_paths structure*/
+/**
+ * @brief Load all files and directories paths into the sys_paths structure
+ */
 void sys_paths_manager_load() {
   if (!sys_paths->load_executed) {
     sys_paths_manager_load_dirs();
@@ -26,7 +28,9 @@ void sys_paths_manager_load() {
   }
 }
 
-/* create all necessary system directories and files*/
+/**
+ * @brief Create all necessary system directories and files
+ */
 void sys_paths_manager_make() {
   sys_paths_manager_mkdirs();
   sys_paths_manager_ftouch();

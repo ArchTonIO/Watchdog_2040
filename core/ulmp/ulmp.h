@@ -3,7 +3,6 @@
 
 /*
 An Uncomplicated LoRa Messaging Protocol (ULMP)
-Author: Antonio Del Cogliano
 */
 
 #include <stdint.h>

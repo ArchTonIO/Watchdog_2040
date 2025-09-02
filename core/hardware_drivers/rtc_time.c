@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "pico/stdlib.h"
+#include "pico/time.h"
 #include "pico/util/datetime.h"
 
 #include "hardware/rtc.h"

@@ -5,7 +5,8 @@
 #include <stdint.h>
 #include <sys/_intsup.h>
 
-#include "pico/stdlib.h"
+#include "pico/stdio.h"
+#include "pico/time.h"
 
 #include "apps/msg_manager/msg_manager.h"
 #include "apps/time_submenus/set_alarm_submenu.h"

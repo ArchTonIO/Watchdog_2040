@@ -48,7 +48,6 @@
 
 #include "config.h"
 #include "hardware/spi.h"
-#include "stdio.h"
 
 typedef struct {
   pin mosi;
@@ -84,6 +83,6 @@ void sx1278_set_mode_tx(sx1278 *radio);
 void sx1278_set_mode_rx(sx1278 *radio);
 void sx1278_set_mode_idle(sx1278 *radio);
 void sx1278_send_str(sx1278 *radio, char *data);
-void sx1278_send_raw(sx1278 *radio, char *data, size_t length);
+void sx1278_send_raw(sx1278 *radio, uint8_t *data, size_t length);
 
 #endif

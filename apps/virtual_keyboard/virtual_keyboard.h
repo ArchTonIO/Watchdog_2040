@@ -28,14 +28,14 @@
 #define NSK 0x20 /*not shown key*/
 #define NOW 0x00 /*no write*/
 
-extern char NEWLINE_PIXELS[];
-extern char BACKSPACE_PIXELS[];
-extern char UPPERCASE_PIXELS[];
-extern char LOWERCASE_PIXELS[];
-extern char SHIFT_PIXELS[];
-extern char SPACE_PIXELS[];
-extern char NAVIGATE_PIXELS[];
-extern char END_INPUT_PIXELS[];
+extern const uint8_t NEWLINE_PIXELS[];
+extern const uint8_t BACKSPACE_PIXELS[];
+extern const uint8_t UPPERCASE_PIXELS[];
+extern const uint8_t LOWERCASE_PIXELS[];
+extern const uint8_t SHIFT_PIXELS[];
+extern const uint8_t SPACE_PIXELS[];
+extern const uint8_t NAVIGATE_PIXELS[];
+extern const uint8_t END_INPUT_PIXELS[];
 
 typedef struct {
   char label;

@@ -5,6 +5,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -97,8 +98,6 @@ void insert_text(text_editor *editor,
     editor->logic_cursor_col++;
     editor->video_cursor_col++;
   }
-  // editor->logic_cursor_row++;
-  // editor->video_cursor_row++;
   handle_text_wrapping(editor);
   if (!is_text_placeholder)
     return;

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pico/stdlib.h"
+#include "pico/time.h"
 
 #include "core/hardware_drivers/sx1278.h"
 #include "core/ulmp/ulmp.h"

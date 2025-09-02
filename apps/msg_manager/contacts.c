@@ -200,7 +200,6 @@ void edit_contact_name(char *name) {
   path_free(new_full_path);
   path_free(old_full_path);
   free(new_name);
-  // contacts_list_update();
   print_info("Contact name\nupdated successfully");
 }
 
@@ -226,7 +225,6 @@ void edit_contact_addr(char *name) {
   path_fwrite(full_path, new_addr_str, 'w');
   path_free(full_path);
   free(new_addr_str);
-  // contacts_list_update();
   print_info("Contact address\nupdated successfully");
 }
 
@@ -404,12 +402,10 @@ void save_contact(const char *name, uint16_t addr) {
   snprintf(addr_str, 6, "%u", addr);
   path_fwrite(full_path, addr_str, 'w');
   path_free(full_path);
-  // contacts_list_update();
 }
 
 void delete_contact(const char *name) {
   path *full_path = get_contact_full_path(name);
   path_fdelete(full_path);
   path_free(full_path);
-  // contacts_list_update();
 }

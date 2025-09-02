@@ -7,9 +7,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "pico/stdlib.h"
-
 #include "config.h"
+#include "hardware/gpio.h"
 #include "hardware/i2c.h"
 
 int16_t translate_pair(uint8_t msb, uint8_t lsb);
@@ -122,6 +121,6 @@ bool ens160_is_working(ens160 *sensor) {
 }
 
 int16_t translate_pair(uint8_t msb, uint8_t lsb) {
-  int16_t value = (msb << 8) | lsb;
-  return (value >= 0x8000) ? -((65535 - value) + 1) : value;
+  uint16_t raw = ((uint16_t)msb << 8) | lsb;
+  return (raw >= 0x8000) ? -((int16_t)((~raw + 1) & 0xFFFF)) : (int16_t)raw;
 }

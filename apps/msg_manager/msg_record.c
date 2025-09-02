@@ -72,7 +72,7 @@ void msg_record_dump(msg_record *record) {
   path *keys_file_temp = path_init(keys_file_str);
   path *keys_file = path_concat(sys_paths->dirs->messages_path,
       keys_file_temp);
-  path_free(keys_file_temp); // Fix memory leak
+  path_free(keys_file_temp);
   free(keys_file_str);
   path_ftouch(conversation_file);
   size_t payload_size = (strlen(record->contact_name) +

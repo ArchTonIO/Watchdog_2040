@@ -39,7 +39,7 @@ void show_read_messages_menu() {
     path *conv_file_temp = path_init(str_list_get(all_files, i));
     path *conv_file = path_concat(sys_paths->dirs->messages_path,
         conv_file_temp);
-    path_free(conv_file_temp); // Fix: Use path_free instead of free
+    path_free(conv_file_temp);
     if (strcmp(conv_file->ext, "keys") != 0)
       str_list_append(active_conversations, conv_file->name);
     path_free(conv_file);
@@ -179,7 +179,7 @@ str_list *get_msg_uids_by_chunk(str_list *msg_uids,
        i < (chunk_index + 1) * chunk_size && i < msg_uids->len;
        i++) {
     char *msg_uid = str_list_get(msg_uids, i);
-    msg_uid[strlen(msg_uid) - 1] = '\0'; // Remove the newline character
+    msg_uid[strlen(msg_uid) - 1] = '\0';
     str_list_append(chunk, msg_uid);
   }
   return chunk;
@@ -187,7 +187,7 @@ str_list *get_msg_uids_by_chunk(str_list *msg_uids,
 
 str_list *get_selectable_options_by_msg_uids(str_list *msg_uids,
     uint16_t contact_addr) {
-  //[<"->" or "<-"> <status str>]<first_n_chars_of_msg>
+  /*[<"->" or "<-"> <status str>]<first_n_chars_of_msg>*/
   char *contact_name = get_contact_name_by_addr_threadsafe(contact_addr);
   path *contact_name_file = path_init(contact_name);
   path *conversation_file = path_concat(sys_paths->dirs->messages_path,

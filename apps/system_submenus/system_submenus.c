@@ -4,6 +4,7 @@
 #include "apps/system_submenus/system_submenus.h"
 
 #include <math.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "core/components/hw_manager.h"

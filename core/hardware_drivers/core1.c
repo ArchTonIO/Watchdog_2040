@@ -9,11 +9,9 @@
 #include <stdlib.h>
 
 #include "pico/multicore.h"
-#include "pico/stdlib.h"
 
 #include "core/boot/bootup.h"
 #include "core/hardware_drivers/haptics.h"
-#include "core/hardware_drivers/ssd1306.h"
 
 core1_scheduler *core1_scheduler_inst = NULL;
 

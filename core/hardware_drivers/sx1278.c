@@ -8,10 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pico/stdlib.h"
+#include "pico/time.h"
 
 #include "config.h"
-#include "hardware/irq.h"
+#include "hardware/gpio.h"
 
 sx1278 *instance = NULL;
 
@@ -66,8 +66,8 @@ sx1278 *sx1278_init(pin mosi,
   new_radio->spi_port = spi_port;
   new_radio->baudrate = baudrate;
   new_radio->tx_power = tx_power;
-  new_radio->mode = NULL;
-  new_radio->irq_flags = NULL;
+  new_radio->mode = 0;
+  new_radio->irq_flags = 0;
   new_radio->packet_sent_timeout_ms = 200;
   new_radio->message_received_callback = message_received_callback;
   new_radio->is_working = true;
@@ -203,9 +203,7 @@ void sx1278_set_mode_tx(sx1278 *radio) {
 void sx1278_set_mode_rx(sx1278 *radio) {
   if (radio->mode != MODE_RXCONTINUOUS) {
     spi_write_reg_single_byte(radio, REG_01_OP_MODE, MODE_RXCONTINUOUS);
-    spi_write_reg_single_byte(radio,
-        REG_40_DIO_MAPPING1,
-        0x00); // interrupt on rx done
+    spi_write_reg_single_byte(radio, REG_40_DIO_MAPPING1, 0x00);
     radio->mode = MODE_RXCONTINUOUS;
   }
 }
@@ -277,7 +275,7 @@ void sx1278_send_str(sx1278 *radio, char *data) {
  * @param data Pointer to the raw data to be sent.
  * @param length The length of the raw data in bytes.
  */
-void sx1278_send_raw(sx1278 *radio, char *data, size_t length) {
+void sx1278_send_raw(sx1278 *radio, uint8_t *data, size_t length) {
   wait_packet_sent(radio);
   sx1278_set_mode_idle(radio);
   spi_write_reg_single_byte(radio, REG_0D_FIFO_ADDR_PTR, 0x00);

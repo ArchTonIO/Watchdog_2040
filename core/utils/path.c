@@ -51,7 +51,7 @@ path *path_init(const char *abs_path) {
  * @return true if the write was successful, false otherwise.
  */
 bool path_fwrite(path *file, const char *data, char mode) {
-  sdcard_write_file(drivers->sd_card, file, data, mode);
+  return sdcard_write_file(drivers->sd_card, file, data, mode);
 }
 
 /**

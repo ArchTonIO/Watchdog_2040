@@ -4,6 +4,7 @@
 #include "core/components/malloc_mascot.h"
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -295,8 +296,7 @@ void malloc_explains_you_text_editor() {
   clear_text_area();
 }
 
-void malloc_asks_your_name() // TODO: fix this
-{
+void malloc_asks_your_name() {
   ssd1306_draw_bitmap(drivers->oled_screen,
       0,
       19,

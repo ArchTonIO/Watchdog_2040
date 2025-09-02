@@ -4,10 +4,9 @@
 #include "core/hardware_drivers/haptics.h"
 
 #include <stdint.h>
-#include <stdio.h>
 #include <sys/_intsup.h>
 
-#include "pico/stdlib.h"
+#include "pico/time.h"
 
 #include "core/hardware_drivers/core1.h"
 #include "core/hardware_drivers/haptics.h"
