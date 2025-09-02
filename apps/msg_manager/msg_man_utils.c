@@ -163,7 +163,7 @@ str_list *get_chunks_by_msg_uids(str_list *msg_uids, uint8_t chunk_size) {
   str_list *chunks = str_list_init();
   for (uint64_t i = 0; i < num_chunks; i++) {
     char index_str[7];
-    sprintf(index_str, "%lu", i);
+    sprintf(index_str, "%llu", i);
     char *chunk_index_str = string_add("chunk: ", index_str);
     str_list_append(chunks, chunk_index_str);
     free(chunk_index_str);

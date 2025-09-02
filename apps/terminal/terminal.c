@@ -10,8 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pico/stdlib.h"
-
 #include "apps/terminal/terminal_commands.h"
 #include "apps/text_editor/text_editor.h"
 #include "core/components/malloc_mascot.h"

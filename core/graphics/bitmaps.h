@@ -6,8 +6,6 @@
 
 #include <stdint.h>
 
-#include "core/hardware_drivers/battery.h"
-
 extern uint8_t battery_empty[];
 extern uint8_t battery_1_bar[];
 extern uint8_t battery_2_bars[];

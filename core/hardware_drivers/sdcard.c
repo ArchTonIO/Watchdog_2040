@@ -11,7 +11,6 @@
 #include "core/components/sys_paths_manager.h"
 #include "core/data_structures/string_list.h"
 #include "core/utils/path.h"
-#include "device.h"
 #include "ff.h"
 #include "sd_card.h"
 
@@ -305,6 +304,7 @@ bool sdcard_rename(sdcard *sd, path *src, path *dest) {
 bool sdcard_touch_file(sdcard *sd, path *file) {
   if (!sdcard_file_exists(sd, file))
     return sdcard_write_file(sd, file, "", 'w');
+  return true;
 }
 
 /**

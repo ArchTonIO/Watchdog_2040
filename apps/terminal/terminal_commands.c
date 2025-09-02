@@ -13,7 +13,7 @@
 
 #include "pico/bootrom.h"
 #include "pico/stdio_usb.h"
-#include "pico/stdlib.h"
+#include "pico/time.h"
 
 #include "apps/system_submenus/system_submenus.h"
 #include "apps/text_editor/text_editor.h"

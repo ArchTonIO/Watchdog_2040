@@ -6,7 +6,6 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "core/data_structures/string_list.h"
@@ -29,13 +28,13 @@ uint16_t array_find_max(uint16_t *array, size_t len);
 uint16_t array_find_min(uint16_t *array, size_t len);
 
 /*Strings helpers*/
-char *string_add(char *str1, char *str2);
-bool is_string_numeric(char *str);
-bool is_string_alphanumeric(char *str);
-bool is_string_alpha(char *str);
-str_list *string_split(char *str, char delimiter);
-char *string_remove_linefeed(char *str);
-char *string_replace(char *str, char old_char, char new_char);
+char *string_add(const char *str1, const char *str2);
+bool is_string_numeric(const char *str);
+bool is_string_alphanumeric(const char *str);
+bool is_string_alpha(const char *str);
+str_list *string_split(const char *str, const char delimiter);
+char *string_remove_linefeed(const char *str);
+char *string_replace(const char *str, char old_char, char new_char);
 char *
 string_substring_replace(const char *str, const char *old, const char *new);
 char *gen_random_string(size_t length);

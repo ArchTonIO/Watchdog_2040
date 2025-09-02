@@ -8,8 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pico/stdlib.h"
-
 #include "apps/virtual_keyboard/virtual_keyboard.h"
 #include "core/components/hw_manager.h"
 #include "core/data_structures/string_list.h"
@@ -34,13 +32,15 @@ void print_logic_buf(text_editor *editor);
 void populate_video_buffer(text_editor *editor);
 char *stringify_logic_buffer(text_editor *editor);
 void navigate_text(text_editor *editor);
-void insert_text(text_editor *editor, char *text, bool is_text_placeholder);
+void insert_text(text_editor *editor,
+    const char *text,
+    bool is_text_placeholder);
 
 /**
  * @brief Launch a new instance of the text editor so that it appears
  * on the oled screen with all needed components loaded
  */
-text_editor *text_editor_launch(char *text, bool is_text_placeholder) {
+text_editor *text_editor_launch(const char *text, bool is_text_placeholder) {
   virtual_keyboard *keyboard = virtual_keyboard_init();
   ssd1306_clear(drivers->oled_screen);
   text_editor *editor = text_editor_init(keyboard, false);
@@ -84,7 +84,9 @@ text_editor *text_editor_init(virtual_keyboard *keyboard, bool debug) {
   return editor;
 }
 
-void insert_text(text_editor *editor, char *text, bool is_text_placeholder) {
+void insert_text(text_editor *editor,
+    const char *text,
+    bool is_text_placeholder) {
   for (uint32_t i = 0; i < strlen(text); i++) {
     if (text[i] == '\n') {
       handle_newline(editor);

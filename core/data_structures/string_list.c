@@ -32,7 +32,7 @@ str_list *str_list_init() {
  * @param *list The list to append to.
  * @param *value The value to append.
  */
-void str_list_append(str_list *list, char *value) {
+void str_list_append(str_list *list, const char *value) {
   if (list->len >= MAX_LIST_LEN) {
     printf("%s\n", MAX_LEN_REACHED_STR);
     return;
@@ -69,7 +69,7 @@ void str_list_append(str_list *list, char *value) {
  * @param *value The value you are looking the index for.
  * @return integer The index of that value in the list.
  */
-integer str_list_index_of(str_list *list, char *value) {
+integer str_list_index_of(str_list *list, const char *value) {
   struct lnode *cursor = list->head;
   uinteger index = 0;
   while (cursor != NULL) {

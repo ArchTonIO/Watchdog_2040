@@ -28,8 +28,8 @@ typedef struct {
 } str_list;
 
 str_list *str_list_init();
-void str_list_append(str_list *list, char *value);
-integer str_list_index_of(str_list *list, char *value);
+void str_list_append(str_list *list, const char *value);
+integer str_list_index_of(str_list *list, const char *value);
 char *str_list_get(str_list *list, integer index);
 char *str_list_pop(str_list *list, integer index);
 void str_list_print(str_list *list);

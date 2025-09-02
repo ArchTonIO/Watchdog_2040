@@ -35,7 +35,7 @@ typedef struct {
 } text_editor;
 
 text_editor *text_editor_init(virtual_keyboard *keyboard, bool debug);
-text_editor *text_editor_launch(char *text, bool is_text_placeholder);
+text_editor *text_editor_launch(const char *text, bool is_text_placeholder);
 void text_editor_kill(text_editor *editor);
 char *text_editor_get_buf(text_editor *editor);
 void reset_state(text_editor *editor);

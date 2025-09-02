@@ -10,7 +10,7 @@
 #include <string.h>
 
 #include "pico/rand.h"
-#include "pico/stdlib.h"
+#include "pico/stdio_usb.h"
 
 #include "apps/text_editor/text_editor.h"
 #include "core/components/hw_manager.h"
@@ -108,7 +108,7 @@ void print_loading(const char *message) {
  * @return A new string that is the concatenation of str1 and str2, or NULL on
  * failure.
  */
-char *string_add(char *str1, char *str2) {
+char *string_add(const char *str1, const char *str2) {
   size_t len1 = strlen(str1);
   size_t len2 = strlen(str2);
   char *result = malloc(len1 + len2 + 1);
@@ -138,14 +138,14 @@ uint16_t array_find_min(uint16_t *array, size_t len) {
   return min;
 }
 
-bool is_string_numeric(char *str) {
+bool is_string_numeric(const char *str) {
   for (uint8_t i = 0; i < strlen(str); i++)
     if (str[i] < '0' || str[i] > '9')
       return false;
   return true;
 }
 
-bool is_string_alphanumeric(char *str) {
+bool is_string_alphanumeric(const char *str) {
   for (uint8_t i = 0; i < strlen(str); i++)
     if ((str[i] < '0' || str[i] > '9') && (str[i] < 'A' || str[i] > 'Z') &&
         (str[i] < 'a' || str[i] > 'z'))
@@ -153,7 +153,7 @@ bool is_string_alphanumeric(char *str) {
   return true;
 }
 
-bool is_string_alpha(char *str) {
+bool is_string_alpha(const char *str) {
   for (uint8_t i = 0; i < strlen(str); i++)
     if ((str[i] < 'A' || str[i] > 'Z') && (str[i] < 'a' || str[i] > 'z'))
       return false;
@@ -171,7 +171,7 @@ void wait_for_serial_input() {
   }
 }
 
-str_list *string_split(char *str, char delimiter) {
+str_list *string_split(const char *str, const char delimiter) {
   str_list *result = str_list_init();
   char *copy = strdup(str);
   char delim[2] = {delimiter, '\0'};
@@ -184,7 +184,7 @@ str_list *string_split(char *str, char delimiter) {
   return result;
 }
 
-char *string_remove_linefeed(char *str) {
+char *string_remove_linefeed(const char *str) {
   char *newstr = strdup(str);
   size_t len = strlen(newstr);
   if (len > 0 && newstr[len - 1] == '\n')
@@ -192,7 +192,7 @@ char *string_remove_linefeed(char *str) {
   return newstr;
 }
 
-char *string_replace(char *str, char old_char, char new_char) {
+char *string_replace(const char *str, char old_char, char new_char) {
   char *newstr = strdup(str);
   for (size_t i = 0; i < strlen(newstr); i++)
     if (newstr[i] == old_char)
