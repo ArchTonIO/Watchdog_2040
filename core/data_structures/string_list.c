@@ -13,7 +13,7 @@ struct lnode {
   struct lnode *next;
 };
 
-/*
+/**
  * @brief Create a simple doubly linked list for strings.
  *
  * @return str_list * A pointer to the doubly linked list.
@@ -26,11 +26,11 @@ str_list *list_init() {
   return newlist;
 }
 
-/*
- * @brief list_appends a string constant to the list.
+/**
+ * @brief Append a string constant to the list.
  *
- * @param *list The list to list_append to.
- * @param *value The value to list_append.
+ * @param *list The list to append to.
+ * @param *value The value to append.
  */
 void list_append(str_list *list, char *value) {
   if (list->len >= MAX_LIST_LEN) {
@@ -61,7 +61,7 @@ void list_append(str_list *list, char *value) {
   }
 }
 
-/*
+/**
  * @brief Get the index of a certain string constant (value)
  *stored in the list.
  *
@@ -82,7 +82,7 @@ integer list_index_of(str_list *list, char *value) {
   return -1;
 }
 
-/*
+/**
  * @brief Get a value in the list by its index.
  *
  * @param *list The list to look in.
@@ -104,7 +104,7 @@ char *get(str_list *list, integer index) {
   return cursor->value;
 }
 
-/*
+/**
  * @brief Pop a value in the list by its index.
  *
  * @param *list The list to look in.
@@ -144,10 +144,11 @@ char *pop(str_list *list, integer index) {
     }
     cursor = cursor->next;
   }
+  return NULL;
 }
 
-/*
- * @brief print lists info and values.
+/**
+ * @brief Print list's info and values.
  *
  * @param *list The list to print.
  */
@@ -162,8 +163,8 @@ void list_print(str_list *list) {
   }
 }
 
-/*
- * @brief clear all the list content.
+/**
+ * @brief Clear all the list content.
  *
  * @param *list The list to clear.
  */
@@ -174,15 +175,15 @@ void clear(str_list *list) {
   }
 }
 
-/*
- * @brief returns the lenght of the list.
+/**
+ * @brief Returns the length of the list.
  *
  * @param *list The list.
  */
 uinteger list_len(str_list *list) { return list->len; }
 
-/*
- * @brief compare two lists of strings.
+/**
+ * @brief Compare two lists of strings.
  *
  * @param *list1, the first list of strings.
  * @param *list2, the second list of strings.
@@ -206,7 +207,7 @@ uinteger list_compare(str_list *list1, str_list *list2) {
   return 1;
 }
 
-/*
+/**
  * @brief Concatenate all the strings in the list.
  *
  * @param *list The list to concatenate.
@@ -244,7 +245,7 @@ char *list_concat(str_list *list, char separator) {
   return total_payload;
 }
 
-/*
+/**
  * @brief Extend a list with another list.
  *
  * @param *list1 The first list.
@@ -262,7 +263,7 @@ str_list *list_extend(str_list *list1, str_list *list2) {
   return newlist;
 }
 
-/*
+/**
  * @brief Copy a list.
  *
  * @param *to_copy The list to copy.
@@ -276,6 +277,11 @@ str_list *list_copy(str_list *to_copy) {
   return newlist;
 }
 
+/**
+ * @brief Reverse a list.
+ * @param *list The list to reverse.
+ * @return str_list * The new reversed list.
+ */
 str_list *list_reverse(str_list *list) {
   str_list *newlist = list_init();
   for (integer i = list->len - 1; i >= 0; i--) {
@@ -284,7 +290,7 @@ str_list *list_reverse(str_list *list) {
   return newlist;
 }
 
-/*
+/**
  * @brief Delete the list.
  *
  * @param *list The list to delete.

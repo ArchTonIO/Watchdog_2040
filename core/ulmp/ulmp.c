@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pico/rand.h"
 #include "pico/stdlib.h"
 
 #include "core/hardware_drivers/sx1278.h"

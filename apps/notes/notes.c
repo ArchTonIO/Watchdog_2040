@@ -6,12 +6,11 @@
 #include <string.h>
 
 #include "apps/text_editor/text_editor.h"
-#include "core/components/hw_manager.h"
 #include "core/components/sys_paths_manager.h"
 #include "core/data_structures/string_list.h"
-#include "core/hardware_drivers/ssd1306.h"
 #include "core/tools/options_gen.h"
 #include "core/utils/path.h"
+#include "core/utils/utils.h"
 
 void take_note();
 void edit_or_delete_note(const char *note_name);
@@ -50,14 +49,7 @@ void take_note() {
   text_editor_kill(name_editor);
   if (note_exists(title_buf)) {
     free(title_buf);
-    ssd1306_print(drivers->oled_screen,
-        "[ERR] note with this\nname already exists!",
-        0,
-        0,
-        false);
-    ssd1306_show(drivers->oled_screen);
-    sleep_ms(3000);
-    ssd1306_clear(drivers->oled_screen);
+    print_usr_error("A note with this name\nalready exists!");
     return;
   }
   path *note_path = path_init(title_buf);

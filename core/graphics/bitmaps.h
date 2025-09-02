@@ -26,8 +26,6 @@ extern uint8_t *clock_digits[10];
 extern uint8_t clock_dots[];
 extern uint8_t message_received[];
 extern uint8_t message_received_open[];
-extern uint8_t contact_saved[];
-extern uint8_t contact_deleted[];
 extern uint8_t malloc_the_mascot[];
 extern uint8_t *startup_animation[16];
 extern uint8_t malloc_saying_hi[];

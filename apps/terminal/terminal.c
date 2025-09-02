@@ -25,8 +25,6 @@ int8_t dispatch_command(terminal *term, const char *command);
 void terminal_bind_std_commands(terminal *term) {
   terminal_add_command(term,
       create_command("help", "Show available commands.", __help__));
-  // terminal_add_command(term,
-  //     create_command("clear", "Clear the terminal screen.", __clear__));
   terminal_add_command(term,
       create_command("echo", "Print text to the terminal.", __echo__));
   terminal_add_command(term,

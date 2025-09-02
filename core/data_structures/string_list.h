@@ -2,6 +2,7 @@
 // Copyright (c) 2025 Antonio Del Cogliano
 
 #include <stdint.h>
+
 #ifndef STRING_LIST_H
 #define STRING_LIST_H
 
