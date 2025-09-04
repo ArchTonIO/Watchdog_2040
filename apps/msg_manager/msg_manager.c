@@ -187,6 +187,7 @@ void notify(uint16_t src_address) {
     free(name);
     return;
   }
+  sleep_ms(2);
   ssd1306_get_mutex(drivers->oled_screen);
   display_received_message(name, src_address);
   ssd1306_release_mutex(drivers->oled_screen);
