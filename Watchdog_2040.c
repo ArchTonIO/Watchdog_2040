@@ -86,7 +86,13 @@ void sys_mainloop() {
         joystick_update(drivers->joystick);
         if (joystick_get_direction(drivers->joystick) == E) {
           display_main_menu();
+          sleep_ms(200);
           screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
+        }
+        joystick_update(drivers->joystick);
+        if (joystick_get_direction(drivers->joystick) == W) {
+          sleep_ms(200);
+          break;
         }
         if ((to_us_since_boot(get_absolute_time()) / 1000000) -
                 screen_up_start >
