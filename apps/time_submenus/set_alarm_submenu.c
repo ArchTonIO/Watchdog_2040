@@ -17,6 +17,7 @@
 #include "core/hardware_drivers/joystick.h"
 #include "core/hardware_drivers/rtc_time.h"
 #include "core/hardware_drivers/ssd1306.h"
+#include "core/utils/utils.h"
 
 static char *alarm_message;
 
@@ -26,17 +27,11 @@ void enter_set_alarm_submenu() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
   ssd1306_clear(drivers->oled_screen);
   if (drivers->rtc->alarm_set) {
-    ssd1306_print(drivers->oled_screen,
-        "Alarm already set !\n\n"
-        "If you want to change\n"
-        "The alarm time or\n"
-        "message,\n"
-        "please unset it first.",
-        0,
-        0,
-        false);
-    ssd1306_show(drivers->oled_screen);
-    sleep_ms(5000);
+    print_usr_error("Alarm already set !\n\n"
+                    "If you want to change\n"
+                    "The alarm time or\n"
+                    "message,\n"
+                    "please unset it first");
     return;
   }
   time_digits *digits = time_digits_init();
@@ -66,6 +61,9 @@ void alarm_callback() { drivers->rtc->alarm_triggered = true; }
 void process_alarm() {
   if (!drivers->rtc->alarm_triggered)
     return;
+  if (!ssd1306_was_mutex_support_enabled(drivers->oled_screen))
+    return;
+  ssd1306_get_mutex(drivers->oled_screen);
   ssd1306_clear(drivers->oled_screen);
   ssd1306_draw_bitmap(drivers->oled_screen,
       0,
@@ -78,19 +76,19 @@ void process_alarm() {
   ssd1306_print(drivers->oled_screen, "E' tempo !", 4, 5, false);
   ssd1306_show(drivers->oled_screen);
   joystick_update(drivers->joystick);
+  haptics_switch_performing_core();
   while (joystick_get_direction(drivers->joystick) == C) {
     joystick_update(drivers->joystick);
     haptic_auto_pulse();
   }
+  haptics_switch_performing_core();
   ssd1306_clear(drivers->oled_screen);
   ssd1306_show(drivers->oled_screen);
+  ssd1306_release_mutex(drivers->oled_screen);
   drivers->rtc->alarm_triggered = false;
 }
 
 void unset_alarm() {
-  ssd1306_clear(drivers->oled_screen);
   rtc_time_remove_alarm(drivers->rtc);
-  ssd1306_print(drivers->oled_screen, "Alarm was disabled !", 0, 0, false);
-  ssd1306_show(drivers->oled_screen);
-  sleep_ms(3000);
+  print_info("Alarm was disabled");
 }
