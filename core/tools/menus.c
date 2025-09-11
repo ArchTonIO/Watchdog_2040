@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "apps/AQI/aqi.h"
+#include "apps/flashlight/flashlight.h"
 #include "apps/msg_manager/contacts.h"
 #include "apps/msg_manager/msg_manager.h"
 #include "apps/notes/notes.h"
@@ -16,6 +17,7 @@
 #include "apps/time_submenus/stopwatch_submenu.h"
 #include "apps/time_submenus/timer_submenu.h"
 #include "core/data_structures/string_list.h"
+#include "core/graphics/bitmaps.h"
 #include "core/tools/launcher.h"
 
 void display_ulmp_menu();
@@ -37,59 +39,64 @@ void malloc_see_memories() {
 
 DEFINE_LAUNCHER(main_launcher,
     "Main menu",
-    {"ULMP", display_ulmp_menu},
-    {"Time", display_time_menu},
-    {"Terminal", terminal_launch},
-    {"Air quality indexes", display_air_quality_indexes},
-    {"System", display_system_menu},
-    {"Notes", enter_notes_submenu},
-    {"Games", display_games_menu},
-    {"Malloc", display_malloc_menu})
+    {"ULMP", connections_icon, display_ulmp_menu},
+    {"Time", set_time_icon, display_time_menu},
+    {"Terminal", cli_icon, terminal_launch},
+    {"Air quality", AQI_icon, display_air_quality_indexes},
+    {"System", qfn_package_icon, display_system_menu},
+    {"Flashlight", flashlight_icon, enter_flashlight_screen},
+    {"Notes", notes_icon, enter_notes_submenu},
+    {"Games", pong_icon, display_games_menu},
+    {"Malloc", malloc_icon, display_malloc_menu})
 
 DEFINE_LAUNCHER(ulmp_launcher,
     "ULMP menu",
-    {"Send message", send_message},
-    {"Read messages", read_messages},
-    {"Contacts", enter_contacts_submenu},
-    {"Scan online contacts", scan_online_contacts},
-    {"Notifications", display_notifications_menu})
+    {"Send message", send_msg_icon, send_message},
+    {"Read messages", read_messages_icon, read_messages},
+    {"Contacts", contacts_icon, enter_contacts_submenu},
+    {"Scan online", scan_contacts_icon, scan_online_contacts},
+    {"Notifications", notifications_icon, display_notifications_menu})
 
 DEFINE_LAUNCHER(time_launcher,
     "Time menu",
-    {"Set time", enter_set_time_submenu},
-    {"Set date", enter_set_date_submenu},
-    {"Set alarm", enter_set_alarm_submenu},
-    {"Unset alarm", unset_alarm},
-    {"Stopwatch", enter_stopwatch_submenu},
-    {"Timer", enter_timer_submenu})
+    {"Set time", set_time_icon, enter_set_time_submenu},
+    {"Set date", set_date_icon, enter_set_date_submenu},
+    {"Set alarm", set_alarm_icon, enter_set_alarm_submenu},
+    {"Unset alarm", unset_alarm_icon, unset_alarm},
+    {"Stopwatch", stopwatch_icon, enter_stopwatch_submenu},
+    {"Timer", timer_icon, enter_timer_submenu})
 
 DEFINE_LAUNCHER(system_launcher,
     "System menu",
-    {"System info", display_system_info_wrapped},
-    {"Battery status", display_battery_status},
-    {"Check joystick", display_joystick_check},
-    {"System reset", reset_system})
+    {"System info", system_info_icon, display_system_info_wrapped},
+    {"Battery status", battery_status_icon, display_battery_status},
+    {"Check joystick", check_joystick_icon, display_joystick_check},
+    {"System reset", reset_icon, reset_system})
 
 DEFINE_LAUNCHER(malloc_launcher,
     "Malloc menu",
-    {"Talk with Malloc", malloc_talk_with},
-    {"See Malloc memories", malloc_see_memories})
+    {"Talk with Malloc", NO_ICON, malloc_talk_with},
+    {"See Malloc memories", NO_ICON, malloc_see_memories})
 
 DEFINE_LAUNCHER(notifications_launcher,
     "Notifications menu",
-    {"Enable notifications", enable_message_notifications},
-    {"Disable notifications", disable_message_notifications})
+    {"Enable notifications",
+        enable_notifications_icon,
+        enable_message_notifications},
+    {"Disable notifications",
+        disable_notifications_icon,
+        disable_message_notifications})
 
 DEFINE_LAUNCHER(tutorial_launcher,
     "Tutorial menu",
-    {"Entry 0", display_tutorial_page},
-    {"Entry 1", display_tutorial_page},
-    {"Entry 2", display_tutorial_page},
-    {"Entry 3", display_tutorial_page},
-    {"Entry 4", display_tutorial_page},
-    {"Entry 5", display_tutorial_page},
-    {"Entry 6", display_tutorial_page},
-    {"Entry 7", display_tutorial_page})
+    {"Entry 0", NO_ICON, display_tutorial_page},
+    {"Entry 1", NO_ICON, display_tutorial_page},
+    {"Entry 2", NO_ICON, display_tutorial_page},
+    {"Entry 3", NO_ICON, display_tutorial_page},
+    {"Entry 4", NO_ICON, display_tutorial_page},
+    {"Entry 5", NO_ICON, display_tutorial_page},
+    {"Entry 6", NO_ICON, display_tutorial_page},
+    {"Entry 7", NO_ICON, display_tutorial_page})
 
 void display_main_menu() { launcher_start(&main_launcher); }
 void display_ulmp_menu() { launcher_start(&ulmp_launcher); }

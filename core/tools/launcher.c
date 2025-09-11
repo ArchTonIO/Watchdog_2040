@@ -12,9 +12,12 @@
 #include "core/hardware_drivers/ssd1306.h"
 #include "core/tools/options_gen.h"
 
-application create_application(char *name, void (*entry_point)(void)) {
+application create_application(char *name,
+    const uint8_t *icon,
+    void (*entry_point)(void)) {
   application app;
   app.name = name;
+  app.icon = icon;
   app.entry_point = entry_point;
   return app;
 }
@@ -39,12 +42,15 @@ launcher *launcher_init(char *name) {
  */
 void launcher_add_application(launcher *self,
     char *name,
+    const uint8_t *icon,
     void (*entry_point)(void)) {
-  if (self->apps_count < MAX_APPS) {
-    self->applications[self->apps_count].name = name;
-    self->applications[self->apps_count].entry_point = entry_point;
-    self->apps_count++;
-  }
+  if (self->apps_count >= MAX_APPS)
+    return;
+
+  self->applications[self->apps_count].name = name;
+  self->applications[self->apps_count].icon = icon;
+  self->applications[self->apps_count].entry_point = entry_point;
+  self->apps_count++;
 }
 
 /**
@@ -58,11 +64,14 @@ void launcher_start(launcher *self) {
     str_list_append(options, self->applications[i].name);
   }
   options_page *launcher_page = options_page_init(self->name, options);
+
   for (int i = 0; i < self->apps_count; i++) {
     attach_callback_to_option(launcher_page,
         i,
         self->applications[i].entry_point);
+    add_icon_to_option(launcher_page, i, self->applications[i].icon);
   }
+
   options_page_launch(launcher_page);
   options_page_free(launcher_page);
   ssd1306_clear(drivers->oled_screen);

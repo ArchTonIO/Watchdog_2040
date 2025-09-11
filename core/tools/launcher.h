@@ -10,6 +10,7 @@
 
 typedef struct {
   char *name;
+  const uint8_t *icon;
   void (*entry_point)(void);
 } application;
 
@@ -26,6 +27,7 @@ typedef struct {
 
 void launcher_add_application(launcher *self,
     char *name,
+    const uint8_t *icon,
     void (*entry_point)(void));
 void launcher_start(launcher *self);
 
@@ -36,6 +38,7 @@ void launcher_start(launcher *self);
     for (size_t i = 0; i < sizeof(temp_apps) / sizeof(temp_apps[0]); i++) {   \
       launcher_add_application(&VAR_NAME,                                     \
           temp_apps[i].name,                                                  \
+          temp_apps[i].icon,                                                  \
           temp_apps[i].entry_point);                                          \
     }                                                                         \
   }                                                                           \

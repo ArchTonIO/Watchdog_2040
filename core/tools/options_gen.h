@@ -17,6 +17,7 @@
 typedef struct {
   char *name;
   char *display_name;
+  const uint8_t *icon;
   bool selected;
   void (*callback)(void);
 } option;
@@ -31,6 +32,10 @@ typedef struct {
 } options_page;
 
 options_page *options_page_init(char *title, str_list *options);
+
+void add_icon_to_option(options_page *page,
+    uint8_t option_index,
+    const uint8_t *icon);
 void attach_callback_to_option(options_page *page,
     uint8_t option_index,
     void (*callback)(void));

@@ -43,11 +43,21 @@ options_page *options_page_init(char *title, str_list *options) {
     formatted[MAX_X_CHARS] = '\0';
     page->options[i].display_name = formatted;
     page->options[i].name = original;
-    page->options[i].selected = false;
+    page->options[i].icon = NULL;
     page->options[i].callback = NULL;
     page->scroll = 0;
   }
   return page;
+}
+
+void add_icon_to_option(options_page *page,
+    uint8_t option_index,
+    const uint8_t *icon) {
+  if (option_index < page->num_options) {
+    page->options[option_index].icon = icon;
+    page->options[option_index].display_name[MAX_X_CHARS - 4] = '>';
+    page->options[option_index].display_name[MAX_X_CHARS - 5] = '-';
+  }
 }
 
 /**
@@ -77,6 +87,7 @@ char *options_page_launch(options_page *page) {
   sleep_ms(INTERAC_TIMEOUT);
   ssd1306_enable_mutex_support(drivers->oled_screen);
   ssd1306_clear(drivers->oled_screen);
+  uint8_t left_padding;
   while (1) {
     ssd1306_get_mutex(drivers->oled_screen);
     ssd1306_print(drivers->oled_screen,
@@ -84,22 +95,53 @@ char *options_page_launch(options_page *page) {
         (uint8_t)((MAX_X_CHARS - strlen(page->title)) / 2),
         0,
         false);
+
+    if (page->options[page->selected_option].icon != NULL) {
+      ssd1306_draw_bitmap(drivers->oled_screen,
+          0,
+          0,
+          page->options[page->selected_option].icon,
+          8,
+          8,
+          false);
+    }
+
     for (uint8_t i = 0; i < page->num_options; i++) {
       if (i < page->scroll || i >= page->scroll + MAX_OPTIONS_ON_SCREEN)
         continue;
       uint8_t screen_row = i - page->scroll + 2;
+
       if (i == page->selected_option) {
+        left_padding = page->options[i].icon != NULL ? 2 : 0;
         ssd1306_print(drivers->oled_screen,
             page->options[i].display_name,
-            0,
+            left_padding,
             screen_row,
             true);
+        if (page->options[i].icon != NULL) {
+          ssd1306_draw_bitmap(drivers->oled_screen,
+              0,
+              screen_row * 8,
+              page->options[i].icon,
+              8,
+              8,
+              true);
+        }
       } else {
         ssd1306_print(drivers->oled_screen,
             page->options[i].display_name,
-            0,
+            left_padding,
             screen_row,
             false);
+        if (page->options[i].icon != NULL) {
+          ssd1306_draw_bitmap(drivers->oled_screen,
+              0,
+              screen_row * 8,
+              page->options[i].icon,
+              8,
+              8,
+              false);
+        }
       }
     }
     ssd1306_show(drivers->oled_screen);
