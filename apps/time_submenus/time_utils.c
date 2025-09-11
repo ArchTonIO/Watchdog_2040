@@ -30,10 +30,10 @@ time_digits *time_digits_init() {
   return digits;
 }
 
-void draw_symbols(uint8_t *top_symbol,
-    uint8_t *bottom_symbol,
-    uint8_t *left_symbol,
-    uint8_t *right_symbol) {
+void draw_symbols(const uint8_t *top_symbol,
+    const uint8_t *bottom_symbol,
+    const uint8_t *left_symbol,
+    const uint8_t *right_symbol) {
   ssd1306_draw_bitmap(drivers->oled_screen,
       (SSD1306_WIDTH - TIME_NAV_SYMBOLS_L) / 2,
       0,

@@ -25,10 +25,10 @@ void time_digits_show(time_digits *digits,
     uint8_t start_y,
     uint8_t spacing);
 void blink_lines(line underline, line upperline, uint8_t interval);
-void draw_symbols(uint8_t *top_symbol,
-    uint8_t *bottom_symbol,
-    uint8_t *left_symbol,
-    uint8_t *right_symbol);
+void draw_symbols(const uint8_t *top_symbol,
+    const uint8_t *bottom_symbol,
+    const uint8_t *left_symbol,
+    const uint8_t *right_symbol);
 char *from_dotw_to_weekday(int8_t dotw);
 void set_hours_tens(time_digits *digits,
     void (*at_change_callback)(time_digits *digits));

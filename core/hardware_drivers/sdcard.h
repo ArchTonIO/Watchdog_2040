@@ -43,6 +43,5 @@ bool sdcard_mkdir(sdcard *sd, path *dir);
 bool sdcard_rmdir(sdcard *sd, path *dir);
 bool sdcard_rmtree(sdcard *sd, path *dir);
 bool sdcard_path_is_dir(sdcard *sd, path *path);
-// void sdcard_format(sdcard *sd);
 
 #endif

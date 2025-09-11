@@ -35,7 +35,7 @@ typedef struct {
 } polyline;
 
 typedef struct {
-  uint8_t *bitmap;
+  const uint8_t *bitmap;
   uint8_t width;
   uint8_t height;
   uint8_t posx;

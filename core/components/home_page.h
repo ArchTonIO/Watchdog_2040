@@ -11,12 +11,12 @@
 #include "core/graphics/graphic_primitives.h"
 
 typedef struct {
-  uint8_t *hour_tens_bitmap;
-  uint8_t *hour_units_bitmap;
-  uint8_t *minute_tens_bitmap;
-  uint8_t *minute_units_bitmap;
-  uint8_t *second_tens_bitmap;
-  uint8_t *second_units_bitmap;
+  const uint8_t *hour_tens_bitmap;
+  const uint8_t *hour_units_bitmap;
+  const uint8_t *minute_tens_bitmap;
+  const uint8_t *minute_units_bitmap;
+  const uint8_t *second_tens_bitmap;
+  const uint8_t *second_units_bitmap;
 } clock_bitmaps;
 
 typedef struct {

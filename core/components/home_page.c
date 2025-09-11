@@ -67,7 +67,7 @@ void process_system_state() {
   home_page_inst->notifications = msg_man_inst->received_msgs_count;
 }
 
-uint8_t *get_battery_level_bitmap() {
+const uint8_t *get_battery_level_bitmap() {
   if (home_page_inst->battery_level >= 100) {
     return battery_4_bars;
   } else if (home_page_inst->battery_level >= 75) {
@@ -81,35 +81,35 @@ uint8_t *get_battery_level_bitmap() {
   }
 }
 
-uint8_t *get_sd_status_bitmap() {
+const uint8_t *get_sd_status_bitmap() {
   if (home_page_inst->sd_status)
     return microsd_working;
   else
     return microsd_not_working;
 }
 
-uint8_t *get_sx1278_status_bitmap() {
+const uint8_t *get_sx1278_status_bitmap() {
   if (home_page_inst->sx1278_status)
     return lora_working;
   else
     return lora_not_working;
 }
 
-uint8_t *get_en160_status_bitmap() {
+const uint8_t *get_en160_status_bitmap() {
   if (home_page_inst->en160_status)
     return ens160_working;
   else
     return ens160_not_working;
 }
 
-uint8_t *get_notifications_bitmap() {
+const uint8_t *get_notifications_bitmap() {
   if (home_page_inst->notifications > 10)
     return num_msg_bitmaps[11];
   else
     return num_msg_bitmaps[home_page_inst->notifications];
 }
 
-uint8_t *get_alarm_status_bitmap() {
+const uint8_t *get_alarm_status_bitmap() {
   if (home_page_inst->alarm_set)
     return alarm_enabled;
   else
