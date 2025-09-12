@@ -6,6 +6,9 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,22 +30,36 @@ jobs:
       - name: Build
         run: cmake --build build --parallel
 
-      - name: Get tag name
-        id: get_tag
-        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      - name: Extract changelog for current version
+        id: extract_changelog
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG_NAME#v}  # Remove 'v' prefix
+          
+          awk -v version="$VERSION" '
+          BEGIN { print=0 }
+          /^## leakybob \[/ {
+              if (print) exit
+              if ($0 ~ "\\[" version "\\]") {
+                  print=1
+                  print $0
+                  next
+              }
+          }
+          print && /^## leakybob \[/ { exit }
+          print { print }
+          ' CHANGELOG.md > release_notes.md
+          
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+          cat release_notes.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create Release and Upload UF2
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
+          body: ${{ steps.extract_changelog.outputs.RELEASE_NOTES }}
           files: build/*.uf2
-          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload UF2 as artifact (for debugging)
-        uses: actions/upload-artifact@v4
-        with:
-          name: firmware-${{ github.ref_name }}
-          path: build/*.uf2
