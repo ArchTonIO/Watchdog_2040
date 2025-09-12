@@ -29,7 +29,7 @@ jobs:
 
       - name: Build
         run: cmake --build build --parallel
-
+        
       - name: Extract changelog for current version
         id: extract_changelog
         run: |
@@ -37,17 +37,17 @@ jobs:
           VERSION=${TAG_NAME#v}  # Remove 'v' prefix
           
           awk -v version="$VERSION" '
-          BEGIN { print=0 }
+          BEGIN { printing=0 }
           /^## leakybob \[/ {
-              if (print) exit
+              if (printing) exit
               if ($0 ~ "\\[" version "\\]") {
-                  print=1
+                  printing=1
                   print $0
                   next
               }
           }
-          print && /^## leakybob \[/ { exit }
-          print { print }
+          printing && /^## leakybob \[/ { exit }
+          printing { print }
           ' CHANGELOG.md > release_notes.md
           
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
