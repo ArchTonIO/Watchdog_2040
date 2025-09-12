@@ -6,16 +6,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## leakybob [1.26.0]
 
 ### Added
 
 - Add note app
 - Handle notification using core1
+- MIT license
+- Haptic feedback for long joystick press
+- Centralization and enanchements of contacts management
+- Change "serial" and "exit" terminal commands with "ser" and "esc"
+- Add "reboot" and "bootsel" commands to terminal
+- Standardize screen logs
+- Joystick to the left in the home screen will lock screen
+- Icons to launcher entries
+- Flashlight
+- Onboard notifications led support
 
 ### Fixed
 
-- Fix memory leak when providing wrong password to enter terminal
+- Fix:  memory leak when providing wrong password to enter terminal (was bug 11)
+- Fix: if a message arrives when the recipient is displaying the notification screen from the previously arrived message, the new message will not get delivered (was bug 10)
+- Fix: messages are not correctly delivered if receiving user is in one of the menu (is interacting with the device outside of home screen) (was bug 07)
+- Fix: alarm-related crashes
+
+### Changed
+
+- Notification system is entirely managed by core 1
+
+### Removed
+
+- Messges are no longer received and stored when sent from unknown address
 
 ## leakybob [1.14.0] - 2025-08-13
 

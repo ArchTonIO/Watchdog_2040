@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <sys/_intsup.h>
+#include <sys/types.h>
 
 #include "pico/time.h"
 
@@ -16,16 +17,18 @@ volatile uint8_t performing_core = 1;
 static uint32_t time_now;
 static uint32_t time_from_last_haptic_instruction;
 static uint32_t last_haptic_instruction_time;
+static pin _motor_pin;
 
 void haptics_init(pin motor_pin) {
-  gpio_init(motor_pin);
-  gpio_set_dir(motor_pin, GPIO_OUT);
-  gpio_put(motor_pin, false);
+  _motor_pin = motor_pin;
+  gpio_init(_motor_pin);
+  gpio_set_dir(_motor_pin, GPIO_OUT);
+  gpio_put(_motor_pin, false);
 }
 
-inline void haptics_motor_on() { gpio_put(HAPTICS_MOTOR_PIN, true); }
+inline void haptics_motor_on() { gpio_put(_motor_pin, true); }
 
-inline void haptics_motor_off() { gpio_put(HAPTICS_MOTOR_PIN, false); }
+inline void haptics_motor_off() { gpio_put(_motor_pin, false); }
 
 void haptics_motor_pulse(uint16_t durations_ms[],
     uint16_t intervals[],

@@ -15,6 +15,7 @@
 #include "core/hardware_drivers/ens160.h"
 #include "core/hardware_drivers/haptics.h"
 #include "core/hardware_drivers/joystick.h"
+#include "core/hardware_drivers/onboard_led.h"
 #include "core/hardware_drivers/rtc_time.h"
 #include "core/hardware_drivers/sdcard.h"
 #include "core/hardware_drivers/ssd1306.h"
@@ -36,6 +37,7 @@ hw_drivers *hardware_drivers_init() {
       SSD1306_ADDR);
   drivers = hw_man;
   haptics_init(HAPTICS_MOTOR_PIN);
+  onboard_led_init(ONBOARD_LED_PIN);
   core1_scheduler_init();
   core1_spin();
   sleep_ms(1000);

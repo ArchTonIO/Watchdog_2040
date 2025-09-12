@@ -18,6 +18,7 @@
 #include "core/hardware_drivers/core1.h"
 #include "core/hardware_drivers/haptics.h"
 #include "core/hardware_drivers/joystick.h"
+#include "core/hardware_drivers/onboard_led.h"
 #include "core/hardware_drivers/ssd1306.h"
 #include "core/tools/menus.h"
 #include "core/utils/path.h"
@@ -36,8 +37,6 @@ void attach_background_routines() {
 }
 
 void sys_setup() {
-  gpio_init(25);
-  gpio_set_dir(25, true);
   adc_init();
   stdio_init_all();
   hardware_drivers_init();
@@ -66,8 +65,6 @@ void sys_setup() {
 
 void sys_mainloop() {
   bool first_run = true;
-  uint8_t loops = 0;
-  bool ledvalue = false;
   uint8_t screen_up_seconds = 10;
   uint32_t screen_up_start;
   while (true) {
@@ -102,14 +99,6 @@ void sys_mainloop() {
       ssd1306_clear(drivers->oled_screen);
       ssd1306_show(drivers->oled_screen);
     }
-    if (loops % 10 == 0) {
-      gpio_put(25, ledvalue);
-      ledvalue = !ledvalue;
-    }
-    if (loops < 254)
-      loops++;
-    else
-      loops = 0;
   }
 }
 

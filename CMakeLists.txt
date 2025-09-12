@@ -78,6 +78,7 @@ core/hardware_drivers/core1.c
 core/hardware_drivers/ens160.c
 core/hardware_drivers/haptics.c
 core/hardware_drivers/joystick.c
+core/hardware_drivers/onboard_led.c
 core/hardware_drivers/rtc_time.c
 core/hardware_drivers/sdcard.c
 core/hardware_drivers/ssd1306.c

@@ -17,6 +17,7 @@
 #include "core/data_structures/string_list.h"
 #include "core/graphics/bitmaps.h"
 #include "core/hardware_drivers/haptics.h"
+#include "core/hardware_drivers/onboard_led.h"
 #include "core/hardware_drivers/ssd1306.h"
 #include "core/tools/options_gen.h"
 #include "core/ulmp/ulmp.h"
@@ -72,6 +73,10 @@ msg_manager *msg_manager_init(uint16_t my_addr) {
 void process_messages() {
   lora_send_ack(notify);
   lora_send_pong();
+  if (msg_man_inst->received_msgs_count > 0)
+    onboard_led_enable_blinking();
+  else
+    onboard_led_disable_blinking();
   sleep_ms(10);
 }
 

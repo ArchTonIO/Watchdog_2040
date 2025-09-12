@@ -4,7 +4,12 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#define pin uint8_t
+#include <stdint.h>
+
+typedef uint8_t pin;
+
+/*notifications led settings*/
+#define ONBOARD_LED_PIN 25
 
 /*vibrating motor settings*/
 #define HAPTICS_MOTOR_PIN 8
@@ -15,13 +20,6 @@
 #define ENS160_I2C_PORT i2c1
 #define ENS160_BAUDRATE 400 * 1000
 #define ENS160_ADDR 0x53
-
-/*MAX30102 pulse oximeter settings*/
-#define MAX30102_SDA 4
-#define MAX30102_SCK 5
-#define MAX30102_I2C_PORT i2c0
-#define MAX30102_BAUDRATE 400 * 1000
-#define MAX30102_ADDR 0x57
 
 /*SSD1306 oled screen settings*/
 #define SSD1306_SDA 0
