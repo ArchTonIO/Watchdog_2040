@@ -38,11 +38,11 @@ typedef uint8_t pin;
 #define SX1278_INTERRUPT 21
 #define SX1278_SPI_PORT spi0
 #define SX1278_SPI_BAUDRATE 5000 * 1000
-#define SX1278_TX_POWER 15
+#define SX1278_TX_POWER 23
 
 /*Micro sd reader module settings*/
 /*Beware that changing those pins will have no effects,
-as the SD card driver code is not wrote by me, this only serves as reference.
+as the SD card driver code is not wrote by me, this only serves as reference.P
 If you wish to change the pins go to
 lib/no-Os-FatFS-SD-SPI-RPi-Pico/FatFs_SPI/sd_driver/hw_config.c*/
 #define MICRO_SD_MOSI 15
@@ -58,7 +58,7 @@ lib/no-Os-FatFS-SD-SPI-RPi-Pico/FatFs_SPI/sd_driver/hw_config.c*/
 #define JOYSTICK_X_CHANNEL 0
 #define JOYSTICK_Y_CHANNEL 1
 #define JOYSTICK_BUTTON_PIN 22
-#define JOYSTICK_DEAFULT_DEADZONE_MIN 1900
+#define JOYSTICK_DEFAULT_DEADZONE_MIN 1900
 #define JOYSTICK_DEFAULT_DEADZONE_MAX 2100
 #define JOYSTICK_DEFAULT_CENTER 2000
 #define JOYSTICK_DEFAULT_MAX_L 2800
@@ -71,7 +71,7 @@ lib/no-Os-FatFS-SD-SPI-RPi-Pico/FatFs_SPI/sd_driver/hw_config.c*/
 #define BATTERY_MIN_VOLTAGE 3.27
 #define BATTERY_MAX_VOLTAGE 4.20
 #define BATTERY_PIN                                                           \
-  29 // threre is nothing connected to this pin, cause 29 is directly connected
+  29 // there is nothing connected to this pin, cause 29 is directly connected
      // to vsys, and thus to the battery
 #define ADC_CHANNEL 3
 
