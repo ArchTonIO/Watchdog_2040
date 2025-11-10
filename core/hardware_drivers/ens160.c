@@ -110,6 +110,20 @@ void ens160_reset(ens160 *sensor) {
   sleep_ms(500);
 }
 
+inline void ens160_power_down(ens160 *sensor) {
+  if (ens160_get_op_mode(sensor) == 0x00)
+    return;
+  ens160_set_op_mode(sensor, 0x00);
+}
+
+void ens160_power_up(ens160 *sensor) {
+  if (ens160_get_op_mode(sensor) == 0x02)
+    return;
+  ens160_set_op_mode(sensor, 0x01);
+  sleep_ms(20);
+  ens160_set_op_mode(sensor, 0x02);
+}
+
 bool ens160_is_working(ens160 *sensor) {
   sleep_ms(10);
   if (ens160_get_op_mode(sensor) != 2) {

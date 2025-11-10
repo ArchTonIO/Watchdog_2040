@@ -29,6 +29,8 @@ void ens160_set_op_mode(ens160 *sensor, uint8_t mode);
 int16_t ens160_read_co2(ens160 *sensor);
 int16_t ens160_read_tvoc(ens160 *sensor);
 uint8_t ens160_read_aqi(ens160 *sensor);
+void ens160_power_down(ens160 *sensor);
+void ens160_power_up(ens160 *sensor);
 void ens160_reset(ens160 *sensor);
 
 #endif
