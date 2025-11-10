@@ -12,11 +12,13 @@
 #include "config.h"
 #include "hardware/adc.h"
 
-voltage_level battery_table[] = {{1700, 4.20, 100},
+voltage_level battery_table[] = {
     {1640, 3.98, 75},
     {1550, 3.84, 50},
     {1530, 3.75, 25},
-    {1355, 3.27, 0}};
+    {1355, 3.27, 10},
+    {1300, 3.15, 5},
+};
 
 size_t battery_table_size = sizeof(battery_table) / sizeof(voltage_level);
 

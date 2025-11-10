@@ -16,6 +16,7 @@
 #include "core/graphics/bitmaps.h"
 #include "core/graphics/graphic_primitives.h"
 #include "core/hardware_drivers/battery.h"
+#include "core/hardware_drivers/ens160.h"
 #include "core/hardware_drivers/rtc_time.h"
 #include "core/hardware_drivers/sdcard.h"
 #include "core/hardware_drivers/ssd1306.h"
@@ -45,7 +46,7 @@ home_page *home_page_init() {
   return new_home_page;
 }
 
-void check_pheripherals() {
+void check_peripherals() {
   if (drivers->sd_card->is_working)
     home_page_inst->sd_status = 1;
   else
@@ -68,13 +69,13 @@ void process_system_state() {
 }
 
 const uint8_t *get_battery_level_bitmap() {
-  if (home_page_inst->battery_level >= 100) {
+  if (home_page_inst->battery_level >= 75) {
     return battery_4_bars;
-  } else if (home_page_inst->battery_level >= 75) {
-    return battery_3_bars;
   } else if (home_page_inst->battery_level >= 50) {
-    return battery_2_bars;
+    return battery_3_bars;
   } else if (home_page_inst->battery_level >= 25) {
+    return battery_2_bars;
+  } else if (home_page_inst->battery_level >= 10) {
     return battery_1_bar;
   } else {
     return battery_empty;
@@ -258,11 +259,27 @@ void update_clock(uint8_t start_pix_w, uint8_t start_pix_h, uint8_t spacing) {
 }
 
 void update_texts() {
+  uint8_t aqi_value = ens160_read_aqi(drivers->air_quality_sensor);
+  char *aqi_value_str;
+  if (aqi_value == 1) {
+    aqi_value_str = "good";
+  } else if (aqi_value == 2) {
+    aqi_value_str = "fair";
+  } else if (aqi_value == 3) {
+    aqi_value_str = "mid";
+  } else if (aqi_value == 4) {
+    aqi_value_str = "poor";
+  } else if (aqi_value == 5) {
+    aqi_value_str = "bad";
+  } else {
+    aqi_value_str = "Unknown";
+  }
+  printf("AQI: %d, AQI_STR: %s\n", aqi_value, aqi_value_str);
   text_area aqi_text = {.text = "AQI",
       .posx = 0,
       .posy = 3,
       .is_inverted = false};
-  text_area aqi_value_text = {.text = " 1 ", // todo: change with real value
+  text_area aqi_value_text = {.text = aqi_value_str,
       .posx = 0,
       .posy = 4,
       .is_inverted = false};
