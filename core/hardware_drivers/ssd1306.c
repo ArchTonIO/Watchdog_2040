@@ -394,6 +394,15 @@ void ssd1306_clear(ssd1306 *display) {
     memset(display->scr, 0, buf_size);
 }
 
+uint8_t *ssd1306_take_screenshot(ssd1306 *display) {
+  int buf_size = (display->height / 8) * display->width + 1;
+  uint8_t *buf = (uint8_t *)malloc(buf_size);
+  if (!buf)
+    return NULL;
+  memcpy(buf, display->scr + 1, buf_size);
+  return buf;
+}
+
 /**
  * @brief Set the cursor position
  * @param display: the display to set the cursor position for

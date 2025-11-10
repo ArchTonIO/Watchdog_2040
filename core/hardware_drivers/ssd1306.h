@@ -86,6 +86,7 @@ void ssd1306_set_cursor(ssd1306 *display, uint8_t x, uint8_t y);
 void ssd1306_invert(ssd1306 *display, uint8_t invert);
 void ssd1306_show(ssd1306 *display);
 void ssd1306_clear(ssd1306 *display);
+uint8_t *ssd1306_take_screenshot(ssd1306 *display);
 inline void ssd1306_get_mutex(ssd1306 *display) {
   mutex_enter_blocking(&display->mutex);
 }
