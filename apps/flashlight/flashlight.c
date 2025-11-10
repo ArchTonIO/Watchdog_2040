@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Antonio Del Cogliano
+
 #include "apps/flashlight/flashlight.h"
 
 #include "core/components/hw_manager.h"
-#include "core/data_structures/string_list.h"
+#include "core/hardware_drivers/joystick.h"
 #include "core/hardware_drivers/ssd1306.h"
 
 void set_flashlight_on() {
