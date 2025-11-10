@@ -26,7 +26,7 @@ void enter_notes_submenu() {
   while (true) {
     existing_notes = path_listdir(sys_paths->dirs->notes_path);
     options = str_list_extend(notes, existing_notes);
-    notes_page = options_page_init("Notes menu", options);
+    notes_page = options_page_init("Notes", options);
     char *buf = options_page_launch(notes_page);
     if (strcmp(buf, "+ new note") == 0)
       take_note();

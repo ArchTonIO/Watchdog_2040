@@ -17,6 +17,7 @@
 #include "core/data_structures/string_list.h"
 #include "core/graphics/bitmaps.h"
 #include "core/hardware_drivers/haptics.h"
+#include "core/hardware_drivers/joystick.h"
 #include "core/hardware_drivers/onboard_led.h"
 #include "core/hardware_drivers/ssd1306.h"
 #include "core/tools/options_gen.h"

@@ -38,7 +38,7 @@ void malloc_see_memories() {
 }
 
 DEFINE_LAUNCHER(main_launcher,
-    "Main menu",
+    "Apps",
     {"ULMP", connections_icon, display_ulmp_menu},
     {"Time", set_time_icon, display_time_menu},
     {"Terminal", cli_icon, terminal_launch},
@@ -50,7 +50,7 @@ DEFINE_LAUNCHER(main_launcher,
     {"Malloc", malloc_icon, display_malloc_menu})
 
 DEFINE_LAUNCHER(ulmp_launcher,
-    "ULMP menu",
+    "ULMP",
     {"Send message", send_msg_icon, send_message},
     {"Read messages", read_messages_icon, read_messages},
     {"Contacts", contacts_icon, enter_contacts_submenu},
@@ -58,7 +58,7 @@ DEFINE_LAUNCHER(ulmp_launcher,
     {"Notifications", notifications_icon, display_notifications_menu})
 
 DEFINE_LAUNCHER(time_launcher,
-    "Time menu",
+    "Time",
     {"Set time", set_time_icon, enter_set_time_submenu},
     {"Set date", set_date_icon, enter_set_date_submenu},
     {"Set alarm", set_alarm_icon, enter_set_alarm_submenu},
@@ -67,19 +67,19 @@ DEFINE_LAUNCHER(time_launcher,
     {"Timer", timer_icon, enter_timer_submenu})
 
 DEFINE_LAUNCHER(system_launcher,
-    "System menu",
+    "System",
     {"System info", system_info_icon, display_system_info_wrapped},
     {"Battery status", battery_status_icon, display_battery_status},
     {"Check joystick", check_joystick_icon, display_joystick_check},
     {"System reset", reset_icon, reset_system})
 
 DEFINE_LAUNCHER(malloc_launcher,
-    "Malloc menu",
+    "Malloc",
     {"Talk with Malloc", NO_ICON, malloc_talk_with},
     {"See Malloc memories", NO_ICON, malloc_see_memories})
 
 DEFINE_LAUNCHER(notifications_launcher,
-    "Notifications menu",
+    "Notifications",
     {"Enable notifications",
         enable_notifications_icon,
         enable_message_notifications},
@@ -88,7 +88,7 @@ DEFINE_LAUNCHER(notifications_launcher,
         disable_message_notifications})
 
 DEFINE_LAUNCHER(tutorial_launcher,
-    "Tutorial menu",
+    "Tutorial",
     {"Entry 0", NO_ICON, display_tutorial_page},
     {"Entry 1", NO_ICON, display_tutorial_page},
     {"Entry 2", NO_ICON, display_tutorial_page},
