@@ -155,7 +155,7 @@ char *str_list_pop(str_list *list, integer index) {
 void str_list_print(str_list *list) {
   struct lnode *cursor = list->head;
   uinteger i = 0;
-  printf("lenght: %d\n", list->len);
+  printf("length: %d\n", list->len);
   while (cursor != NULL) {
     printf("  > %d: %s\n", i, cursor->value);
     cursor = cursor->next;

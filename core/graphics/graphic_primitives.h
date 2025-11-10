@@ -59,7 +59,7 @@ typedef struct {
   text_area text_areas[MAX_ENTITIES_BY_TYPE];
   uint8_t lines_count;
   uint8_t circles_count;
-  uint8_t rectanlges_count;
+  uint8_t rectangles_count;
   uint8_t polylines_count;
   uint8_t bitmap_defs_count;
   uint8_t text_areas_count;

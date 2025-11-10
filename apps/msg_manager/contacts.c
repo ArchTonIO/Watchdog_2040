@@ -41,7 +41,7 @@ static contacts_list *clist;
 
 /**
  * @brief initializes the contacts_list global instance (clist),
- * thus effectvely making a complete copy of the contacts from the
+ * thus effectively making a complete copy of the contacts from the
  * microsd and unlocking the feature to check for contacts in a thread-safe
  * way (avoiding directly interacting with the microsd interface)
  */
@@ -83,7 +83,7 @@ void enter_contacts_submenu() {
   while (true) {
     existing_contacts = get_all_contacts();
     options = str_list_extend(contacts, existing_contacts);
-    contacts_page = options_page_init("Contacts menu", options);
+    contacts_page = options_page_init("Contacts", options);
     char *buf = options_page_launch(contacts_page);
     if (strcmp(buf, "+ add contact") == 0) {
       add_contact();

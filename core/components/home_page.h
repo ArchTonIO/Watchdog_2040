@@ -36,7 +36,7 @@ typedef struct {
 } home_page;
 
 home_page *home_page_init();
-void check_pheripherals();
+void check_peripherals();
 void process_system_state();
 void display_home_page();
 

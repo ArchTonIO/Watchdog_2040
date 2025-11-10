@@ -36,7 +36,7 @@ core1_scheduler *core1_scheduler_init() {
 
 /**
  * @brief Adds a callback function to the core1 scheduler.
- * Every callback added will be excecuted in the main loop of core1
+ * Every callback added will be executed in the main loop of core1
  * once the scheduler start_flag is set to true and core1_spin() is called.
  *
  * @param callback The callback function to add.

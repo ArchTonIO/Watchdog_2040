@@ -20,7 +20,7 @@ void push_video_buf_to_screen(text_editor *editor);
 void write_char(uint8_t col, uint8_t row, char to_write);
 void blink_cursor(text_editor *editor, uint8_t col, uint8_t row);
 void reset_state(text_editor *editor);
-void show_scroll_cursor(uint8_t lenght, uint8_t y_pos);
+void show_scroll_cursor(uint8_t length, uint8_t y_pos);
 uint8_t calculate_scroll_cursor_height(int16_t num_extra_lines);
 void scroll_view_up(text_editor *editor);
 void scroll_view_down(text_editor *editor);
@@ -394,14 +394,14 @@ void blink_cursor(text_editor *editor, uint8_t col, uint8_t row) {
   editor->show_cursor = !editor->show_cursor;
 }
 
-void show_scroll_cursor(uint8_t lenght, uint8_t y_pos) {
+void show_scroll_cursor(uint8_t length, uint8_t y_pos) {
   for (uint8_t i = 0; i < (MAX_VIDEO_ROWS * CHAR_HEIGHT); i++) {
     ssd1306_draw_pixel(drivers->oled_screen, SSD1306_WIDTH - 2, i, 0);
     ssd1306_draw_pixel(drivers->oled_screen, SSD1306_WIDTH - 1, i, 0);
   }
-  if (lenght == 0)
+  if (length == 0)
     return;
-  for (uint8_t i = 0; i < lenght; i++) {
+  for (uint8_t i = 0; i < length; i++) {
     ssd1306_draw_pixel(drivers->oled_screen, SSD1306_WIDTH - 2, y_pos + i, 1);
     ssd1306_draw_pixel(drivers->oled_screen, SSD1306_WIDTH - 1, y_pos + i, 1);
   }

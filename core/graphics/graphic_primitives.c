@@ -292,7 +292,7 @@ layout *layout_init() {
   layout *ly = malloc(sizeof(layout));
   ly->lines_count = 0;
   ly->circles_count = 0;
-  ly->rectanlges_count = 0;
+  ly->rectangles_count = 0;
   ly->polylines_count = 0;
   ly->bitmap_defs_count = 0;
   ly->text_areas_count = 0;
@@ -325,8 +325,8 @@ void layout_add_circle(layout *ly, circle c) {
  * @param r The rectangle to add.
  */
 void layout_add_rectangle(layout *ly, rectangle r) {
-  ly->rectanlges_count++;
-  ly->rectangles[ly->rectanlges_count] = r;
+  ly->rectangles_count++;
+  ly->rectangles[ly->rectangles_count] = r;
 }
 
 /**
@@ -370,7 +370,7 @@ void layout_draw(layout *ly) {
   for (uint8_t i = 0; i < ly->circles_count; i++) {
     draw_circle(ly->circles[i]);
   }
-  for (uint8_t i = 0; i < ly->rectanlges_count; i++) {
+  for (uint8_t i = 0; i < ly->rectangles_count; i++) {
     draw_rectangle(ly->rectangles[i]);
   }
   for (uint8_t i = 0; i < ly->polylines_count; i++) {
@@ -405,7 +405,7 @@ void layout_clear(layout *ly) {
   for (uint8_t i = 0; i < ly->circles_count; i++) {
     clear_circle(ly->circles[i]);
   }
-  for (uint8_t i = 0; i < ly->rectanlges_count; i++) {
+  for (uint8_t i = 0; i < ly->rectangles_count; i++) {
     clear_rectangle(ly->rectangles[i]);
   }
   for (uint8_t i = 0; i < ly->polylines_count; i++) {
@@ -445,7 +445,7 @@ void layout_flush_circles(layout *ly) { ly->circles_count = 0; }
  * @brief Deletes all the rectangles in the layout.
  * @param ly The layout to delete the rectangles from.
  */
-void layout_flush_rectangles(layout *ly) { ly->rectanlges_count = 0; }
+void layout_flush_rectangles(layout *ly) { ly->rectangles_count = 0; }
 
 /**
  * @brief Deletes all the polylines in the layout.
@@ -472,7 +472,7 @@ void layout_flush_text_areas(layout *ly) { ly->text_areas_count = 0; }
 void layout_flush_all(layout *ly) {
   ly->lines_count = 0;
   ly->circles_count = 0;
-  ly->rectanlges_count = 0;
+  ly->rectangles_count = 0;
   ly->polylines_count = 0;
   ly->bitmap_defs_count = 0;
   ly->text_areas_count = 0;

@@ -12,7 +12,7 @@ An Uncomplicated LoRa Messaging Protocol (ULMP)
 #ifndef ULMP_H
 #define ULMP_H
 
-/*Headers fields lenght*/
+/*Headers fields length*/
 #define SRC_ADDRESS_LEN 2
 #define DEST_ADDRESS_LEN 2
 #define TRANSACTION_UID_LENGTH 8

@@ -43,10 +43,10 @@ joystick *joystick_init(pin x_pin,
   new_joystick->button_pin = button_pin;
   new_joystick->x_channel = x_channel;
   new_joystick->y_channel = y_channel;
-  new_joystick->x_deadzone_min = JOYSTICK_DEAFULT_DEADZONE_MIN;
+  new_joystick->x_deadzone_min = JOYSTICK_DEFAULT_DEADZONE_MIN;
   new_joystick->x_deadzone_max = JOYSTICK_DEFAULT_DEADZONE_MAX;
   new_joystick->x_center = JOYSTICK_DEFAULT_CENTER;
-  new_joystick->y_deadzone_min = JOYSTICK_DEAFULT_DEADZONE_MIN;
+  new_joystick->y_deadzone_min = JOYSTICK_DEFAULT_DEADZONE_MIN;
   new_joystick->y_deadzone_max = JOYSTICK_DEFAULT_DEADZONE_MAX;
   new_joystick->y_center = JOYSTICK_DEFAULT_CENTER;
   new_joystick->max_l = JOYSTICK_DEFAULT_MAX_L;
@@ -179,7 +179,7 @@ uint8_t joystick_get_direction(joystick *stick) {
  * @param interval_ms The interval to wait to newly check if the joystick is
  * pressed, in milliseconds.
  * @retval true if the long press was performed.
- * @retval flase if the long press was not performed.
+ * @retval false if the long press was not performed.
  */
 bool joystick_check_long_press(joystick *stick, uint16_t interval_ms) {
   joystick_update(stick);
@@ -196,7 +196,7 @@ bool joystick_check_long_press(joystick *stick, uint16_t interval_ms) {
 }
 
 /**
- * @brief Prints the joytick status.
+ * @brief Prints the joystick status.
  *
  * @param stick The joystick instance.
  */

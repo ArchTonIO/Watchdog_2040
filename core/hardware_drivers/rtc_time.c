@@ -27,7 +27,7 @@ rtc_time *rtc_time_init(int16_t year,
   new_rtc->minute = minute;
   new_rtc->second = second;
   char datetime_buf[256];
-  char *datatetime_str = &datetime_buf[0];
+  char *datetime_str = &datetime_buf[0];
   datetime_t t = {.year = year,
       .month = month,
       .day = day,

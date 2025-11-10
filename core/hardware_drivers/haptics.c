@@ -79,7 +79,7 @@ void haptic_pulse(uint8_t pulse_type) {
  *@brief Sends an auto pulse instruction to core 1.
  *An auto pulse is either a 50ms-20ms or 100ms-0ms pulse, depending on
  *how close this call is to the last pulse call,
- *this is to avoid a cotinous vibration
+ *this is to avoid a continuos vibration
  *and still feel distinct pulses.
  */
 void haptic_auto_pulse() {
