@@ -56,7 +56,7 @@ sx1278 *sx1278_init(pin mosi,
     spi_inst_t *spi_port,
     uint32_t baudrate,
     uint8_t tx_power,
-    void (*message_received_callback)(char *msg)) {
+    void (*message_received_callback)(char *msg, float rssi)) {
   sx1278 *new_radio = (sx1278 *)malloc(sizeof(sx1278));
   new_radio->mosi = mosi;
   new_radio->miso = miso;
@@ -71,6 +71,7 @@ sx1278 *sx1278_init(pin mosi,
   new_radio->packet_sent_timeout_ms = 200;
   new_radio->message_received_callback = message_received_callback;
   new_radio->is_working = true;
+  new_radio->is_on = true;
 
   // interrupt set up
   gpio_init(interrupt);
@@ -155,7 +156,8 @@ sx1278 *sx1278_init(pin mosi,
  * @param new_callback The callback function to be called when a message is
  * received.
  */
-void sx1278_attach_isr(sx1278 *radio, void (*new_callback)(char *msg)) {
+void sx1278_attach_isr(sx1278 *radio,
+    void (*new_callback)(char *msg, float rssi)) {
   radio->message_received_callback = new_callback;
 }
 
@@ -172,6 +174,7 @@ void sx1278_sleep(sx1278 *radio) {
   if (radio->mode != MODE_SLEEP) {
     spi_write_reg_single_byte(radio, REG_01_OP_MODE, MODE_SLEEP);
     radio->mode = MODE_SLEEP;
+    radio->is_on = false;
   }
 }
 
@@ -205,6 +208,7 @@ void sx1278_set_mode_rx(sx1278 *radio) {
     spi_write_reg_single_byte(radio, REG_01_OP_MODE, MODE_RXCONTINUOUS);
     spi_write_reg_single_byte(radio, REG_40_DIO_MAPPING1, 0x00);
     radio->mode = MODE_RXCONTINUOUS;
+    radio->is_on = true;
   }
 }
 
@@ -325,7 +329,6 @@ void spi_read_reg_multi_byte(sx1278 *radio,
 }
 
 void irq_handler(uint gpio, uint32_t event_mask) {
-  printf("@@@@@@@@@@@@@@@ IRQ! @@@@@@@@@@@@@@@\n");
   if (!instance || !instance->is_working) {
     printf(
         "[ERROR] IRQ handler called but instance is NULL or not working.\n");
@@ -349,6 +352,12 @@ void message_received_callback() {
     printf("[WARN] Invalid RX packet length: %u\n", length);
     return;
   }
+  int8_t raw_snr = (int8_t)spi_read_reg_single_byte(instance,
+      REG_1B_PKT_SNR_VALUE);
+  float snr = raw_snr / 4.0f;
+
+  uint8_t raw_rssi = spi_read_reg_single_byte(instance, REG_1A_PKT_RSSI_VALUE);
+  float rssi = (snr < 0) ? (-164 + raw_rssi + snr) : (-164 + raw_rssi);
   spi_write_reg_single_byte(instance,
       REG_0D_FIFO_ADDR_PTR,
       spi_read_reg_single_byte(instance, REG_10_FIFO_RX_CURRENT_ADDR));
@@ -356,6 +365,6 @@ void message_received_callback() {
   spi_read_reg_multi_byte(instance, REG_00_FIFO, buffer, length);
   buffer[length] = '\0';
   if (instance->message_received_callback) {
-    instance->message_received_callback((char *)buffer);
+    instance->message_received_callback((char *)buffer, rssi);
   }
 }

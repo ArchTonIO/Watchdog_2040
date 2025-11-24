@@ -58,6 +58,7 @@ lora_instance *lora_init(uint16_t this_addr, sx1278 *sx1278_radio) {
   this_lora->rx->must_send_ack = false;
   this_lora->rx->must_send_pong = false;
   this_lora->rx->recv_payloads_buf = malloc(16);
+  this_lora->rx->last_rssi = 0.0f;
 
   this_lora->radio->message_received_callback = on_recv;
   return this_lora;
@@ -138,6 +139,19 @@ uint8_t lora_send_msg(uint16_t dest_address,
   return result;
 }
 
+uint8_t from_rssi_to_signal_strength(float rssi) {
+  if (rssi >= -70)
+    return 5;
+  else if (rssi >= -85)
+    return 4;
+  else if (rssi >= -100)
+    return 3;
+  else if (rssi >= -115)
+    return 2;
+  else
+    return 1;
+}
+
 /**
  * @brief Sends a ping packet to the specified destination address.
  *
@@ -145,7 +159,8 @@ uint8_t lora_send_msg(uint16_t dest_address,
  * waits for a pong response.
  *
  * @param dest_address The address of the destination LoRa module.
- * @return `0` if pong is received, `1` if pong is not received.
+ * @return The signal strength (1-5) if a pong response is received, or 0 if no
+ * response is received.
  */
 uint8_t lora_ping(uint16_t dest_address) {
   char *transaction_uid = gen_random_string(TRANSACTION_UID_LENGTH);
@@ -160,9 +175,9 @@ uint8_t lora_ping(uint16_t dest_address) {
   sleep_ms(TRANSAC_TIMEOUT);
   if (this_lora->tx->pong_received) {
     this_lora->tx->pong_received = false;
-    return 0;
+    return from_rssi_to_signal_strength(this_lora->rx->last_rssi);
   }
-  return 1;
+  return 0;
 }
 
 /**

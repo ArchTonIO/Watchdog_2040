@@ -20,6 +20,7 @@
 #include "core/hardware_drivers/joystick.h"
 #include "core/hardware_drivers/onboard_led.h"
 #include "core/hardware_drivers/ssd1306.h"
+#include "core/hardware_drivers/sx1278.h"
 #include "core/tools/options_gen.h"
 #include "core/ulmp/ulmp.h"
 #include "core/utils/utils.h"
@@ -286,14 +287,29 @@ void display_received_message(char *name, uint16_t src_address) {
   }
 }
 
+void make_bar(uint8_t value, char *out) {
+  for (uint8_t i = 0; i < 5; i++)
+    out[i] = (i < value) ? '#' : '-';
+  out[5] = '\0';
+}
+
 void scan_online_contacts() {
   str_list *contacts = get_all_contacts();
   str_list *results = str_list_init();
   uint16_t addr;
+  print_loading("Scanning nearby\ncontacts...");
   for (uint8_t i = 0; i < contacts->len; i++) {
     addr = get_contact_addr_by_name(str_list_get(contacts, i));
-    if (lora_ping(addr) == 0)
-      str_list_append(results, str_list_get(contacts, i));
+    uint8_t signal_strength = lora_ping(addr);
+    char str_buf[10];
+    char bar_buf[6];
+    make_bar(signal_strength, bar_buf);
+    sprintf(str_buf, "[%s] ", bar_buf);
+    if (signal_strength != 0) {
+      char *option = string_add(str_buf, str_list_get(contacts, i));
+      str_list_append(results, option);
+      free(option);
+    }
     sleep_ms(10);
   }
   options_page *page = options_page_init("Online contacts", results);

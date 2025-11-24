@@ -67,6 +67,7 @@ typedef struct {
   uint16_t must_send_pong_dest;
   bool must_send_pong;
   char *recv_payloads_buf;
+  float last_rssi;
 } rx_fields;
 
 typedef struct {

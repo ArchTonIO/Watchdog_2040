@@ -44,12 +44,13 @@ void free_message(message *msg) {
   free(msg);
 }
 
-void on_recv(char *msg) {
+void on_recv(char *msg, float rssi) {
   message *deserialized = deserialize_packet((uint8_t *)msg);
   if (deserialized->header->dest_address != this_lora->address) {
     free_message(deserialized);
     return;
   }
+  this_lora->rx->last_rssi = rssi;
   switch (deserialized->header->packet_type) {
   case PING:
     strcpy(this_lora->rx->must_send_pong_transac_uid,
