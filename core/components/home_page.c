@@ -51,11 +51,12 @@ void check_peripherals() {
     home_page_inst->sd_status = 1;
   else
     home_page_inst->sd_status = 0;
-  if (drivers->lora_module->is_working)
+  if (drivers->lora_module->is_working && drivers->lora_module->is_on)
     home_page_inst->sx1278_status = 1;
   else
     home_page_inst->sx1278_status = 0;
-  if (drivers->air_quality_sensor->is_working)
+  if (drivers->air_quality_sensor->is_working &&
+      drivers->air_quality_sensor->is_on)
     home_page_inst->en160_status = 1;
   else
     home_page_inst->en160_status = 0;
@@ -266,15 +267,14 @@ void update_texts() {
   } else if (aqi_value == 2) {
     aqi_value_str = "fair";
   } else if (aqi_value == 3) {
-    aqi_value_str = "mid";
+    aqi_value_str = "mid ";
   } else if (aqi_value == 4) {
     aqi_value_str = "poor";
   } else if (aqi_value == 5) {
-    aqi_value_str = "bad";
+    aqi_value_str = "bad ";
   } else {
-    aqi_value_str = "Unknown";
+    aqi_value_str = "N/A ";
   }
-  printf("AQI: %d, AQI_STR: %s\n", aqi_value, aqi_value_str);
   text_area aqi_text = {.text = "AQI",
       .posx = 0,
       .posy = 3,

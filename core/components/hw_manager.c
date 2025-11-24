@@ -20,6 +20,7 @@
 #include "core/hardware_drivers/sdcard.h"
 #include "core/hardware_drivers/ssd1306.h"
 #include "core/hardware_drivers/sx1278.h"
+#include "core/utils/utils.h"
 #include "hardware/adc.h"
 #include "hardware/clocks.h"
 
@@ -115,7 +116,7 @@ void print_free_heap() {
   printf("Available memory: %u bytes\n", get_free_heap());
 }
 
-uint get_clock_freq_khz(void) { return clock_get_hz(clk_sys) / 1000; }
+inline uint get_clock_freq_khz(void) { return clock_get_hz(clk_sys) / 1000; }
 
 float get_cpu_temp() {
   adc_set_temp_sensor_enabled(true);
@@ -126,6 +127,52 @@ float get_cpu_temp() {
   return 27.0f - (voltage - 0.706f) / 0.001721f;
 }
 
-uint32_t get_used_flash_bytes() {
+inline uint32_t get_used_flash_bytes() {
   return (uint32_t)(&__flash_binary_end) - XIP_BASE;
+}
+
+void enable_ens160() {
+  if (drivers->air_quality_sensor->is_on) {
+    print_usr_error("ENS160 is\nalready enabled!");
+    return;
+  }
+  if (!drivers->air_quality_sensor->is_working) {
+    print_sys_error("ENS160 is\nnot working!");
+    return;
+  }
+  drivers->air_quality_sensor->manually_turned_off = false;
+  ens160_power_up(drivers->air_quality_sensor);
+  print_info("ENS160 sensor\nenabled!");
+}
+
+void disable_ens160() {
+  if (!drivers->air_quality_sensor->is_on) {
+    print_usr_error("ENS160 is\nalready disabled!");
+    return;
+  }
+  drivers->air_quality_sensor->manually_turned_off = true;
+  ens160_power_down(drivers->air_quality_sensor);
+  print_info("ENS160 sensor\ndisabled!");
+}
+
+void enable_sx1278() {
+  if (drivers->lora_module->is_on) {
+    print_usr_error("SX1278 is\nalready enabled!");
+    return;
+  }
+  if (!drivers->lora_module->is_working) {
+    print_sys_error("SX1278 is\nnot working!");
+    return;
+  }
+  sx1278_set_mode_rx(drivers->lora_module);
+  print_info("SX1278 lora\nmodule enabled!");
+}
+
+void disable_sx1278() {
+  if (!drivers->lora_module->is_on) {
+    print_usr_error("SX1278 is\nalready disabled!");
+    return;
+  }
+  sx1278_sleep(drivers->lora_module);
+  print_info("SX1278 lora\nmodule disabled!");
 }

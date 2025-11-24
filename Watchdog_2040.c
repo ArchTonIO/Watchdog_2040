@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Antonio Del Cogliano
 
+#include <hardware/gpio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/_intsup.h>
 
 #include "pico/stdio.h"
+#include "pico/stdlib.h"
 #include "pico/time.h"
 
 #include "apps/msg_manager/msg_manager.h"
@@ -16,6 +20,7 @@
 #include "core/components/sys_paths_manager.h"
 #include "core/data_structures/string_list.h"
 #include "core/hardware_drivers/core1.h"
+#include "core/hardware_drivers/ens160.h"
 #include "core/hardware_drivers/haptics.h"
 #include "core/hardware_drivers/joystick.h"
 #include "core/hardware_drivers/onboard_led.h"
@@ -23,7 +28,6 @@
 #include "core/tools/menus.h"
 #include "core/utils/path.h"
 #include "hardware/adc.h"
-
 path *first_boot_file;
 
 bool is_first_boot() { return (!path_exists(first_boot_file)); }
@@ -33,6 +37,7 @@ void write_first_boot_file() { path_ftouch(first_boot_file); }
 void attach_background_routines() {
   core1_scheduler_add_callback(process_messages);
   core1_scheduler_add_callback(process_alarm);
+  core1_scheduler_add_callback(process_blinking);
   core1_scheduler_set_start_flag(true);
 }
 
@@ -60,7 +65,7 @@ void sys_setup() {
   if (should_end_loading_screen)
     end_loading_screen();
   attach_background_routines();
-  check_pheripherals();
+  check_peripherals();
 }
 
 void sys_mainloop() {
@@ -68,15 +73,17 @@ void sys_mainloop() {
   uint8_t screen_up_seconds = 10;
   uint32_t screen_up_start;
   while (true) {
+    ens160_power_down(drivers->air_quality_sensor);
     joystick_update(drivers->joystick);
-    process_system_state();
     update_conversations();
     ssd1306_enable_mutex_support(drivers->oled_screen);
     if (joystick_get_direction(drivers->joystick) != C || first_run) {
+      ens160_power_up(drivers->air_quality_sensor);
       first_run = false;
       haptic_short_pulse();
       screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
       while (true) {
+        check_peripherals();
         process_system_state();
         update_conversations();
         display_home_page();

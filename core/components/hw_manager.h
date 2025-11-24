@@ -39,5 +39,9 @@ void print_free_heap();
 uint get_clock_freq_khz();
 float get_cpu_temp();
 uint32_t get_used_flash_bytes();
+void enable_ens160();
+void disable_ens160();
+void enable_sx1278();
+void disable_sx1278();
 
 #endif

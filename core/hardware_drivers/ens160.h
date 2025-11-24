@@ -17,6 +17,8 @@ typedef struct {
   uint32_t baudrate;
   uint32_t address;
   bool is_working;
+  bool is_on;
+  bool manually_turned_off;
 } ens160;
 
 ens160 *ens160_init(pin sda,
@@ -24,6 +26,7 @@ ens160 *ens160_init(pin sda,
     i2c_inst_t *i2c_port,
     uint32_t baudrate,
     uint32_t address);
+bool ens160_is_working(ens160 *sensor);
 uint8_t ens160_get_op_mode(ens160 *sensor);
 void ens160_set_op_mode(ens160 *sensor, uint8_t mode);
 int16_t ens160_read_co2(ens160 *sensor);

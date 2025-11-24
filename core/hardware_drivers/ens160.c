@@ -40,6 +40,8 @@ ens160 *ens160_init(pin sda,
   gpio_pull_up(sda);
   gpio_pull_up(sck);
   new_sensor->is_working = ens160_is_working(new_sensor);
+  new_sensor->is_on = true;
+  new_sensor->manually_turned_off = false;
   return new_sensor;
 }
 
@@ -111,26 +113,31 @@ void ens160_reset(ens160 *sensor) {
 }
 
 inline void ens160_power_down(ens160 *sensor) {
-  if (ens160_get_op_mode(sensor) == 0x00)
+  if (!sensor->is_on)
     return;
   ens160_set_op_mode(sensor, 0x00);
+  sensor->is_on = false;
 }
 
 void ens160_power_up(ens160 *sensor) {
-  if (ens160_get_op_mode(sensor) == 0x02)
+  if (sensor->is_on || sensor->manually_turned_off)
     return;
   ens160_set_op_mode(sensor, 0x01);
   sleep_ms(20);
   ens160_set_op_mode(sensor, 0x02);
+  sensor->is_on = true;
 }
 
 bool ens160_is_working(ens160 *sensor) {
   sleep_ms(10);
   if (ens160_get_op_mode(sensor) != 2) {
     ens160_reset(sensor);
-    if (ens160_get_op_mode(sensor) != 2)
+    if (ens160_get_op_mode(sensor) != 2) {
+      sensor->is_working = false;
       return false;
+    }
   }
+  sensor->is_working = true;
   return true;
 }
 

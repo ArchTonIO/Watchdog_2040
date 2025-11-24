@@ -16,6 +16,7 @@
 #include "apps/time_submenus/set_time_submenu.h"
 #include "apps/time_submenus/stopwatch_submenu.h"
 #include "apps/time_submenus/timer_submenu.h"
+#include "core/components/hw_manager.h"
 #include "core/data_structures/string_list.h"
 #include "core/graphics/bitmaps.h"
 #include "core/tools/launcher.h"
@@ -23,6 +24,9 @@
 void display_ulmp_menu();
 void display_time_menu();
 void display_system_menu();
+void display_hardware_manager_menu();
+void display_sx1278_menu();
+void display_ens160_menu();
 void display_games_menu() {
   printf("[MENUS] Games menu not implemented yet.\n");
 }
@@ -55,7 +59,7 @@ DEFINE_LAUNCHER(ulmp_launcher,
     {"Read messages", read_messages_icon, read_messages},
     {"Contacts", contacts_icon, enter_contacts_submenu},
     {"Scan online", scan_contacts_icon, scan_online_contacts},
-    {"Notifications", notifications_icon, display_notifications_menu})
+    {"Notifications", notifications_icon, display_notifications_menu}, )
 
 DEFINE_LAUNCHER(time_launcher,
     "Time",
@@ -70,8 +74,24 @@ DEFINE_LAUNCHER(system_launcher,
     "System",
     {"System info", system_info_icon, display_system_info_wrapped},
     {"Battery status", battery_status_icon, display_battery_status},
+    {"Hardware manager", qfn_package_icon, display_hardware_manager_menu},
     {"Check joystick", check_joystick_icon, display_joystick_check},
     {"System reset", reset_icon, reset_system})
+
+DEFINE_LAUNCHER(hardware_management,
+    "Hardware management",
+    {"SX1278 Module", sx1278_icon, display_sx1278_menu},
+    {"ENS160 Sensor", ens160_icon, display_ens160_menu})
+
+DEFINE_LAUNCHER(sx1278_launcher,
+    "SX1278 Module",
+    {"Enable module", sx1278_icon, enable_sx1278},
+    {"Disable module", sx1278_disabled_icon, disable_sx1278})
+
+DEFINE_LAUNCHER(ens160_launcher,
+    "ENS160 Sensor",
+    {"Enable sensor", ens160_icon, enable_ens160},
+    {"Disable sensor", ens160_disabled_icon, disable_ens160})
 
 DEFINE_LAUNCHER(malloc_launcher,
     "Malloc",
@@ -102,6 +122,9 @@ void display_main_menu() { launcher_start(&main_launcher); }
 void display_ulmp_menu() { launcher_start(&ulmp_launcher); }
 void display_time_menu() { launcher_start(&time_launcher); }
 void display_system_menu() { launcher_start(&system_launcher); }
+void display_hardware_manager_menu() { launcher_start(&hardware_management); }
+void display_ens160_menu() { launcher_start(&ens160_launcher); }
+void display_sx1278_menu() { launcher_start(&sx1278_launcher); }
 void display_malloc_menu() { launcher_start(&malloc_launcher); }
 void display_notifications_menu() { launcher_start(&notifications_launcher); }
 void display_tutorial_menu() { launcher_start(&tutorial_launcher); }
