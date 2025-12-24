@@ -80,7 +80,7 @@ hw_drivers *hardware_drivers_init() {
       JOYSTICK_Y_CHANNEL,
       JOYSTICK_BUTTON_PIN,
       JOYSTICK_SENSITIVITY,
-      -90);
+      JOYSTICK_ROTATION);
   if (hw_man->joystick->is_working)
     core1_push_instruction(JOYSTICK_OK);
   else

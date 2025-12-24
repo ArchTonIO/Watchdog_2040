@@ -57,6 +57,7 @@ void sys_paths_manager_load_dirs() {
   path *logs_dir = path_init(LOGS_DIR);
   path *config_dir = path_init(CONFIG_DIR);
   path *notes_dir = path_init(NOTES_DIR);
+  path *todo_dir = path_init(TODO_DIR);
   path *temp_paths[] = {
       home_dir,
       user_dir,
@@ -66,6 +67,7 @@ void sys_paths_manager_load_dirs() {
       logs_dir,
       config_dir,
       notes_dir,
+      todo_dir,
   };
   sys_paths->dirs->root_path = path_init(ROOT_DIR);
   sys_paths->dirs->home_path = path_init(home_dir->abs_path);
@@ -83,6 +85,8 @@ void sys_paths_manager_load_dirs() {
       config_dir);
   sys_paths->dirs->notes_path = path_concat(sys_paths->dirs->user_path,
       notes_dir);
+  sys_paths->dirs->todo_path = path_concat(sys_paths->dirs->user_path,
+      todo_dir);
   for (uint8_t i = 0; i < sizeof(temp_paths) / sizeof(temp_paths[0]); i++)
     path_free(temp_paths[i]);
 }
@@ -100,6 +104,7 @@ void sys_paths_manager_mkdirs() {
       sys_paths->dirs->logs_path,
       sys_paths->dirs->config_path,
       sys_paths->dirs->notes_path,
+      sys_paths->dirs->todo_path,
   };
   ssd1306_clear(drivers->oled_screen);
   ssd1306_print(drivers->oled_screen, "Creating sys dir tree", 0, 0, false);

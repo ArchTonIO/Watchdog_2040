@@ -153,22 +153,22 @@ uint8_t joystick_get_direction(joystick *stick) {
     return S;
   if (polar.theta_deg >= E_DEG - ZONE_SIZE &&
       polar.theta_deg < E_DEG + ZONE_SIZE)
-    return E;
+    return W;
   if (polar.theta_deg >= W_DEG - ZONE_SIZE &&
       polar.theta_deg < W_DEG + ZONE_SIZE)
-    return W;
+    return E;
   if (polar.theta_deg >= NE_DEG - ZONE_SIZE &&
       polar.theta_deg < NE_DEG + ZONE_SIZE)
-    return NE;
+    return NW;
   if (polar.theta_deg >= NW_DEG - ZONE_SIZE &&
       polar.theta_deg < NW_DEG + ZONE_SIZE)
-    return NW;
+    return NE;
   if (polar.theta_deg >= SE_DEG - ZONE_SIZE &&
       polar.theta_deg < SE_DEG + ZONE_SIZE)
-    return SE;
+    return SW;
   if (polar.theta_deg >= SW_DEG - ZONE_SIZE &&
       polar.theta_deg < SW_DEG + ZONE_SIZE)
-    return SW;
+    return SE;
   return C;
 }
 

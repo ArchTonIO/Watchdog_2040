@@ -20,7 +20,6 @@
 #include "core/hardware_drivers/joystick.h"
 #include "core/hardware_drivers/onboard_led.h"
 #include "core/hardware_drivers/ssd1306.h"
-#include "core/hardware_drivers/sx1278.h"
 #include "core/tools/options_gen.h"
 #include "core/ulmp/ulmp.h"
 #include "core/utils/utils.h"
@@ -156,7 +155,7 @@ void send_message_status_update_callback(uint8_t progress) {
  * @brief Sends a message to a selected contact.
  */
 void send_message() {
-  uint16_t dest_addr = select_contact();
+  uint16_t dest_addr = choose_from_online_contacts();
   if (dest_addr == 0) {
     ssd1306_clear(drivers->oled_screen);
     ssd1306_show(drivers->oled_screen);
@@ -289,33 +288,52 @@ void display_received_message(char *name, uint16_t src_address) {
 
 void make_bar(uint8_t value, char *out) {
   for (uint8_t i = 0; i < 5; i++)
-    out[i] = (i < value) ? '#' : '-';
+    out[i] = (i < value) ? '*' : '-';
   out[5] = '\0';
 }
 
-void scan_online_contacts() {
+/**
+ * @brief Allows the user to choose from online contacts by pinging them.
+ * @return The address of the selected contact, or 0 if none is selected.
+ */
+uint16_t choose_from_online_contacts() {
   str_list *contacts = get_all_contacts();
   str_list *results = str_list_init();
   uint16_t addr;
   print_loading("Scanning nearby\ncontacts...");
   for (uint8_t i = 0; i < contacts->len; i++) {
     addr = get_contact_addr_by_name(str_list_get(contacts, i));
+    char print_str[40];
+    sprintf(print_str,
+        "Scanning nearby \ncontacts...[%u/%u]",
+        i + 1,
+        contacts->len);
+    print_loading(print_str);
     uint8_t signal_strength = lora_ping(addr);
-    char str_buf[10];
-    char bar_buf[6];
-    make_bar(signal_strength, bar_buf);
-    sprintf(str_buf, "[%s] ", bar_buf);
     if (signal_strength != 0) {
+      char str_buf[10];
+      char bar_buf[6];
+      make_bar(signal_strength, bar_buf);
+      sprintf(str_buf, "[%s] ", bar_buf);
       char *option = string_add(str_buf, str_list_get(contacts, i));
       str_list_append(results, option);
       free(option);
     }
     sleep_ms(10);
   }
-  options_page *page = options_page_init("Online contacts", results);
-  char *name = options_page_launch(page);
+  if (results->len == 0)
+    str_list_append(results, "no one is reachable");
+  options_page *page = options_page_init("Signal| Name         ", results);
+  char *res = options_page_launch(page);
+  str_list *res_split = string_split(res, ' ');
+  char *name = str_list_get(res_split, 1);
+  uint16_t address = 0;
+  if (name != NULL)
+    address = get_contact_addr_by_name(name);
   options_page_free(page);
   str_list_free(contacts);
+  str_list_free(res_split);
+  return address;
 }
 
 void enable_message_notifications() {

@@ -6,7 +6,7 @@
 
 #define HOSTNAME "WD_2040"
 #define FIRMWARE_VERSION "leakybob [1.26.0]"
-#define HARDWARE_VERSION "REV 1.0"
+#define HARDWARE_VERSION "V 1.0 REV 3"
 #define DEVICE_NAME "Watchdog_2040"
 #define DEVICE_DISPLAY_NAME "WATCHDOG_2040"
 

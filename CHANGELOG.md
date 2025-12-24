@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Handle notification using core1
 - MIT license
 - Haptic feedback for long joystick press
-- Centralization and enanchements of contacts management
+- Centralization and enhancements of contacts management
 - Change "serial" and "exit" terminal commands with "ser" and "esc"
 - Add "reboot" and "bootsel" commands to terminal
 - Standardize screen logs
@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Messges are no longer received and stored when sent from unknown address
+- Messages are no longer received and stored when sent from unknown address
 
 ## leakybob [1.14.0] - 2025-08-13
 
@@ -74,7 +74,7 @@ the 'core' and the applications that use the core stuff to make things.
 
 - Introduce sys_paths_manager to better manage fixed system paths
 - Improved path api
-- Improve battery percentage estimation, moves to a 1 - 4 bar bitmaps (reading crude ADC from vsys does not gives enought accuracy for a real percentage estimation)
+- Improve battery percentage estimation, moves to a 1 - 4 bar bitmaps (reading crude ADC from vsys does not gives enough accuracy for a real percentage estimation)
 - Make ping and pong stuff work
 - Allow the user to exit from the timer before the time has elapsed
 
@@ -181,7 +181,7 @@ the 'core' and the applications that use the core stuff to make things.
 
 ### Changed
 
-- Divide project in subfolders
+- Divide project in sub-folders
 
 ## nightlyeva [0.1.0] - 2025-02-26
 

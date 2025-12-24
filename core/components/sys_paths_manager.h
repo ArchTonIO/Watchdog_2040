@@ -19,6 +19,7 @@
 #define LOGS_DIR "logs"
 #define CONFIG_DIR "config"
 #define NOTES_DIR "notes"
+#define TODO_DIR "todo"
 
 #define MALLOC_MEMORIES_FILE "malloc_memories"
 #define CONTACTS_ADDR_FILE "contacts"
@@ -36,6 +37,7 @@ typedef struct {
   path *logs_path;
   path *config_path;
   path *notes_path;
+  path *todo_path;
 } sys_dirs;
 
 typedef struct {

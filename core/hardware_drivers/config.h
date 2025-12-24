@@ -38,7 +38,8 @@ typedef uint8_t pin;
 #define SX1278_INTERRUPT 21
 #define SX1278_SPI_PORT spi0
 #define SX1278_SPI_BAUDRATE 5000 * 1000
-#define SX1278_TX_POWER 23
+#define SX1278_TX_POWER 15
+#define REG_1B_PKT_SNR_VALUE 0x1b
 
 /*Micro sd reader module settings*/
 /*Beware that changing those pins will have no effects,
@@ -64,7 +65,8 @@ lib/no-Os-FatFS-SD-SPI-RPi-Pico/FatFs_SPI/sd_driver/hw_config.c*/
 #define JOYSTICK_DEFAULT_MAX_L 2800
 #define JOYSTICK_AUTO_CALIBRATION_SAMPLES 150
 #define JOYSTICK_AUTO_CALIBRATION_INTERVAL_MS 10
-#define JOYSTICK_SENSITIVITY 0.5f
+#define JOYSTICK_SENSITIVITY 0.2f
+#define JOYSTICK_ROTATION 0
 
 /*battery settings*/
 #define ADC_MAX_VALUE 4095.0

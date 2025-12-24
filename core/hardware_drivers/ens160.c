@@ -112,7 +112,7 @@ void ens160_reset(ens160 *sensor) {
   sleep_ms(500);
 }
 
-inline void ens160_power_down(ens160 *sensor) {
+void ens160_power_down(ens160 *sensor) {
   if (!sensor->is_on)
     return;
   ens160_set_op_mode(sensor, 0x00);

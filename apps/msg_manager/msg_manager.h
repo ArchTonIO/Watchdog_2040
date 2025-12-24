@@ -32,7 +32,7 @@ void process_messages();
 void update_conversations();
 void read_messages();
 void send_message();
-void scan_online_contacts();
+uint16_t choose_from_online_contacts();
 void enable_message_notifications();
 void disable_message_notifications();
 

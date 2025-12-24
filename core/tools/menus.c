@@ -58,7 +58,6 @@ DEFINE_LAUNCHER(ulmp_launcher,
     {"Send message", send_msg_icon, send_message},
     {"Read messages", read_messages_icon, read_messages},
     {"Contacts", contacts_icon, enter_contacts_submenu},
-    {"Scan online", scan_contacts_icon, scan_online_contacts},
     {"Notifications", notifications_icon, display_notifications_menu}, )
 
 DEFINE_LAUNCHER(time_launcher,
