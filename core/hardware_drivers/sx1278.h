@@ -9,6 +9,7 @@
 #define REG_06_FRF_MSB 0x06
 #define REG_07_FRF_MID 0x07
 #define REG_08_FRF_LSB 0x08
+#define REG_09_PA_CONFIG 0x09
 #define REG_0E_FIFO_TX_BASE_ADDR 0x0e
 #define REG_0F_FIFO_RX_BASE_ADDR 0x0f
 #define REG_10_FIFO_RX_CURRENT_ADDR 0x10
@@ -22,11 +23,11 @@
 #define REG_21_PREAMBLE_LSB 0x21
 #define REG_22_PAYLOAD_LENGTH 0x22
 #define REG_26_MODEM_CONFIG3 0x26
-
+#define REG_11_REG_OCP 0x2b
 #define REG_4D_PA_DAC 0x4d
-#define REG_09_PA_CONFIG 0x09
 #define REG_40_DIO_MAPPING1 0x40
 #define REG_0D_FIFO_ADDR_PTR 0x0d
+
 #define PA_DAC_ENABLE 0x07
 #define PA_DAC_DISABLE 0x04
 #define PA_SELECT 0x80
@@ -41,6 +42,8 @@
 #define MODE_TX 0x03
 #define MODE_RXCONTINUOUS 0x05
 #define MODE_CAD 0x07
+#define REG_OCP_ON (1 << 5)
+#define OCP_TRIM(x) ((x) & 0x1F)
 
 #define FXOSC = 32000000.0
 
@@ -61,7 +64,7 @@ typedef struct {
   uint8_t tx_power;
   uint8_t mode;
   uint8_t packet_sent_timeout_ms;
-  uint8_t irq_flags;
+  volatile uint8_t irq_flags;
   void (*message_received_callback)(char *msg, float rssi);
   bool is_working;
   bool is_on;
@@ -79,6 +82,7 @@ sx1278 *sx1278_init(pin mosi,
     void (*message_received_callback)(char *msg, float rssi));
 
 void sx1278_sleep(sx1278 *radio);
+void sx1278_reset(sx1278 *radio);
 void sx1278_attach_isr(sx1278 *radio,
     void (*new_callback)(char *msg, float rssi));
 void sx1278_set_mode_tx(sx1278 *radio);

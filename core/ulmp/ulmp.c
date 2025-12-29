@@ -71,6 +71,7 @@ lora_instance *lora_init(uint16_t this_addr, sx1278 *sx1278_radio) {
  * on_recv callback when a message is received (using an HW interrupt)
  */
 void lora_receive() { sx1278_set_mode_rx(this_lora->radio); }
+void lora_reset() { sx1278_reset(this_lora->radio); }
 
 void attempt_single_transaction(uint16_t dest_address, char *payload) {
   char *transaction_uid = gen_random_string(TRANSACTION_UID_LENGTH);
@@ -177,6 +178,7 @@ uint8_t lora_ping(uint16_t dest_address) {
     this_lora->tx->pong_received = false;
     return from_rssi_to_signal_strength(this_lora->rx->last_rssi);
   }
+  lora_reset();
   return 0;
 }
 

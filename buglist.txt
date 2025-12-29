@@ -11,3 +11,4 @@
 - [solved]   - bug10 - if a message arrives when the recipient is displaying the notification screen from the previously arrived message, the new message will not get delivered
 - [solved]   - bug11 - memory leak when password requests to access terminal returns false (wrong password)
 - [solved]   - bug12 - messages from unknown address are not properly saved
+- [solved]   - bug13 - when scanning for online contacts no device can be found even if they are on and in range (the irq_flags reg of the sx1278 was not properly cleared) 
