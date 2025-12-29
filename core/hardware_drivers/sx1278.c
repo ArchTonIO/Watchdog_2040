@@ -129,19 +129,13 @@ sx1278 *sx1278_init(pin mosi,
   spi_write_reg_single_byte(new_radio, REG_08_FRF_LSB, 0x00);
 
   // set tx power
-  if (tx_power < 5)
-    new_radio->tx_power = 5;
-  if (tx_power > 23)
-    new_radio->tx_power = 23;
-  if (tx_power < 20) {
-    spi_write_reg_single_byte(new_radio, REG_4D_PA_DAC, PA_DAC_ENABLE);
-    new_radio->tx_power -= 3;
-  } else {
-    spi_write_reg_single_byte(new_radio, REG_4D_PA_DAC, PA_DAC_DISABLE);
-  }
+  spi_write_reg_single_byte(new_radio, REG_4D_PA_DAC, 0x87);
   spi_write_reg_single_byte(new_radio,
       REG_09_PA_CONFIG,
-      PA_SELECT | (new_radio->tx_power - 5));
+      (1 << 7) | (7 << 4) | (15));
+  spi_write_reg_single_byte(new_radio,
+      REG_11_REG_OCP,
+      REG_OCP_ON | OCP_TRIM(27));
   instance = new_radio;
   return new_radio;
 }
@@ -149,8 +143,8 @@ sx1278 *sx1278_init(pin mosi,
 /**
  * @brief Attaches a new ISR callback to the radio instance.
  *
- * This function allows the user to set a custom callback function that will
- * be called when a message is received by the radio.
+ * This function allows the user to set a custom callback function that
+ * will be called when a message is received by the radio.
  *
  * @param radio Pointer to the sx1278 radio instance.
  * @param new_callback The callback function to be called when a message is
@@ -159,6 +153,13 @@ sx1278 *sx1278_init(pin mosi,
 void sx1278_attach_isr(sx1278 *radio,
     void (*new_callback)(char *msg, float rssi)) {
   radio->message_received_callback = new_callback;
+}
+
+void sx1278_reset(sx1278 *radio) {
+  spi_write_reg_single_byte(radio,
+      REG_01_OP_MODE,
+      MODE_SLEEP | LONG_RANGE_MODE);
+  spi_write_reg_single_byte(radio, REG_12_IRQ_FLAGS, 0x80);
 }
 
 /**
@@ -338,9 +339,11 @@ void irq_handler(uint gpio, uint32_t event_mask) {
   spi_write_reg_single_byte(instance, REG_12_IRQ_FLAGS, instance->irq_flags);
   if (instance->mode == MODE_TX && instance->irq_flags & TX_DONE) {
     message_sent_callback();
+    return;
   } else if (
       instance->mode == MODE_RXCONTINUOUS && instance->irq_flags & RX_DONE) {
     message_received_callback();
+    return;
   }
 }
 
