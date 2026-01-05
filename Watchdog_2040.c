@@ -13,6 +13,7 @@
 #include "pico/time.h"
 
 #include "apps/msg_manager/msg_manager.h"
+#include "apps/pwd_manager/test.c"
 #include "apps/time_submenus/set_alarm_submenu.h"
 #include "core/components/home_page.h"
 #include "core/components/hw_manager.h"
@@ -81,6 +82,7 @@ void sys_mainloop() {
       ens160_power_up(drivers->air_quality_sensor);
       first_run = false;
       haptic_short_pulse();
+      test_encrypt();
       screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
       while (true) {
         check_peripherals();

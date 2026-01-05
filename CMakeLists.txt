@@ -43,6 +43,8 @@ apps/msg_manager/msg_man_utils.c
 apps/msg_manager/msg_manager.c
 apps/msg_manager/msg_record.c
 apps/notes/notes.c
+apps/pwd_manager/aes_ctr.c
+apps/pwd_manager/key.c
 apps/system_submenus/system_submenus.c
 apps/terminal/terminal_commands.c
 apps/terminal/terminal.c
