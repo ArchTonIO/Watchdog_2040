@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2025 Antonio Del Cogliano
+// Copyright (c) 2026 Antonio Del Cogliano
 
 #ifndef LORA_SEND_H
 #define LORA_SEND_H

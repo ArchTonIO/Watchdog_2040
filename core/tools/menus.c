@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2025 Antonio Del Cogliano
+// Copyright (c) 2026 Antonio Del Cogliano
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -51,7 +51,7 @@ DEFINE_LAUNCHER(main_launcher,
     {"Password manager", AQI_icon, password_manager_launch},
     {"System", qfn_package_icon, display_system_menu},
     {"Flashlight", flashlight_icon, enter_flashlight_screen},
-    {"Notes", notes_icon, enter_notes_submenu},
+    {"Notes", notes_icon, notes_launch},
     {"Games", pong_icon, display_games_menu},
     {"Malloc", malloc_icon, display_malloc_menu})
 

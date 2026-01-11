@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Antonio Del Cogliano
+
 #ifndef AES_CTR_H
 #define AES_CTR_H
 

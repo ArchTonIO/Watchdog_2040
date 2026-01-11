@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2025 Antonio Del Cogliano
+// Copyright (c) 2026 Antonio Del Cogliano
 
 #ifndef RTC_TIME_H
 #define RTC_TIME_H

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2025 Antonio Del Cogliano
+// Copyright (c) 2026 Antonio Del Cogliano
 
 #ifndef SYSTEM_SUBMENUS_H
 #define SYSTEM_SUBMENUS_H
