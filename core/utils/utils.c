@@ -19,8 +19,8 @@
 #include "core/hardware_drivers/ssd1306.h"
 #include "core/tools/sha_256.h"
 
-bool request_password(const char *placeholder_text) {
-  text_editor *pwd_editor = text_editor_launch(placeholder_text, true);
+bool request_password() {
+  text_editor *pwd_editor = text_editor_launch("#Enter your password", true);
   char *buf = text_editor_get_buf(pwd_editor);
   text_editor_kill(pwd_editor);
   char *hashed = get_hash(buf);
@@ -35,9 +35,8 @@ bool request_password(const char *placeholder_text) {
   return true;
 }
 
-bool request_and_get_password(const char *placeholder_text,
-    char return_buf[]) {
-  text_editor *pwd_editor = text_editor_launch(placeholder_text, true);
+bool request_and_get_password(char return_buf[]) {
+  text_editor *pwd_editor = text_editor_launch("#Enter your password", true);
   char *buf = text_editor_get_buf(pwd_editor);
   strcpy(return_buf, buf);
   text_editor_kill(pwd_editor);

@@ -100,7 +100,7 @@ void reset_system() {
     return;
   }
   options_page_free(yesno_page);
-  if (!request_password("# Type your password to confirm"))
+  if (!request_password())
     return;
   ssd1306_print(drivers->oled_screen, "Resetting system ...", 0, 0, false);
   ssd1306_show(drivers->oled_screen);

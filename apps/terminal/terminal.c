@@ -174,7 +174,7 @@ void terminal_update_prefix(terminal *term) {
 }
 
 void terminal_launch() {
-  if (!request_password("# Enter your password to access the terminal"))
+  if (!request_password())
     return;
   terminal *term = terminal_init();
   terminal_bind_std_commands(term);
