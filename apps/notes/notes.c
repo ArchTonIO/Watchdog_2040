@@ -67,12 +67,12 @@ void take_note() {
 
 void edit_or_delete_note(const char *note_name) {
   str_list *options = str_list_init();
-  str_list_append(options, "edit");
+  str_list_append(options, "view/edit");
   str_list_append(options, "delete");
   options_page *editordelete_page = options_page_init((char *)note_name,
       options);
   char *buf = options_page_launch(editordelete_page);
-  if (strcmp(buf, "edit") == 0)
+  if (strcmp(buf, "view/edit") == 0)
     open_existing_note(note_name);
   else if (strcmp(buf, "delete") == 0) {
     sleep_ms(200);

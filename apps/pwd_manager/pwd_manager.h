@@ -23,8 +23,4 @@ typedef struct {
 } encrypt_fields;
 
 void password_manager_launch();
-void init_encrypt_fields(encrypt_fields *encrypt);
-void show_services_page(encrypt_fields *encrypt);
-void register_new_service(encrypt_fields *encrypt);
-void edit_or_delete_service(char *service_name, encrypt_fields *encrypt);
 #endif

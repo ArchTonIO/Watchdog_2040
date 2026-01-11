@@ -11,6 +11,7 @@ void display_system_info_wrapped();
 void reset_system();
 void display_battery_status();
 void display_joystick_check();
+void display_reboot_screen();
 void display_tutorial_page();
 
 #endif

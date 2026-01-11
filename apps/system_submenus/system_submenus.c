@@ -184,6 +184,20 @@ void display_joystick_check() {
   }
 }
 
+void display_reboot_screen() {
+  str_list *options = str_list_init();
+  str_list_append(options, "Yes");
+  str_list_append(options, "No");
+  options_page *yesno_page = options_page_init("Reboot now?", options);
+  char *buf = options_page_launch(yesno_page);
+  if (strcmp(buf, "Yes") == 0) {
+    print_info("Rebooting ...");
+    watchdog_reboot(0, 0, 0);
+  }
+  options_page_free(yesno_page);
+  free(buf);
+}
+
 void display_tutorial_page() {
   str_list *options = str_list_init();
   str_list_append(options, "...");
