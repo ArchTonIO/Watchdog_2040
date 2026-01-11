@@ -88,6 +88,7 @@ core/hardware_drivers/ssd1306.c
 core/hardware_drivers/sx1278.c
 
 # TOOLS SECTION
+core/tools/crud_list.c
 core/tools/launcher.c
 core/tools/menus.c
 core/tools/options_gen.c
