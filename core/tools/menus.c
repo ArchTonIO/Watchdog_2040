@@ -9,6 +9,7 @@
 #include "apps/msg_manager/contacts.h"
 #include "apps/msg_manager/msg_manager.h"
 #include "apps/notes/notes.h"
+#include "apps/pwd_manager/pwd_manager.h"
 #include "apps/system_submenus/system_submenus.h"
 #include "apps/terminal/terminal.h"
 #include "apps/time_submenus/set_alarm_submenu.h"
@@ -47,6 +48,7 @@ DEFINE_LAUNCHER(main_launcher,
     {"Time", set_time_icon, display_time_menu},
     {"Terminal", cli_icon, terminal_launch},
     {"Air quality", AQI_icon, display_air_quality_indexes},
+    {"Password manager", AQI_icon, password_manager_launch},
     {"System", qfn_package_icon, display_system_menu},
     {"Flashlight", flashlight_icon, enter_flashlight_screen},
     {"Notes", notes_icon, enter_notes_submenu},
@@ -74,6 +76,7 @@ DEFINE_LAUNCHER(system_launcher,
     {"System info", system_info_icon, display_system_info_wrapped},
     {"Battery status", battery_status_icon, display_battery_status},
     {"Hardware manager", qfn_package_icon, display_hardware_manager_menu},
+    {"Reboot system", reset_icon, display_reboot_screen},
     {"Check joystick", check_joystick_icon, display_joystick_check},
     {"System reset", reset_icon, reset_system})
 

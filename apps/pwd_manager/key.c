@@ -1,8 +1,6 @@
 #include "apps/pwd_manager/key.h"
 
-#include "apps/pwd_manager/aes_ctr.h"
-
-void derive_key(uint8_t key[16],
+void derive_key(uint8_t key[KEY_SIZE],
     const uint8_t *password,
     size_t pass_len,
     const uint8_t *salt,
@@ -15,7 +13,6 @@ void derive_key(uint8_t key[16],
   for (size_t i = 0; i < salt_len; i++)
     buf[i % 16] ^= salt[i];
 
-  /* intentionally slow mixing */
   for (int round = 0; round < 100000; round++) {
     for (int i = 0; i < 16; i++) {
       buf[i] ^= (buf[(i + 1) % 16] + round);

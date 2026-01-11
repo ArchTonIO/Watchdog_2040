@@ -31,6 +31,25 @@ bool request_password(const char *placeholder_text) {
     return false;
   }
   free(hashed);
+  free(buf);
+  return true;
+}
+
+bool request_and_get_password(const char *placeholder_text,
+    char return_buf[]) {
+  text_editor *pwd_editor = text_editor_launch(placeholder_text, true);
+  char *buf = text_editor_get_buf(pwd_editor);
+  strcpy(return_buf, buf);
+  text_editor_kill(pwd_editor);
+  char *hashed = get_hash(buf);
+  if (strcmp(hashed, malloc_memories_inst->user_password_hashed) != 0) {
+    free(hashed);
+    free(buf);
+    print_usr_error("Wrong password");
+    return false;
+  }
+  free(hashed);
+  free(buf);
   return true;
 }
 

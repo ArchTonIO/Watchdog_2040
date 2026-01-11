@@ -15,6 +15,7 @@ void wait_for_serial_input();
 
 /*User input functions*/
 bool request_password(const char *placeholder_text);
+bool request_and_get_password(const char *placeholder_text, char return_buf[]);
 
 /*Logging functions*/
 void print_info(const char *message);

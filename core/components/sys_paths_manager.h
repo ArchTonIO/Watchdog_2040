@@ -20,6 +20,7 @@
 #define CONFIG_DIR "config"
 #define NOTES_DIR "notes"
 #define TODO_DIR "todo"
+#define PWD_MANAGER_DIR "pwd_manager"
 
 #define MALLOC_MEMORIES_FILE "malloc_memories"
 #define CONTACTS_ADDR_FILE "contacts"
@@ -38,6 +39,7 @@ typedef struct {
   path *config_path;
   path *notes_path;
   path *todo_path;
+  path *pwd_manager_path;
 } sys_dirs;
 
 typedef struct {

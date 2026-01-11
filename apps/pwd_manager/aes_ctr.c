@@ -1,6 +1,8 @@
 #include "aes_ctr.h"
 
-/* ===================== AES CORE ===================== */
+#include <string.h>
+
+#define AES_ROUNDS 10
 
 // clang-format off
 static const uint8_t sbox[256] = {
@@ -23,6 +25,40 @@ static const uint8_t sbox[256] = {
 };
 
 // clang-format on
+
+static const uint8_t rcon[10] =
+    {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
+
+void aes128_key_expand(const uint8_t *key, uint8_t *round_keys) {
+  memcpy(round_keys, key, 16);
+
+  uint8_t temp[4];
+  int bytes = 16;
+  int rcon_i = 0;
+
+  while (bytes < 176) {
+    for (int i = 0; i < 4; i++)
+      temp[i] = round_keys[bytes - 4 + i];
+
+    if (bytes % 16 == 0) {
+      uint8_t t = temp[0];
+      temp[0] = temp[1];
+      temp[1] = temp[2];
+      temp[2] = temp[3];
+      temp[3] = t;
+
+      for (int i = 0; i < 4; i++)
+        temp[i] = sbox[temp[i]];
+
+      temp[0] ^= rcon[rcon_i++];
+    }
+
+    for (int i = 0; i < 4; i++) {
+      round_keys[bytes] = round_keys[bytes - 16] ^ temp[i];
+      bytes++;
+    }
+  }
+}
 
 static void aes_add_round_key(uint8_t *state, const uint8_t *round_key) {
   for (int i = 0; i < 16; i++)
@@ -84,11 +120,9 @@ void aes_encrypt_block(uint8_t *state, const uint8_t *round_keys) {
   aes_add_round_key(state, round_keys + AES_ROUNDS * 16);
 }
 
-/* ===================== CTR MODE ===================== */
-
 void aes128_ctr_crypt(uint8_t *data,
     uint32_t length,
-    const uint8_t key[16],
+    const uint8_t round_keys[176],
     uint8_t nonce[16]) {
   uint8_t keystream[16];
   uint8_t counter[16];
@@ -102,12 +136,11 @@ void aes128_ctr_crypt(uint8_t *data,
     for (int i = 0; i < 16; i++)
       keystream[i] = counter[i];
 
-    aes_encrypt_block(keystream, key);
+    aes_encrypt_block(keystream, round_keys);
 
     for (int i = 0; i < 16 && offset < length; i++)
       data[offset++] ^= keystream[i];
 
-    /* increment counter (last byte first) */
     for (int i = 15; i >= 0; i--) {
       if (++counter[i])
         break;

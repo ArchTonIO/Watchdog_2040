@@ -4,7 +4,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-void derive_key(uint8_t key[16],
+#define KEY_SIZE 16
+
+void derive_key(uint8_t key[KEY_SIZE],
     const uint8_t *password,
     size_t pass_len,
     const uint8_t *salt,

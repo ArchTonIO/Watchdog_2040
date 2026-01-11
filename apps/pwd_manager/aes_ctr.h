@@ -9,9 +9,8 @@
 
 void aes128_ctr_crypt(uint8_t *data,
     uint32_t length,
-    const uint8_t key[AES_KEY_SIZE],
-    uint8_t nonce[AES_BLOCK_SIZE]);
-
-void aes_encrypt_block(uint8_t *state, const uint8_t *round_keys);
+    const uint8_t round_keys[176],
+    uint8_t nonce[16]);
+void aes128_key_expand(const uint8_t *key, uint8_t *round_keys);
 
 #endif
