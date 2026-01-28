@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "core/data_structures/string_list.h"
-#include "core/graphics/graphic_primitives.h"
+#include "core/graphics/layout.h"
 
 typedef struct {
   const uint8_t *hour_tens_bitmap;

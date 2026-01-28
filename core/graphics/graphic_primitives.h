@@ -7,8 +7,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define MAX_ENTITIES_BY_TYPE 100
-
 typedef struct {
   uint8_t x;
   uint8_t y;
@@ -50,21 +48,6 @@ typedef struct {
   bool is_inverted;
 } text_area;
 
-typedef struct {
-  line lines[MAX_ENTITIES_BY_TYPE];
-  circle circles[MAX_ENTITIES_BY_TYPE];
-  rectangle rectangles[MAX_ENTITIES_BY_TYPE];
-  polyline polylines[MAX_ENTITIES_BY_TYPE];
-  bitmap_definition bitmap_defs[MAX_ENTITIES_BY_TYPE];
-  text_area text_areas[MAX_ENTITIES_BY_TYPE];
-  uint8_t lines_count;
-  uint8_t circles_count;
-  uint8_t rectangles_count;
-  uint8_t polylines_count;
-  uint8_t bitmap_defs_count;
-  uint8_t text_areas_count;
-} layout;
-
 point create_point(uint8_t x, uint8_t y);
 void draw_point(point p);
 void clear_point(point p);
@@ -84,23 +67,5 @@ void draw_rectangle(rectangle r);
 polyline create_polyline(point *points);
 void clear_polyline(polyline pl);
 void draw_polyline(polyline pl);
-
-layout *layout_init();
-void layout_add_line(layout *ly, line ln);
-void layout_add_circle(layout *ly, circle c);
-void layout_add_rectangle(layout *ly, rectangle r);
-void layout_add_polyline(layout *ly, polyline p);
-void layout_add_bitmap_definition(layout *ly, bitmap_definition bd);
-void layout_add_text_area(layout *ly, text_area ta);
-void layout_draw(layout *ly);
-void layout_clear(layout *ly);
-void layout_flush_lines(layout *ly);
-void layout_flush_circles(layout *ly);
-void layout_flush_rectangles(layout *ly);
-void layout_flush_polylines(layout *ly);
-void layout_flush_bitmap_definitions(layout *ly);
-void layout_flush_text_areas(layout *ly);
-void layout_flush_all(layout *ly);
-void layout_free(layout *ly);
 
 #endif

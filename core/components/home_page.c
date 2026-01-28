@@ -15,6 +15,7 @@
 #include "core/data_structures/string_list.h"
 #include "core/graphics/bitmaps.h"
 #include "core/graphics/graphic_primitives.h"
+#include "core/graphics/layout.h"
 #include "core/hardware_drivers/battery.h"
 #include "core/hardware_drivers/ens160.h"
 #include "core/hardware_drivers/rtc_time.h"
@@ -42,6 +43,10 @@ home_page *home_page_init() {
   new_home_page->notifications = 0;
   new_home_page->ly = layout_init();
   home_page_inst = new_home_page;
+  layout_add_layer(home_page_inst->ly, "top_bar_bitmaps");
+  layout_add_layer(home_page_inst->ly, "clock_bitmaps");
+  layout_add_layer(home_page_inst->ly, "text_areas");
+  layout_add_layer(home_page_inst->ly, "lines");
   create_lines();
   return new_home_page;
 }
@@ -179,12 +184,14 @@ void update_top_bar() {
       .posx = TOP_BAR_BITMAPS_W * 5,
       .posy = 0,
       .is_inverted = false};
-  layout_add_bitmap_definition(home_page_inst->ly, battery_level_btmp_def);
-  layout_add_bitmap_definition(home_page_inst->ly, sd_status_btmp_def);
-  layout_add_bitmap_definition(home_page_inst->ly, sx1278_status_btmp_def);
-  layout_add_bitmap_definition(home_page_inst->ly, en160_status_btmp_def);
-  layout_add_bitmap_definition(home_page_inst->ly, notifications_btmp_def);
-  layout_add_bitmap_definition(home_page_inst->ly, alarm_status_btmp_def);
+  layer *top_bar_bitmaps_ly = get_layer_by_name(home_page_inst->ly,
+      "top_bar_bitmaps");
+  layer_add_bitmap_definition(top_bar_bitmaps_ly, battery_level_btmp_def);
+  layer_add_bitmap_definition(top_bar_bitmaps_ly, sd_status_btmp_def);
+  layer_add_bitmap_definition(top_bar_bitmaps_ly, sx1278_status_btmp_def);
+  layer_add_bitmap_definition(top_bar_bitmaps_ly, en160_status_btmp_def);
+  layer_add_bitmap_definition(top_bar_bitmaps_ly, notifications_btmp_def);
+  layer_add_bitmap_definition(top_bar_bitmaps_ly, alarm_status_btmp_def);
 }
 
 void update_clock(uint8_t start_pix_w, uint8_t start_pix_h, uint8_t spacing) {
@@ -249,14 +256,16 @@ void update_clock(uint8_t start_pix_w, uint8_t start_pix_h, uint8_t spacing) {
       .posx = start_pix_w,
       .posy = start_pix_h,
       .is_inverted = false};
-  layout_add_bitmap_definition(home_page_inst->ly, hour_tens_btmp_def);
-  layout_add_bitmap_definition(home_page_inst->ly, hour_units_btmp_def);
-  layout_add_bitmap_definition(home_page_inst->ly, clock_dots_btmp_def);
-  layout_add_bitmap_definition(home_page_inst->ly, minute_tens_btmp_def);
-  layout_add_bitmap_definition(home_page_inst->ly, minute_units_btmp_def);
-  layout_add_bitmap_definition(home_page_inst->ly, clock_dots_1_btmp_def);
-  layout_add_bitmap_definition(home_page_inst->ly, second_tens_btmp_def);
-  layout_add_bitmap_definition(home_page_inst->ly, second_units_btmp_def);
+  layer *clock_bitmaps_ly = get_layer_by_name(home_page_inst->ly,
+      "clock_bitmaps");
+  layer_add_bitmap_definition(clock_bitmaps_ly, hour_tens_btmp_def);
+  layer_add_bitmap_definition(clock_bitmaps_ly, hour_units_btmp_def);
+  layer_add_bitmap_definition(clock_bitmaps_ly, clock_dots_btmp_def);
+  layer_add_bitmap_definition(clock_bitmaps_ly, minute_tens_btmp_def);
+  layer_add_bitmap_definition(clock_bitmaps_ly, minute_units_btmp_def);
+  layer_add_bitmap_definition(clock_bitmaps_ly, clock_dots_1_btmp_def);
+  layer_add_bitmap_definition(clock_bitmaps_ly, second_tens_btmp_def);
+  layer_add_bitmap_definition(clock_bitmaps_ly, second_units_btmp_def);
 }
 
 void update_texts() {
@@ -319,14 +328,15 @@ void update_texts() {
       .posx = 5,
       .posy = 7,
       .is_inverted = false};
-  layout_add_text_area(home_page_inst->ly, aqi_text);
-  layout_add_text_area(home_page_inst->ly, aqi_value_text);
-  layout_add_text_area(home_page_inst->ly, ulmp_text);
-  layout_add_text_area(home_page_inst->ly, ulmp_addr_text);
-  layout_add_text_area(home_page_inst->ly, sram_text);
-  layout_add_text_area(home_page_inst->ly, used_ram_text);
-  layout_add_text_area(home_page_inst->ly, day_text);
-  layout_add_text_area(home_page_inst->ly, date_text);
+  layer *text_areas_ly = get_layer_by_name(home_page_inst->ly, "text_areas");
+  layer_add_text_area(text_areas_ly, aqi_text);
+  layer_add_text_area(text_areas_ly, aqi_value_text);
+  layer_add_text_area(text_areas_ly, ulmp_text);
+  layer_add_text_area(text_areas_ly, ulmp_addr_text);
+  layer_add_text_area(text_areas_ly, sram_text);
+  layer_add_text_area(text_areas_ly, used_ram_text);
+  layer_add_text_area(text_areas_ly, day_text);
+  layer_add_text_area(text_areas_ly, date_text);
 }
 
 void create_lines() {
@@ -346,10 +356,11 @@ void create_lines() {
       create_point(SSD1306_WIDTH - 35,
           start_pix_h + CLOCK_DOTS_BITMAPS_H + line_padding * 2 - 3),
       create_point(SSD1306_WIDTH - 35, SSD1306_HEIGHT - 1));
-  layout_add_line(home_page_inst->ly, l);
-  layout_add_line(home_page_inst->ly, l1);
-  layout_add_line(home_page_inst->ly, date_line_left);
-  layout_add_line(home_page_inst->ly, date_line_right);
+  layer *lines_ly = get_layer_by_name(home_page_inst->ly, "lines");
+  layer_add_line(lines_ly, l);
+  layer_add_line(lines_ly, l1);
+  layer_add_line(lines_ly, date_line_left);
+  layer_add_line(lines_ly, date_line_right);
 }
 
 void display_home_page() {
@@ -361,9 +372,15 @@ void display_home_page() {
   update_clock(start_pix_w, start_pix_h, spacing);
   update_texts();
   ssd1306_get_mutex(drivers->oled_screen);
-  layout_draw(home_page_inst->ly);
+  layout_draw_all_layers(home_page_inst->ly);
   ssd1306_show(drivers->oled_screen);
   ssd1306_release_mutex(drivers->oled_screen);
-  layout_flush_bitmap_definitions(home_page_inst->ly);
-  layout_flush_text_areas(home_page_inst->ly);
+  layer *top_bar_bitmaps = get_layer_by_name(home_page_inst->ly,
+      "top_bar_bitmaps");
+  layer *clock_bitmaps = get_layer_by_name(home_page_inst->ly,
+      "clock_bitmaps");
+  layer *text_areas = get_layer_by_name(home_page_inst->ly, "text_areas");
+  layer_remove_bitmap_definitions(top_bar_bitmaps);
+  layer_remove_bitmap_definitions(clock_bitmaps);
+  layer_remove_text_areas(text_areas);
 }

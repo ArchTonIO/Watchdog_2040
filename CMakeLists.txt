@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Initialise pico_sdk from installed location
+# Initialize pico_sdk from installed location
 # (note this can come from environment, CMake cache etc)
 
 # == DO NOT EDIT THE FOLLOWING LINES for the Raspberry Pi Pico VS Code Extension to work ==
@@ -29,7 +29,7 @@ include(pico_sdk_import.cmake)
 
 project(Watchdog_2040 C CXX ASM)
 
-# Initialise the Raspberry Pi Pico SDK
+# Initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
 add_subdirectory(core/lib/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
 # Add executable. Default name is the project name, version 0.1
@@ -37,6 +37,7 @@ add_subdirectory(core/lib/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
 add_executable(Watchdog_2040
 # APPS SECTION
 apps/AQI/aqi.c
+apps/drawing_board/board.c
 apps/flashlight/flashlight.c
 apps/msg_manager/contacts.c
 apps/msg_manager/msg_man_utils.c
@@ -56,6 +57,7 @@ apps/time_submenus/set_time_submenu.c
 apps/time_submenus/stopwatch_submenu.c
 apps/time_submenus/time_utils.c
 apps/time_submenus/timer_submenu.c
+apps/todo/todo.c
 apps/virtual_keyboard/virtual_keyboard.c
 
 # BOOT SECTION
@@ -74,6 +76,7 @@ core/data_structures/string_list.c
 core/graphics/bitmaps.c
 core/graphics/graphic_primitives.c
 core/graphics/graphs.c
+core/graphics/layout.c
 
 # HARDWARE DRIVERS SECTION
 core/hardware_drivers/battery.c

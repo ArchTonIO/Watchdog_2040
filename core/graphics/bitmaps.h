@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include "apps/drawing_board/board.h"
+
 extern const uint8_t battery_empty[];
 extern const uint8_t battery_1_bar[];
 extern const uint8_t battery_2_bars[];
@@ -71,6 +73,22 @@ extern const uint8_t unset_alarm_icon[8];
 extern const uint8_t stopwatch_icon[8];
 extern const uint8_t timer_icon[8];
 extern const uint8_t NO_ICON[8];
+extern const uint8_t b_circle[];
+extern const uint8_t eraser[];
+extern const uint8_t b_line[];
+extern const uint8_t pencil[];
+extern const uint8_t redo[];
+extern const uint8_t square[];
+extern const uint8_t thickness[];
+extern const uint8_t triangle[];
+extern const uint8_t undo[];
+extern const uint8_t quit[];
+extern const uint8_t drawing_board_icon[];
+extern const uint8_t todo_icon[];
+extern const uint8_t password_manager_icon[];
+extern const uint8_t haptic_disabled[];
+extern const uint8_t haptic_icon[];
+extern const uint8_t ulmp_icon[];
 
 #define TOP_BAR_BITMAPS_H 16
 #define TOP_BAR_BITMAPS_W 21
