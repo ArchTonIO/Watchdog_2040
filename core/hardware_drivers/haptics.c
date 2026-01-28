@@ -3,6 +3,7 @@
 
 #include "core/hardware_drivers/haptics.h"
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <sys/_intsup.h>
 #include <sys/types.h>
@@ -11,12 +12,14 @@
 
 #include "core/hardware_drivers/core1.h"
 #include "core/hardware_drivers/haptics.h"
+#include "core/utils/utils.h"
 #include "hardware/gpio.h"
 
 volatile uint8_t performing_core = 1;
 static uint32_t time_now;
 static uint32_t time_from_last_haptic_instruction;
 static uint32_t last_haptic_instruction_time;
+static bool is_haptic_enabled = true;
 static pin _motor_pin;
 
 void haptics_init(pin motor_pin) {
@@ -46,6 +49,8 @@ inline void haptics_switch_performing_core() {
 }
 
 void haptic_pulse(uint8_t pulse_type) {
+  if (!is_haptic_enabled)
+    return;
   time_now = to_ms_since_boot(get_absolute_time());
   if (last_haptic_instruction_time != 0)
     time_from_last_haptic_instruction = time_now -
@@ -54,15 +59,15 @@ void haptic_pulse(uint8_t pulse_type) {
   switch (pulse_type) {
   case AUTO_PULSE:
     if (time_from_last_haptic_instruction < 151)
-      haptics_motor_pulse((uint16_t[]){50}, (uint16_t[]){20}, 1);
+      haptics_motor_pulse((uint16_t[]){30}, (uint16_t[]){20}, 1);
     else
       haptics_motor_pulse((uint16_t[]){100}, (uint16_t[]){0}, 1);
     break;
   case MICRO_PULSE:
-    haptics_motor_pulse((uint16_t[]){50}, (uint16_t[]){20}, 1);
+    haptics_motor_pulse((uint16_t[]){30}, (uint16_t[]){20}, 1);
     break;
   case SHORT_PULSE:
-    haptics_motor_pulse((uint16_t[]){120}, (uint16_t[]){0}, 1);
+    haptics_motor_pulse((uint16_t[]){100}, (uint16_t[]){0}, 1);
     break;
   case LONG_PULSE:
     haptics_motor_pulse((uint16_t[]){1000}, (uint16_t[]){0}, 1);
@@ -77,7 +82,7 @@ void haptic_pulse(uint8_t pulse_type) {
 
 /**
  *@brief Sends an auto pulse instruction to core 1.
- *An auto pulse is either a 50ms-20ms or 100ms-0ms pulse, depending on
+ *An auto pulse is either a 25ms-20ms or 100ms-0ms pulse, depending on
  *how close this call is to the last pulse call,
  *this is to avoid a continuos vibration
  *and still feel distinct pulses.
@@ -105,4 +110,22 @@ void haptic_long_pulse() {
 void haptic_double_pulse() {
   performing_core == 1 ? core1_push_instruction(DOUBLE_PULSE)
                        : haptic_pulse(DOUBLE_PULSE);
+}
+
+void haptic_disable() {
+  if (!is_haptic_enabled) {
+    print_usr_error("Haptic already\ndisabled !");
+    return;
+  }
+  is_haptic_enabled = false;
+  print_info("Haptic disabled !");
+}
+
+void haptic_enable() {
+  if (is_haptic_enabled) {
+    print_usr_error("Haptic already\nenabled !");
+    return;
+  }
+  is_haptic_enabled = true;
+  print_info("Haptic enabled !");
 }

@@ -4,6 +4,7 @@
 #ifndef HW_MANAGER_H
 #define HW_MANAGER_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "core/data_structures/string_list.h"
@@ -27,6 +28,7 @@ typedef struct {
   joystick *joystick;
   sdcard *sd_card;
   rtc_time *rtc;
+  bool power_saving;
 } hw_drivers;
 
 extern hw_drivers *drivers;
@@ -43,5 +45,8 @@ void enable_ens160();
 void disable_ens160();
 void enable_sx1278();
 void disable_sx1278();
+void enable_power_saving_mode();
+void disable_power_saving_mode();
+void process_power_saving();
 
 #endif

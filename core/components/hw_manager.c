@@ -94,6 +94,7 @@ hw_drivers *hardware_drivers_init() {
   hw_man->rtc = rtc_time_init(2025, 5, 9, 4, 20, 37, 00);
   core1_push_instruction(RTC_OK);
   core1_push_instruction(CHECKS_END);
+  hw_man->power_saving = false;
   return hw_man;
 }
 
@@ -168,6 +169,14 @@ void enable_sx1278() {
   print_info("SX1278 lora\nmodule enabled!");
 }
 
+volatile bool wake_requested = false;
+
+void joystick_irq(uint gpio, uint32_t events) {
+  if (gpio == JOYSTICK_BUTTON_PIN) {
+    wake_requested = true;
+  }
+}
+
 void disable_sx1278() {
   if (!drivers->lora_module->is_on) {
     print_usr_error("SX1278 is\nalready disabled!");
@@ -175,4 +184,53 @@ void disable_sx1278() {
   }
   sx1278_sleep(drivers->lora_module);
   print_info("SX1278 lora\nmodule disabled!");
+}
+
+void enable_power_saving_mode() {
+  drivers->power_saving = true;
+  print_info("Power save enabled !");
+}
+void disable_power_saving_mode() {
+  drivers->power_saving = false;
+  print_info("Power save disabled !");
+}
+
+void enter_power_saving_mode() {
+  gpio_set_irq_enabled_with_callback(JOYSTICK_BUTTON_PIN,
+      GPIO_IRQ_EDGE_FALL,
+      true,
+      &joystick_irq);
+  ens160_power_down(drivers->air_quality_sensor);
+  sx1278_sleep(drivers->lora_module);
+  ssd1306_clear(drivers->oled_screen);
+  ssd1306_show(drivers->oled_screen);
+  set_sys_clock_khz(25000, true);
+  sleep_ms(50);
+}
+
+void wait_joystick_interrupt() {
+  while (!wake_requested)
+    __wfi();
+}
+
+void exit_power_saving_mode() {
+  gpio_set_irq_enabled_with_callback(JOYSTICK_BUTTON_PIN,
+      GPIO_IRQ_EDGE_FALL,
+      false,
+      &joystick_irq);
+  set_sys_clock_khz(125000, true);
+  sleep_ms(50);
+  ens160_power_up(drivers->air_quality_sensor);
+  sx1278_set_mode_idle(drivers->lora_module);
+  sleep_ms(10);
+  sx1278_set_mode_rx(drivers->lora_module);
+  wake_requested = false;
+}
+
+void process_power_saving() {
+  if (!drivers->power_saving)
+    return;
+  enter_power_saving_mode();
+  wait_joystick_interrupt();
+  exit_power_saving_mode();
 }

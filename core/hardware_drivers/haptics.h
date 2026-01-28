@@ -21,5 +21,7 @@ void haptic_long_pulse();
 void haptic_double_pulse();
 void haptic_pulse(uint8_t pulse_type);
 void haptics_switch_performing_core();
+void haptic_disable();
+void haptic_enable();
 
 #endif

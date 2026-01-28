@@ -70,11 +70,12 @@ void sys_mainloop() {
   uint8_t screen_up_seconds = 10;
   uint32_t screen_up_start;
   while (true) {
+    process_power_saving();
     ens160_power_down(drivers->air_quality_sensor);
     joystick_update(drivers->joystick);
     update_conversations();
     ssd1306_enable_mutex_support(drivers->oled_screen);
-    if (joystick_get_direction(drivers->joystick) != C || first_run) {
+    if (drivers->joystick->button_pressed || first_run) {
       ens160_power_up(drivers->air_quality_sensor);
       first_run = false;
       haptic_short_pulse();
