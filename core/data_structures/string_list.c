@@ -3,6 +3,7 @@
 
 #include "string_list.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -288,6 +289,28 @@ str_list *str_list_reverse(str_list *list) {
     str_list_append(newlist, str_list_get(list, i));
   }
   return newlist;
+}
+
+/**
+ * @brief Apply a function to every string of the list.
+ * @param list The input list.
+ * @param func The pointer to the callback function.
+ * @param must_free specify if the return string of the callback function
+ * should be freed
+ */
+str_list *str_list_apply_func(str_list *list,
+    char *(func)(const char *input),
+    bool must_free) {
+  str_list *new_list = str_list_init();
+  char *out;
+  for (size_t i = 0; i < list->len; i++) {
+    out = func(str_list_get(list, i));
+    str_list_append(new_list, out);
+    if (must_free)
+      free(out);
+  }
+  str_list_free(list);
+  return new_list;
 }
 
 /**

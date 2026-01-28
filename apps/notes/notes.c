@@ -18,9 +18,11 @@ void notes_launch() {
   list.name = "Notes";
   list.items_category_name = "note";
   list.workdir = sys_paths->dirs->notes_path;
+  list.create_as_dir = false;
   list.create_callback = take_note;
   list.read_update_callback = open_existing_note;
   list.delete_callback = delete_item_basic;
+  list.flag_callback = NULL;
   launch_crud_list(&list);
 }
 

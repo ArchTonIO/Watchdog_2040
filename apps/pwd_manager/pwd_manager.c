@@ -36,9 +36,11 @@ void password_manager_launch() {
   list.name = "Password manager";
   list.items_category_name = "service";
   list.workdir = sys_paths->dirs->pwd_manager_path;
+  list.create_as_dir = false;
   list.create_callback = register_new_service;
   list.read_update_callback = edit_service_credentials;
   list.delete_callback = delete_item_basic;
+  list.flag_callback = NULL;
   init_encrypt_fields(&list);
 }
 

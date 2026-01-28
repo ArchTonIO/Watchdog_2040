@@ -44,6 +44,7 @@ options_page *options_page_init(char *title, str_list *options) {
     page->options[i].display_name = formatted;
     page->options[i].name = original;
     page->options[i].icon = NULL;
+    page->options[i].flag_callback = NULL;
     page->options[i].callback = NULL;
     page->scroll = 0;
   }
@@ -62,6 +63,8 @@ void add_icon_to_option(options_page *page,
 
 /**
  * @brief Attaches a callback function to an option in the options page.
+ * The callback is called when the option is selected by moving the joystick
+ * east
  *
  * @param page The options page to attach the callback to.
  * @param option_index The index of the option to attach the callback to.
@@ -76,10 +79,27 @@ void attach_callback_to_option(options_page *page,
 }
 
 /**
- * @brief Launches an options page with a list of options and allows the user
- * to select one. The selected option is returned as a string, or, if a
- * callback was previously attached to the option, the callback is executed
- * instead.
+ * @brief Attaches a flag callback function to an option in the options page.
+ * The flag callback is called when the option is selected when the joystick
+ * button gets clicked on it.
+ *
+ * @param page The options page to attach the callback to.
+ * @param option_index The index of the option to attach the callback to.
+ * @param callback The callback function to attach.
+ */
+void attach_flag_callback_to_option(options_page *page,
+    uint8_t option_index,
+    char *(flag_callback)(char *input)) {
+  if (option_index < page->num_options) {
+    page->options[option_index].flag_callback = flag_callback;
+  }
+}
+
+/**
+ * @brief Launches an options page with a list of options and allows the
+ * user to select one. The selected option is returned as a string, or, if
+ * a callback was previously attached to the option, the callback is
+ * executed instead.
  * @param page The options page to launch.
  * @returns The name of the selected option as a string.
  */
@@ -148,6 +168,15 @@ char *options_page_launch(options_page *page) {
     ssd1306_release_mutex(drivers->oled_screen);
     joystick_update(drivers->joystick);
     uint8_t joystick_dir = joystick_get_direction(drivers->joystick);
+    if (drivers->joystick->button_pressed) {
+      if (page->options[page->selected_option].flag_callback != NULL) {
+        sleep_ms(INTERAC_TIMEOUT);
+        char *buf = page->options[page->selected_option].flag_callback(
+            page->options[page->selected_option].display_name);
+        free(page->options[page->selected_option].display_name);
+        page->options[page->selected_option].display_name = buf;
+      }
+    }
     if (joystick_dir == N) {
       haptic_auto_pulse();
       if (page->selected_option > 0) {

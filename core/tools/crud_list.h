@@ -4,6 +4,8 @@
 #ifndef CRUD_LIST_H
 #define CRUD_LIST_H
 
+#include <stdbool.h>
+
 #include "core/utils/path.h"
 
 typedef struct crud_list crud_list;
@@ -12,9 +14,16 @@ typedef struct crud_list {
   char *name;
   char *items_category_name;
   path *workdir;
+  bool create_as_dir; // new items will be created as directories (instead of
+  // files)
   void (*create_callback)(crud_list *self);
   void (*read_update_callback)(crud_list *self, const char *item);
   void (*delete_callback)(crud_list *self, const char *item);
+  char *(*flag_callback)(char *input);
+  const char *flag_string;   // the strings that should be added to
+                             // an item when it is being flagged
+  const char *unflag_string; // the strings that should be added to
+                             // an item when it is being unflagged
 } crud_list;
 
 void launch_crud_list(crud_list *list);

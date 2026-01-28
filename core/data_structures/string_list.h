@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #ifndef STRING_LIST_H
@@ -40,6 +41,9 @@ char *str_list_concat(str_list *list, char separator);
 str_list *str_list_extend(str_list *list1, str_list *list2);
 str_list *str_list_copy(str_list *to_copy);
 str_list *str_list_reverse(str_list *list);
+str_list *str_list_apply_func(str_list *list,
+    char *(func)(const char *input),
+    bool must_free);
 void str_list_free(str_list *list);
 
 #endif

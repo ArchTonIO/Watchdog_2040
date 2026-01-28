@@ -24,7 +24,7 @@ void launch_crud_list(crud_list *list) {
   str_list *options;
   options_page *items_page;
 
-  size_t add_option_buf_len = strlen(list->items_category_name) + 3;
+  size_t add_option_buf_len = strlen(list->items_category_name) + 7;
   char add_option_buf[add_option_buf_len];
   snprintf(add_option_buf,
       add_option_buf_len,
@@ -39,12 +39,47 @@ void launch_crud_list(crud_list *list) {
     existing_items = path_listdir(list->workdir);
     options = str_list_extend(items, existing_items);
     items_page = options_page_init(list->name, options);
+
+    if (list->flag_callback != NULL)
+      for (size_t i = 0; i < options->len; i++)
+        attach_flag_callback_to_option(items_page, i, list->flag_callback);
+
     char *buf = options_page_launch(items_page);
     if (strcmp(buf, add_option_buf) == 0)
       list->create_callback(list);
-    else if (strcmp(buf, "") == 0)
+    else if (strcmp(buf, "") == 0) {
+
+      if (list->flag_callback == NULL)
+        break;
+
+      for (size_t i = 0; i < options->len; i++) {
+        if (strstr(items_page->options[i].name, "+ new") != NULL)
+          continue;
+        char *replaced = string_substring_replace(
+            items_page->options[i].display_name,
+            "->",
+            "");
+
+        // checking if the item has been flagged/unflagged by the user by
+        // comparing the name in the option page with replaced to see if they
+        // both contains the flag / unflag string or not
+        if ((strstr(replaced, list->flag_string) != NULL &&
+                strstr(items_page->options[i].name, list->flag_string) !=
+                    NULL) ||
+            (strstr(replaced, list->unflag_string) != NULL &&
+                strstr(items_page->options[i].name, list->unflag_string) !=
+                    NULL)) {
+          free(replaced);
+          continue;
+        }
+
+        delete_item_basic(list, items_page->options[i].name);
+        create_or_overwrite_item(list, replaced, "");
+        free(replaced);
+      }
+
       break;
-    else
+    } else
       edit_or_delete_item(list, buf);
     str_list_free(existing_items);
     options_page_free(items_page);
@@ -104,7 +139,8 @@ path *get_item_path(crud_list *list, const char *item_name) {
  * @returns true if the item exists, false otherwise.
  */
 bool item_exists(crud_list *list, const char *item_name) {
-  str_list *existing_items = path_listdir(list->workdir);
+  str_list *existing_items;
+  existing_items = path_listdir(list->workdir);
   for (size_t i = 0; i < existing_items->len; i++) {
     if (strcmp(str_list_get(existing_items, i), item_name) == 0) {
       str_list_free(existing_items);
@@ -117,17 +153,27 @@ bool item_exists(crud_list *list, const char *item_name) {
 
 /**
  * @brief Creates or overwrites an item in the CRUD list.
+ * When the CRUD list is NOT in single_file_mode:
  *
  * @param list The CRUD list structure.
  * @param item_name The name of the item.
  * @param content The content to write to the item.
+ *
+ * When the CRUD list IS in single_file_mode:
+ * @param list THE CRUD list structure.
+ * @param item_name, the item name to write/rewrite
+ * @param content, the new item name for rewrite, empty string for write
  */
 void create_or_overwrite_item(crud_list *list,
     const char *item_name,
     char *content) {
   path *item_path = get_item_path(list, item_name);
-  path_fwrite(item_path, content, 'w');
+  if (list->create_as_dir)
+    path_mkdir(item_path);
+  else
+    path_fwrite(item_path, content, 'w');
   path_free(item_path);
+  // }
 }
 
 /**
@@ -137,10 +183,13 @@ void create_or_overwrite_item(crud_list *list,
  * @param item_name The name of the item to delete.
  */
 void delete_item_basic(crud_list *list, const char *item_name) {
-  char print_buf[50];
-  snprintf(print_buf, 30, "Deleting\n%s...", item_name);
-  print_loading(print_buf);
+  // char print_buf[50];
+  // snprintf(print_buf, 30, "Deleting\n%s...", item_name);
+  // print_loading(print_buf);
   path *item_path = get_item_path(list, item_name);
-  path_fdelete(item_path);
+  if (list->create_as_dir)
+    path_rmtree(item_path);
+  else
+    path_fdelete(item_path);
   path_free(item_path);
 }
