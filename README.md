@@ -367,7 +367,7 @@ Here our transaction ends, the message has been fully sent.
 
 ## Apps
 
-![alt text](apps.gif)
+![alt text](doc_images/apps.gif)
 
 The apps "shipped" with the last version of the firmware are:
 
@@ -425,11 +425,11 @@ No app depends on it.
 
 Sending a message
 
-![alt text](ulmp.gif)
+![alt text](doc_images/ulmp.gif)
 
 Adding a contact
 
-![alt text](contacts.gif)
+![alt text](doc_images/contacts.gif)
 
 The message manager app is the most complex so its functionalities deserve a list:
 
@@ -472,7 +472,7 @@ No app depends on it.
 
 ### Notes
 
-![alt text](notes.gif)
+![alt text](doc_images/notes.gif)
 
 A simple notes app that allows to create, edit and delete text files on the SD card.
 
@@ -502,7 +502,7 @@ No app depends on it.
 
 ### System submenus
 
-![alt text](sys.gif)
+![alt text](doc_images/sys.gif)
 
 A set of submenus to display system information and perform system actions, like:
 
@@ -539,7 +539,7 @@ Apps that depend on it:
 
 ### Terminal
 
-![alt text](terminal.gif)
+![alt text](doc_images/terminal.gif)
 
 A simple terminal app that allows to execute shell commands on the device, it has two main mode of operation:
 

@@ -6,6 +6,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## leakybob [1.33.0]
+
+### Added
+
+- Automatic power down of ens160 module when in standby-mode to save battery (dramatically)
+- RSSI estimation at ping time - looking for online contacts is now automatically done when selecting the "write message" ULMP app entry, that is going to only show online contacts with their relative RSSI
+- Password manager App, protected with master password that saves credentials to microSD with aes128-ctr encryption
+- Todo App
+
+### Fixed
+
+- Battery percentage estimation is roughly better
+
+### Changed
+
+- Maxed out LoRa transmitting power
+- Improved haptic feedback, it can also be turned-off by user.
+- Joystick dead zones and axis orientation fitted for WD_2040 V1.0 REV3
+
 ## leakybob [1.26.0]
 
 ### Added
