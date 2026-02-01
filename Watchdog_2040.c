@@ -17,7 +17,6 @@
 #include "core/components/sys_paths_manager.h"
 #include "core/data_structures/string_list.h"
 #include "core/hardware_drivers/core1.h"
-#include "core/hardware_drivers/ens160.h"
 #include "core/hardware_drivers/haptics.h"
 #include "core/hardware_drivers/joystick.h"
 #include "core/hardware_drivers/onboard_led.h"
@@ -25,6 +24,7 @@
 #include "core/tools/menus.h"
 #include "core/utils/path.h"
 #include "hardware/adc.h"
+
 path *first_boot_file;
 
 bool is_first_boot() { return (!path_exists(first_boot_file)); }
@@ -70,40 +70,37 @@ void sys_mainloop() {
   uint8_t screen_up_seconds = 10;
   uint32_t screen_up_start;
   while (true) {
-    process_power_saving();
-    ens160_power_down(drivers->air_quality_sensor);
+    if (!first_run)
+      sys_idle();
     joystick_update(drivers->joystick);
     update_conversations();
-    ssd1306_enable_mutex_support(drivers->oled_screen);
-    if (drivers->joystick->button_pressed || first_run) {
-      ens160_power_up(drivers->air_quality_sensor);
-      first_run = false;
-      haptic_short_pulse();
-      screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
-      while (true) {
-        check_peripherals();
-        process_system_state();
-        update_conversations();
-        display_home_page();
-        joystick_update(drivers->joystick);
-        if (joystick_get_direction(drivers->joystick) == E) {
-          display_main_menu();
-          sleep_ms(200);
-          screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
-        }
-        joystick_update(drivers->joystick);
-        if (joystick_get_direction(drivers->joystick) == W) {
-          sleep_ms(200);
-          break;
-        }
-        if ((to_us_since_boot(get_absolute_time()) / 1000000) -
-                screen_up_start >
-            screen_up_seconds)
-          break;
+    haptic_short_pulse();
+    first_run = false;
+    screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
+    while (true) {
+      check_peripherals();
+      process_system_state();
+      update_conversations();
+      display_home_page();
+      joystick_update(drivers->joystick);
+      if (drivers->joystick->button_pressed)
+        toggle_continuous_rx();
+      if (joystick_get_direction(drivers->joystick) == E) {
+        display_main_menu();
+        sleep_ms(200);
+        screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
       }
-      ssd1306_clear(drivers->oled_screen);
-      ssd1306_show(drivers->oled_screen);
+      joystick_update(drivers->joystick);
+      if (joystick_get_direction(drivers->joystick) == W) {
+        sleep_ms(200);
+        break;
+      }
+      if ((to_us_since_boot(get_absolute_time()) / 1000000) - screen_up_start >
+          screen_up_seconds)
+        break;
     }
+    ssd1306_clear(drivers->oled_screen);
+    ssd1306_show(drivers->oled_screen);
   }
 }
 

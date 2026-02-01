@@ -41,12 +41,7 @@ void print_free_heap();
 uint get_clock_freq_khz();
 float get_cpu_temp();
 uint32_t get_used_flash_bytes();
-void enable_ens160();
-void disable_ens160();
-void enable_sx1278();
-void disable_sx1278();
-void enable_power_saving_mode();
-void disable_power_saving_mode();
-void process_power_saving();
-
+void sys_idle();
+void toggle_continuous_rx();
+bool is_rxcontinuous_enabled();
 #endif

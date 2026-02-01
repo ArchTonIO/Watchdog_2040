@@ -23,6 +23,8 @@ static char *alarm_message;
 
 void alarm_callback();
 
+static void at_change_callback(time_digits *digits) {}
+
 void enter_set_alarm_submenu() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
   ssd1306_clear(drivers->oled_screen);
@@ -39,7 +41,7 @@ void enter_set_alarm_submenu() {
       set_timedate_decr,
       set_timedate_leftmost,
       set_timedate_rigthmost);
-  set_hours_tens(digits, NULL);
+  set_hours_tens(digits, at_change_callback);
   text_editor *editor = text_editor_launch(
       "# Write the message to display when the alarm goes off\n",
       true);

@@ -6,8 +6,6 @@
 
 #include <stdint.h>
 
-#include "apps/drawing_board/board.h"
-
 extern const uint8_t battery_empty[];
 extern const uint8_t battery_1_bar[];
 extern const uint8_t battery_2_bars[];
@@ -24,6 +22,8 @@ extern const uint8_t alarm_enabled[];
 extern const uint8_t alarm_disabled[];
 extern const uint8_t *clock_digits[10];
 extern const uint8_t clock_dots[];
+extern const uint8_t rxcontinuous_disabled[];
+extern const uint8_t rxcontinuous_enabled[];
 extern const uint8_t message_received[];
 extern const uint8_t message_received_open[];
 extern const uint8_t malloc_the_mascot[];

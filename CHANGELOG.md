@@ -6,6 +6,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## leakybob [1.34.0]
+
+### Added
+
+- Continuous rx mode can be enabled/disabled from an home screen shortcut
+
+### Fixed
+
+- Fixed bugs 14, 15, 16, 17 (all related to alarm and lora module)
+
+### Changed
+
+- Not fully implemented apps are removed from the main launcher
+- Made mainloop more lightweight, when rx continuous is disabled more battery gets saved
+
 ## leakybob [1.33.0]
 
 ### Added

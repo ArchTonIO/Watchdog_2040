@@ -11,4 +11,8 @@
 - [solved]   - bug10 - if a message arrives when the recipient is displaying the notification screen from the previously arrived message, the new message will not get delivered
 - [solved]   - bug11 - memory leak when password requests to access terminal returns false (wrong password)
 - [solved]   - bug12 - messages from unknown address are not properly saved
-- [solved]   - bug13 - when scanning for online contacts no device can be found even if they are on and in range (the irq_flags reg of the sx1278 was not properly cleared) 
+- [solved]   - bug13 - when scanning for online contacts no device can be found even if they are on and in range (the irq_flags reg of the sx1278 was not properly cleared)
+- [solved]   - bug14 - when setting the alarm, modifying the last seconds digit makes the system crash (at_change_callback of "set_hours_tens" was set to NULL)
+- [solved]   - bug15 - memory leak when setting alarm (it is not a leak, the alarm message is stored in a static char)
+- [solved]   - bug16 - alarm does not fires if clock speed is reduced during standby (looks like it does works)
+- [solved]   - bug17 - after sx1278 goes to sleep it does not work when set to rx mode (sx1278 needs to be re-initialized)

@@ -123,6 +123,12 @@ const uint8_t *get_alarm_status_bitmap() {
     return alarm_disabled;
 }
 
+const uint8_t *get_rxcontinuous_indicator_bitmap() {
+  if (is_rxcontinuous_enabled())
+    return rxcontinuous_enabled;
+  return rxcontinuous_disabled;
+}
+
 void update_clock_bitmaps() {
   update_time(drivers->rtc);
   int8_t hour = drivers->rtc->internal_datetime.hour;
@@ -192,6 +198,21 @@ void update_top_bar() {
   layer_add_bitmap_definition(top_bar_bitmaps_ly, en160_status_btmp_def);
   layer_add_bitmap_definition(top_bar_bitmaps_ly, notifications_btmp_def);
   layer_add_bitmap_definition(top_bar_bitmaps_ly, alarm_status_btmp_def);
+}
+
+void update_rxcontinuous_indicator() {
+  bitmap_definition rxcontinuous_indicator_btmp_def = {
+      .bitmap = get_rxcontinuous_indicator_bitmap(),
+      .width = 21,
+      .height = 16,
+      .posx = TOP_BAR_BITMAPS_W * 5, // aligned with the alarm top tray icon
+      .posy = 24,
+      .is_inverted = false,
+  };
+  layer *top_bar_bitmaps_ly = get_layer_by_name(home_page_inst->ly,
+      "top_bar_bitmaps");
+  layer_add_bitmap_definition(top_bar_bitmaps_ly,
+      rxcontinuous_indicator_btmp_def);
 }
 
 void update_clock(uint8_t start_pix_w, uint8_t start_pix_h, uint8_t spacing) {
@@ -368,6 +389,7 @@ void display_home_page() {
   uint8_t start_pix_h = 23;
   uint8_t spacing = 2;
   update_top_bar();
+  update_rxcontinuous_indicator();
   update_clock_bitmaps();
   update_clock(start_pix_w, start_pix_h, spacing);
   update_texts();

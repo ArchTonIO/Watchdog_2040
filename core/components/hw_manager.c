@@ -20,7 +20,6 @@
 #include "core/hardware_drivers/sdcard.h"
 #include "core/hardware_drivers/ssd1306.h"
 #include "core/hardware_drivers/sx1278.h"
-#include "core/utils/utils.h"
 #include "hardware/adc.h"
 #include "hardware/clocks.h"
 
@@ -132,44 +131,17 @@ inline uint32_t get_used_flash_bytes() {
   return (uint32_t)(&__flash_binary_end) - XIP_BASE;
 }
 
-void enable_ens160() {
-  if (drivers->air_quality_sensor->is_on) {
-    print_usr_error("ENS160 is\nalready enabled!");
-    return;
-  }
-  if (!drivers->air_quality_sensor->is_working) {
-    print_sys_error("ENS160 is\nnot working!");
-    return;
-  }
-  drivers->air_quality_sensor->manually_turned_off = false;
-  ens160_power_up(drivers->air_quality_sensor);
-  print_info("ENS160 sensor\nenabled!");
-}
-
-void disable_ens160() {
-  if (!drivers->air_quality_sensor->is_on) {
-    print_usr_error("ENS160 is\nalready disabled!");
-    return;
-  }
-  drivers->air_quality_sensor->manually_turned_off = true;
-  ens160_power_down(drivers->air_quality_sensor);
-  print_info("ENS160 sensor\ndisabled!");
-}
-
-void enable_sx1278() {
-  if (drivers->lora_module->is_on) {
-    print_usr_error("SX1278 is\nalready enabled!");
-    return;
-  }
-  if (!drivers->lora_module->is_working) {
-    print_sys_error("SX1278 is\nnot working!");
-    return;
-  }
-  sx1278_set_mode_rx(drivers->lora_module);
-  print_info("SX1278 lora\nmodule enabled!");
-}
-
 volatile bool wake_requested = false;
+volatile bool continuous_rx = false;
+
+void toggle_continuous_rx() {
+  if (continuous_rx)
+    continuous_rx = false;
+  else
+    continuous_rx = true;
+}
+
+inline bool is_rxcontinuous_enabled() { return continuous_rx; }
 
 void joystick_irq(uint gpio, uint32_t events) {
   if (gpio == JOYSTICK_BUTTON_PIN) {
@@ -177,60 +149,57 @@ void joystick_irq(uint gpio, uint32_t events) {
   }
 }
 
-void disable_sx1278() {
-  if (!drivers->lora_module->is_on) {
-    print_usr_error("SX1278 is\nalready disabled!");
-    return;
-  }
-  sx1278_sleep(drivers->lora_module);
-  print_info("SX1278 lora\nmodule disabled!");
-}
-
-void enable_power_saving_mode() {
-  drivers->power_saving = true;
-  print_info("Power save enabled !");
-}
-void disable_power_saving_mode() {
-  drivers->power_saving = false;
-  print_info("Power save disabled !");
-}
-
-void enter_power_saving_mode() {
-  gpio_set_irq_enabled_with_callback(JOYSTICK_BUTTON_PIN,
-      GPIO_IRQ_EDGE_FALL,
-      true,
-      &joystick_irq);
+void enter_idle() {
   ens160_power_down(drivers->air_quality_sensor);
-  sx1278_sleep(drivers->lora_module);
   ssd1306_clear(drivers->oled_screen);
   ssd1306_show(drivers->oled_screen);
-  set_sys_clock_khz(25000, true);
-  sleep_ms(50);
+  ssd1306_enable_mutex_support(drivers->oled_screen);
+  if (!continuous_rx) {
+    gpio_set_irq_enabled_with_callback(JOYSTICK_BUTTON_PIN,
+        GPIO_IRQ_EDGE_FALL,
+        true,
+        &joystick_irq);
+    sx1278_sleep(drivers->lora_module);
+    set_sys_clock_khz(25000, true);
+    sleep_ms(50);
+  }
 }
 
 void wait_joystick_interrupt() {
-  while (!wake_requested)
-    __wfi();
+  if (!continuous_rx)
+    while (!wake_requested)
+      __wfi();
+  else
+    while (!drivers->joystick->button_pressed) {
+      joystick_update(drivers->joystick);
+    }
 }
 
-void exit_power_saving_mode() {
-  gpio_set_irq_enabled_with_callback(JOYSTICK_BUTTON_PIN,
-      GPIO_IRQ_EDGE_FALL,
-      false,
-      &joystick_irq);
-  set_sys_clock_khz(125000, true);
-  sleep_ms(50);
+void exit_idle() {
   ens160_power_up(drivers->air_quality_sensor);
-  sx1278_set_mode_idle(drivers->lora_module);
-  sleep_ms(10);
-  sx1278_set_mode_rx(drivers->lora_module);
+  if (!continuous_rx) {
+    gpio_set_irq_enabled_with_callback(JOYSTICK_BUTTON_PIN,
+        GPIO_IRQ_EDGE_FALL,
+        false,
+        &joystick_irq);
+    drivers->lora_module = sx1278_init(SX1278_MOSI,
+        SX1278_MISO,
+        SX1278_SCK,
+        SX1278_CS,
+        SX1278_INTERRUPT,
+        SX1278_SPI_PORT,
+        SX1278_SPI_BAUDRATE,
+        SX1278_TX_POWER,
+        drivers->lora_module->message_received_callback);
+    sx1278_set_mode_rx(drivers->lora_module);
+    set_sys_clock_khz(125000, true);
+    sleep_ms(50);
+  }
   wake_requested = false;
 }
 
-void process_power_saving() {
-  if (!drivers->power_saving)
-    return;
-  enter_power_saving_mode();
+void sys_idle() {
+  enter_idle();
   wait_joystick_interrupt();
-  exit_power_saving_mode();
+  exit_idle();
 }
