@@ -14,16 +14,24 @@ typedef uint8_t pin;
 /*vibrating motor settings*/
 #define HAPTICS_MOTOR_PIN 8
 
+/*i2c1 bus settings*/
+#define I2C1_BUS_SDA 2
+#define I2C1_BUS_SCK 3
+#define I2C1_BUS_PORT i2c1
+#define I2C1_BUS_BAUDRATE 100 * 1000
+
 /*ENS160 air quality sensor settings*/
-#define ENS160_SDA 2
-#define ENS160_SCK 3
 #define ENS160_I2C_PORT i2c1
-#define ENS160_BAUDRATE 400 * 1000
 #define ENS160_ADDR 0x53
+
+/*DS3231 RTC SETTINGS*/
+#define DS3231_I2C_PORT i2c1
+#define DS3231_I2C_ADDRESS 0x68
 
 /*SSD1306 oled screen settings*/
 #define SSD1306_SDA 0
 #define SSD1306_SCK 1
+#define SSD1306_PWR 9
 #define SSD1306_I2C_PORT i2c0
 #define SSD1306_BAUDRATE 100 * 1000
 #define SSD1306_WIDTH 128

@@ -4,21 +4,26 @@
 #include "rtc_time.h"
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "pico/time.h"
 #include "pico/util/datetime.h"
 
+#include "core/hardware_drivers/ds3231.h"
 #include "hardware/rtc.h"
 
-rtc_time *rtc_time_init(int16_t year,
+rtc_time *rtc_time_init(ds3231_rtc_t external_rtc,
+    int16_t year,
     int8_t month,
     int8_t day,
     int8_t weekday,
     int8_t hour,
     int8_t minute,
     int8_t second) {
+
   rtc_time *new_rtc = (rtc_time *)malloc(sizeof(rtc_time));
+  new_rtc->external_rtc = external_rtc;
   new_rtc->year = year;
   new_rtc->month = month;
   new_rtc->day = day;
@@ -73,6 +78,34 @@ void rtc_time_set_time(rtc_time *rtc,
       .hour = hour,
       .min = minute,
       .sec = second};
+  rtc->internal_datetime = t;
+  ds3231_datetime_t external_rtc_datetime = {
+      .hour = hour,
+      .minutes = minute,
+      .seconds = second,
+      .day = day,
+      .dotw = weekday,
+      .month = month,
+      .year = year,
+  };
+  ds3231_set_datetime(&external_rtc_datetime, &(rtc->external_rtc));
+  rtc_set_datetime(&rtc->internal_datetime);
+  sleep_us(64);
+}
+
+void rtc_time_load_time_from_external_rtc(rtc_time *rtc,
+    ds3231_rtc_t *external_rtc) {
+  ds3231_datetime_t ds3231_time;
+  ds3231_get_datetime(&ds3231_time, external_rtc);
+  printf("LOADING TIME FROM EXTERNAL_RTC\n");
+  printf("%d", ds3231_time.hour);
+  datetime_t t = {.year = ds3231_time.year,
+      .month = ds3231_time.month,
+      .day = ds3231_time.day,
+      .dotw = ds3231_time.dotw,
+      .hour = ds3231_time.hour,
+      .min = ds3231_time.minutes,
+      .sec = ds3231_time.seconds};
   rtc->internal_datetime = t;
   rtc_set_datetime(&rtc->internal_datetime);
   sleep_us(64);

@@ -81,6 +81,7 @@ core/graphics/layout.c
 # HARDWARE DRIVERS SECTION
 core/hardware_drivers/battery.c
 core/hardware_drivers/core1.c
+core/hardware_drivers/ds3231.c
 core/hardware_drivers/ens160.c
 core/hardware_drivers/haptics.c
 core/hardware_drivers/joystick.c
@@ -119,7 +120,7 @@ pico_enable_stdio_usb(Watchdog_2040 1)
 
 # Add the standard library to the build
 target_link_libraries(Watchdog_2040
-        pico_stdlib hardware_i2c hardware_rtc hardware_spi hardware_adc FatFs_SPI pico_rand pico_multicore)
+        pico_stdlib hardware_i2c hardware_rtc hardware_spi hardware_adc FatFs_SPI pico_rand pico_multicore hardware_pwm)
 
 # Add the standard include files to the build
 target_include_directories(Watchdog_2040 PRIVATE

@@ -7,8 +7,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "config.h"
-#include "hardware/gpio.h"
 #include "hardware/i2c.h"
 
 int16_t translate_pair(uint8_t msb, uint8_t lsb);
@@ -16,29 +14,13 @@ bool ens160_is_working(ens160 *sensor);
 
 /**
  * @brief Initializes an ENS160 air quality sensor instance.
- * @param sda The SDA pin for I2C communication.
- * @param sck The SCK pin for I2C communication.
- * @param i2c_port The I2C port to use.
- * @param baudrate The baud rate for I2C communication.
  * @param address The I2C address of the ENS160 sensor.
  * @return A pointer to the initialized ens160 instance.
  */
-ens160 *ens160_init(pin sda,
-    pin sck,
-    i2c_inst_t *i2c_port,
-    uint32_t baudrate,
-    uint32_t address) {
+ens160 *ens160_init(i2c_inst_t *i2c_port, uint32_t address) {
   ens160 *new_sensor = (ens160 *)malloc(sizeof(ens160));
-  new_sensor->sda = sda;
-  new_sensor->sck = sck;
   new_sensor->i2c_port = i2c_port;
-  new_sensor->baudrate = baudrate;
   new_sensor->address = address;
-  i2c_init(i2c_port, baudrate);
-  gpio_set_function(sda, GPIO_FUNC_I2C);
-  gpio_set_function(sck, GPIO_FUNC_I2C);
-  gpio_pull_up(sda);
-  gpio_pull_up(sck);
   new_sensor->is_working = ens160_is_working(new_sensor);
   new_sensor->is_on = true;
   new_sensor->manually_turned_off = false;

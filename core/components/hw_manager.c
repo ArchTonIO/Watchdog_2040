@@ -12,6 +12,7 @@
 #include "core/hardware_drivers/battery.h"
 #include "core/hardware_drivers/config.h"
 #include "core/hardware_drivers/core1.h"
+#include "core/hardware_drivers/ds3231.h"
 #include "core/hardware_drivers/ens160.h"
 #include "core/hardware_drivers/haptics.h"
 #include "core/hardware_drivers/joystick.h"
@@ -26,10 +27,19 @@
 hw_drivers *drivers;
 void wait_for_core1();
 
+void init_i2c1_bus() {
+  i2c_init(I2C1_BUS_PORT, I2C1_BUS_BAUDRATE);
+  gpio_set_function(I2C1_BUS_SDA, GPIO_FUNC_I2C);
+  gpio_set_function(I2C1_BUS_SCK, GPIO_FUNC_I2C);
+  gpio_pull_up(I2C1_BUS_SDA);
+  gpio_pull_up(I2C1_BUS_SCK);
+}
+
 hw_drivers *hardware_drivers_init() {
   hw_drivers *hw_man = (hw_drivers *)malloc(sizeof(hw_drivers));
   hw_man->oled_screen = ssd1306_init(SSD1306_SDA,
       SSD1306_SCK,
+      SSD1306_PWR,
       SSD1306_I2C_PORT,
       SSD1306_BAUDRATE,
       SSD1306_WIDTH,
@@ -42,11 +52,8 @@ hw_drivers *hardware_drivers_init() {
   core1_spin();
   sleep_ms(1000);
   core1_push_instruction(SHOW_BOOTUP);
-  hw_man->air_quality_sensor = ens160_init(ENS160_SDA,
-      ENS160_SCK,
-      ENS160_I2C_PORT,
-      ENS160_BAUDRATE,
-      ENS160_ADDR);
+  init_i2c1_bus();
+  hw_man->air_quality_sensor = ens160_init(ENS160_I2C_PORT, ENS160_ADDR);
   if (hw_man->air_quality_sensor->is_working)
     core1_push_instruction(ENS160_OK);
   else
@@ -90,7 +97,12 @@ hw_drivers *hardware_drivers_init() {
     core1_push_instruction(SDCARD_OK);
   else
     core1_push_instruction(SDCARD_ERR);
-  hw_man->rtc = rtc_time_init(2025, 5, 9, 4, 20, 37, 00);
+
+  ds3231_rtc_t external_rtc;
+  ds3231_init(DS3231_I2C_PORT, DS3231_I2C_ADDRESS, &external_rtc);
+  hw_man->external_rtc = external_rtc;
+  hw_man->rtc = rtc_time_init(external_rtc, 2025, 5, 9, 4, 20, 37, 00);
+  rtc_time_load_time_from_external_rtc(hw_man->rtc, &external_rtc);
   core1_push_instruction(RTC_OK);
   core1_push_instruction(CHECKS_END);
   hw_man->power_saving = false;

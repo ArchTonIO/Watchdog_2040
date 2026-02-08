@@ -9,6 +9,7 @@
 
 #include "core/data_structures/string_list.h"
 #include "core/hardware_drivers/battery.h"
+#include "core/hardware_drivers/ds3231.h"
 #include "core/hardware_drivers/ens160.h"
 #include "core/hardware_drivers/joystick.h"
 #include "core/hardware_drivers/rtc_time.h"
@@ -27,6 +28,7 @@ typedef struct {
   battery *battery;
   joystick *joystick;
   sdcard *sd_card;
+  ds3231_rtc_t external_rtc;
   rtc_time *rtc;
   bool power_saving;
 } hw_drivers;
