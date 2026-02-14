@@ -49,24 +49,25 @@ typedef struct {
   float sensitivity;
   int16_t axis_rotation;
   bool is_working;
-} joystick;
+} joystick_t;
 
 typedef struct {
   float l;
   float theta_deg;
 } polar_coords;
 
-joystick *joystick_init(pin x_pin,
+void joystick_init(joystick_t *joystick,
+    pin x_pin,
     pin y_pin,
     uint8_t x_channel,
     uint8_t y_channel,
     pin button_pin,
     float sensitivity,
     int16_t axis_rotation);
-uint8_t joystick_get_direction(joystick *joystick);
-polar_coords joystick_get_polar(joystick *joystick);
-bool joystick_check_long_press(joystick *joystick, uint16_t interval_ms);
-void joystick_print(joystick *joystick);
-void joystick_update(joystick *joystick);
+uint8_t joystick_get_direction(joystick_t *joystick);
+polar_coords joystick_get_polar(joystick_t *joystick);
+bool joystick_check_long_press(joystick_t *joystick, uint16_t interval_ms);
+void joystick_print(joystick_t *joystick);
+void joystick_update(joystick_t *joystick);
 
 #endif

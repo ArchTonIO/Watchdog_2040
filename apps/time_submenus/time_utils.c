@@ -153,8 +153,8 @@ void set_hours_tens(time_digits *digits,
       create_point(start_x + CLOCK_DIGIT_BITMAPS_W - 1, upper_y));
   while (true) {
     blink_lines(underline, upperline, TIME_SUBMENUS_INPUT_TIMEOUT / 2);
-    joystick_update(drivers->joystick);
-    uint8_t direction = joystick_get_direction(drivers->joystick);
+    joystick_update(&(drivers->joystick));
+    uint8_t direction = joystick_get_direction(&(drivers->joystick));
     switch (direction) {
     case N:
       haptic_auto_pulse();
@@ -194,8 +194,8 @@ void set_hours_units(time_digits *digits,
       create_point(start_x + CLOCK_DIGIT_BITMAPS_W - 1, upper_y));
   while (true) {
     blink_lines(underline, upperline, TIME_SUBMENUS_INPUT_TIMEOUT / 2);
-    joystick_update(drivers->joystick);
-    uint8_t direction = joystick_get_direction(drivers->joystick);
+    joystick_update(&(drivers->joystick));
+    uint8_t direction = joystick_get_direction(&(drivers->joystick));
     switch (direction) {
     case N:
       haptic_auto_pulse();
@@ -237,8 +237,8 @@ void set_minutes_tens(time_digits *digits,
 
   while (true) {
     blink_lines(underline, upperline, TIME_SUBMENUS_INPUT_TIMEOUT / 2);
-    joystick_update(drivers->joystick);
-    uint8_t direction = joystick_get_direction(drivers->joystick);
+    joystick_update(&(drivers->joystick));
+    uint8_t direction = joystick_get_direction(&(drivers->joystick));
     switch (direction) {
     case N:
       haptic_auto_pulse();
@@ -278,8 +278,8 @@ void set_minutes_units(time_digits *digits,
       create_point(start_x + CLOCK_DIGIT_BITMAPS_W - 1, upper_y));
   while (true) {
     blink_lines(underline, upperline, TIME_SUBMENUS_INPUT_TIMEOUT / 2);
-    joystick_update(drivers->joystick);
-    uint8_t direction = joystick_get_direction(drivers->joystick);
+    joystick_update(&(drivers->joystick));
+    uint8_t direction = joystick_get_direction(&(drivers->joystick));
     switch (direction) {
     case N:
       haptic_auto_pulse();
@@ -319,8 +319,8 @@ void set_seconds_tens(time_digits *digits,
       create_point(start_x + CLOCK_DIGIT_BITMAPS_W - 1, upper_y));
   while (true) {
     blink_lines(underline, upperline, TIME_SUBMENUS_INPUT_TIMEOUT / 2);
-    joystick_update(drivers->joystick);
-    uint8_t direction = joystick_get_direction(drivers->joystick);
+    joystick_update(&(drivers->joystick));
+    uint8_t direction = joystick_get_direction(&(drivers->joystick));
     switch (direction) {
     case N:
       haptic_auto_pulse();
@@ -360,8 +360,8 @@ void set_seconds_units(time_digits *digits,
       create_point(start_x + CLOCK_DIGIT_BITMAPS_W - 1, upper_y));
   while (true) {
     blink_lines(underline, upperline, TIME_SUBMENUS_INPUT_TIMEOUT / 2);
-    joystick_update(drivers->joystick);
-    uint8_t direction = joystick_get_direction(drivers->joystick);
+    joystick_update(&(drivers->joystick));
+    uint8_t direction = joystick_get_direction(&(drivers->joystick));
     switch (direction) {
     case N:
       haptic_auto_pulse();

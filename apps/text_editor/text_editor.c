@@ -137,14 +137,14 @@ char *text_editor_get_buf(text_editor *editor) {
 
 void navigate_text(text_editor *editor) {
   while (1) {
-    if (joystick_check_long_press(drivers->joystick, 500)) {
+    if (joystick_check_long_press(&(drivers->joystick), 500)) {
       sleep_ms(1000);
       break;
     }
     blink_cursor(editor, editor->video_cursor_col, editor->video_cursor_row);
     ssd1306_show(&(drivers->ssd1306));
-    joystick_update(drivers->joystick);
-    if (joystick_get_direction(drivers->joystick) == N) {
+    joystick_update(&(drivers->joystick));
+    if (joystick_get_direction(&(drivers->joystick)) == N) {
       if (editor->video_cursor_row > 0)
         editor->video_cursor_row--;
       if (editor->logic_cursor_row > 0)
@@ -153,7 +153,7 @@ void navigate_text(text_editor *editor) {
           editor->logic_cursor_row > editor->video_cursor_row + 1)
         scroll_view_up(editor);
     }
-    if (joystick_get_direction(drivers->joystick) == S) {
+    if (joystick_get_direction(&(drivers->joystick)) == S) {
       if (editor->video_cursor_row < MAX_VIDEO_ROWS - 1)
         editor->video_cursor_row++;
       if (editor->logic_cursor_row < MAX_LOGIC_ROWS - 1)
@@ -162,12 +162,12 @@ void navigate_text(text_editor *editor) {
           editor->logic_cursor_row > editor->video_cursor_row)
         scroll_view_down(editor);
     }
-    if (joystick_get_direction(drivers->joystick) == W &&
+    if (joystick_get_direction(&(drivers->joystick)) == W &&
         editor->video_cursor_col > 0) {
       editor->video_cursor_col--;
       editor->logic_cursor_col--;
     }
-    if (joystick_get_direction(drivers->joystick) == E &&
+    if (joystick_get_direction(&(drivers->joystick)) == E &&
         editor->video_cursor_col < MAX_VIDEO_COLS) {
       editor->video_cursor_col++;
       editor->logic_cursor_col++;

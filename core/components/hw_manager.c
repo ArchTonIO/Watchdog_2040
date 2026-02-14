@@ -37,6 +37,7 @@ void init_i2c1_bus() {
 
 hw_drivers *hardware_drivers_init() {
   hw_drivers *hw_man = (hw_drivers *)malloc(sizeof(hw_drivers));
+
   ssd1306_t ssd1306;
   ssd1306_init(&ssd1306,
       SSD1306_SDA,
@@ -48,6 +49,7 @@ hw_drivers *hardware_drivers_init() {
       SSD1306_ADDR);
   hw_man->ssd1306 = ssd1306;
   drivers = hw_man;
+
   haptics_init(HAPTICS_MOTOR_PIN);
   onboard_led_init(ONBOARD_LED_PIN);
   core1_scheduler_init();
@@ -55,6 +57,7 @@ hw_drivers *hardware_drivers_init() {
   sleep_ms(1000);
   core1_push_instruction(SHOW_BOOTUP);
   init_i2c1_bus();
+
   ens160_t ens160;
   ens160_init(&ens160, ENS160_I2C_PORT, ENS160_ADDR);
   hw_man->ens160 = ens160;
@@ -62,6 +65,7 @@ hw_drivers *hardware_drivers_init() {
     core1_push_instruction(ENS160_OK);
   else
     core1_push_instruction(ENS160_ERR);
+
   hw_man->lora_module = sx1278_init(SX1278_MOSI,
       SX1278_MISO,
       SX1278_SCK,
@@ -75,6 +79,7 @@ hw_drivers *hardware_drivers_init() {
     core1_push_instruction(SX1278_OK);
   else
     core1_push_instruction(SX1278_ERR);
+
   hw_man->battery = battery_init(ADC_MAX_VALUE,
       BATTERY_MIN_VOLTAGE,
       BATTERY_MAX_VOLTAGE,
@@ -84,17 +89,22 @@ hw_drivers *hardware_drivers_init() {
     core1_push_instruction(BATTERY_OK);
   else
     core1_push_instruction(BATTERY_ERR);
-  hw_man->joystick = joystick_init(JOYSTICK_X_PIN,
+
+  joystick_t joystick;
+  joystick_init(&joystick,
+      JOYSTICK_X_PIN,
       JOYSTICK_Y_PIN,
       JOYSTICK_X_CHANNEL,
       JOYSTICK_Y_CHANNEL,
       JOYSTICK_BUTTON_PIN,
       JOYSTICK_SENSITIVITY,
       JOYSTICK_ROTATION);
-  if (hw_man->joystick->is_working)
+  hw_man->joystick = joystick;
+  if (hw_man->joystick.is_working)
     core1_push_instruction(JOYSTICK_OK);
   else
     core1_push_instruction(JOYSTICK_ERR);
+
   hw_man->sd_card = sdcard_init();
   sdcard_mount(hw_man->sd_card);
   if (hw_man->sd_card->is_working)
@@ -186,8 +196,8 @@ void wait_joystick_interrupt() {
     while (!wake_requested)
       __wfi();
   else
-    while (!drivers->joystick->button_pressed) {
-      joystick_update(drivers->joystick);
+    while (!(drivers->joystick).button_pressed) {
+      joystick_update(&(drivers->joystick));
     }
 }
 

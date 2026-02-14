@@ -72,7 +72,7 @@ void sys_mainloop() {
   while (true) {
     if (!first_run)
       sys_idle();
-    joystick_update(drivers->joystick);
+    joystick_update(&(drivers->joystick));
     update_conversations();
     haptic_short_pulse();
     first_run = false;
@@ -82,16 +82,16 @@ void sys_mainloop() {
       process_system_state();
       update_conversations();
       display_home_page();
-      joystick_update(drivers->joystick);
-      if (drivers->joystick->button_pressed)
+      joystick_update(&(drivers->joystick));
+      if ((drivers->joystick).button_pressed)
         toggle_continuous_rx();
-      if (joystick_get_direction(drivers->joystick) == E) {
+      if (joystick_get_direction(&(drivers->joystick)) == E) {
         display_main_menu();
         sleep_ms(200);
         screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
       }
-      joystick_update(drivers->joystick);
-      if (joystick_get_direction(drivers->joystick) == W) {
+      joystick_update(&(drivers->joystick));
+      if (joystick_get_direction(&(drivers->joystick)) == W) {
         sleep_ms(200);
         break;
       }

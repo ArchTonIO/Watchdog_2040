@@ -49,9 +49,9 @@ malloc_memories *malloc_memories_init() {
 void right_to_continue() {
   ssd1306_print(&(drivers->ssd1306), "Right to continue ->", 0, 7, 0);
   ssd1306_show(&(drivers->ssd1306));
-  joystick_update(drivers->joystick);
-  while (joystick_get_direction(drivers->joystick) != E) {
-    joystick_update(drivers->joystick);
+  joystick_update(&(drivers->joystick));
+  while (joystick_get_direction(&(drivers->joystick)) != E) {
+    joystick_update(&(drivers->joystick));
     sleep_ms(10);
   }
 }

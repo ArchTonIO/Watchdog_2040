@@ -85,9 +85,9 @@ void reset_system() {
       false);
   ssd1306_show(&(drivers->ssd1306));
   sleep_ms(200);
-  joystick_update(drivers->joystick);
-  while (joystick_get_direction(drivers->joystick) != E) {
-    joystick_update(drivers->joystick);
+  joystick_update(&(drivers->joystick));
+  while (joystick_get_direction(&(drivers->joystick)) != E) {
+    joystick_update(&(drivers->joystick));
     sleep_ms(100);
   }
   str_list *options = str_list_init();
@@ -120,9 +120,9 @@ void reset_system() {
 
 void display_battery_status() {
   ssd1306_clear(&(drivers->ssd1306));
-  joystick_update(drivers->joystick);
-  while (joystick_get_direction(drivers->joystick) != W) {
-    joystick_update(drivers->joystick);
+  joystick_update(&(drivers->joystick));
+  while (joystick_get_direction(&(drivers->joystick)) != W) {
+    joystick_update(&(drivers->joystick));
     ssd1306_print(&(drivers->ssd1306), "Battery status", 3, 0, false);
     ssd1306_print(&(drivers->ssd1306), "Percentage:     ", 0, 2, false);
     ssd1306_print(&(drivers->ssd1306),
@@ -163,17 +163,17 @@ void display_joystick_check() {
   circle c1 = create_circle(create_point(64, 40), 5);
   draw_circle(c);
   draw_circle(c1);
-  while (!joystick_check_long_press(drivers->joystick, 2000)) {
-    joystick_update(drivers->joystick);
+  while (!joystick_check_long_press(&(drivers->joystick), 2000)) {
+    joystick_update(&(drivers->joystick));
     clear_circle(c1);
-    polar_coords polar = joystick_get_polar(drivers->joystick);
+    polar_coords polar = joystick_get_polar(&(drivers->joystick));
     float theta_rad = polar.theta_deg * (M_PI / 180.0f);
     c1 = create_circle(create_point(64 + polar.l * 10 * cosf(theta_rad),
                            40 - polar.l * 10 * sinf(theta_rad)),
         7);
     draw_circle(c1);
-    snprintf(x_str, sizeof(x_str), "%u", drivers->joystick->x_value);
-    snprintf(y_str, sizeof(y_str), "%u", drivers->joystick->y_value);
+    snprintf(x_str, sizeof(x_str), "%u", (drivers->joystick).x_value);
+    snprintf(y_str, sizeof(y_str), "%u", (drivers->joystick).y_value);
     snprintf(theta_str, sizeof(theta_str), "%.2f", polar.theta_deg);
     snprintf(rho_str, sizeof(rho_str), "%.2f", polar.l);
     ssd1306_print(&(drivers->ssd1306), x_str, 2, 4, false);

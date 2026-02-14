@@ -97,8 +97,8 @@ void set_weekday(date *d) {
       create_point(start_x + (CHAR_WIDTH - 2) * 3, upper_y));
   while (true) {
     blink_lines(underline, upperline, TIME_SUBMENUS_INPUT_TIMEOUT / 2);
-    joystick_update(drivers->joystick);
-    uint8_t direction = joystick_get_direction(drivers->joystick);
+    joystick_update(&(drivers->joystick));
+    uint8_t direction = joystick_get_direction(&(drivers->joystick));
     switch (direction) {
     case N:
       haptic_auto_pulse();
@@ -136,8 +136,8 @@ void set_day(date *d) {
       create_point(start_x + (CHAR_WIDTH - 2) * 2 - 2, upper_y));
   while (true) {
     blink_lines(underline, upperline, TIME_SUBMENUS_INPUT_TIMEOUT / 2);
-    joystick_update(drivers->joystick);
-    uint8_t direction = joystick_get_direction(drivers->joystick);
+    joystick_update(&(drivers->joystick));
+    uint8_t direction = joystick_get_direction(&(drivers->joystick));
     switch (direction) {
     case N:
       haptic_auto_pulse();
@@ -175,8 +175,8 @@ void set_month(date *d) {
       create_point(start_x + (CHAR_WIDTH - 2) * 2 - 2, upper_y));
   while (true) {
     blink_lines(underline, upperline, TIME_SUBMENUS_INPUT_TIMEOUT / 2);
-    joystick_update(drivers->joystick);
-    uint8_t direction = joystick_get_direction(drivers->joystick);
+    joystick_update(&(drivers->joystick));
+    uint8_t direction = joystick_get_direction(&(drivers->joystick));
     switch (direction) {
     case N:
       haptic_auto_pulse();
@@ -215,8 +215,8 @@ void set_year(date *d) {
       create_point(start_x + (CHAR_WIDTH - 2) * 2 - 2, upper_y));
   while (true) {
     blink_lines(underline, upperline, TIME_SUBMENUS_INPUT_TIMEOUT / 2);
-    joystick_update(drivers->joystick);
-    uint8_t direction = joystick_get_direction(drivers->joystick);
+    joystick_update(&(drivers->joystick));
+    uint8_t direction = joystick_get_direction(&(drivers->joystick));
     switch (direction) {
     case N:
       haptic_auto_pulse();

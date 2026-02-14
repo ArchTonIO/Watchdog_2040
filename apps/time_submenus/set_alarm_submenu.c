@@ -77,10 +77,10 @@ void process_alarm() {
   ssd1306_print(&(drivers->ssd1306), alarm_message, 0, 0, false);
   ssd1306_print(&(drivers->ssd1306), "E' tempo !", 4, 5, false);
   ssd1306_show(&(drivers->ssd1306));
-  joystick_update(drivers->joystick);
+  joystick_update(&(drivers->joystick));
   haptics_switch_performing_core();
-  while (joystick_get_direction(drivers->joystick) == C) {
-    joystick_update(drivers->joystick);
+  while (joystick_get_direction(&(drivers->joystick)) == C) {
+    joystick_update(&(drivers->joystick));
     haptic_auto_pulse();
   }
   haptics_switch_performing_core();

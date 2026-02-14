@@ -266,9 +266,9 @@ void display_received_message(char *name, uint16_t src_address) {
       lora_reset_recv_buffer();
       return;
     }
-    joystick_update(drivers->joystick);
+    joystick_update(&(drivers->joystick));
     sleep_ms(100);
-    if (joystick_get_direction(drivers->joystick) == E) {
+    if (joystick_get_direction(&(drivers->joystick)) == E) {
       text_editor *editor = text_editor_launch(
           msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
           false);

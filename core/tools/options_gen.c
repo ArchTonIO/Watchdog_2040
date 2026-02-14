@@ -166,9 +166,9 @@ char *options_page_launch(options_page *page) {
     }
     ssd1306_show(&(drivers->ssd1306));
     ssd1306_release_mutex(&(drivers->ssd1306));
-    joystick_update(drivers->joystick);
-    uint8_t joystick_dir = joystick_get_direction(drivers->joystick);
-    if (drivers->joystick->button_pressed) {
+    joystick_update(&(drivers->joystick));
+    uint8_t joystick_dir = joystick_get_direction(&(drivers->joystick));
+    if ((drivers->joystick).button_pressed) {
       if (page->options[page->selected_option].flag_callback != NULL) {
         sleep_ms(INTERAC_TIMEOUT);
         char *buf = page->options[page->selected_option].flag_callback(

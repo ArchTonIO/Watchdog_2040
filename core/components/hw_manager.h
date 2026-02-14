@@ -26,7 +26,7 @@ typedef struct {
   ssd1306_t ssd1306;
   sx1278 *lora_module;
   battery *battery;
-  joystick *joystick;
+  joystick_t joystick;
   sdcard *sd_card;
   ds3231_rtc_t external_rtc;
   rtc_time *rtc;

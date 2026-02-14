@@ -155,8 +155,8 @@ void drawing_board_launch() {
 void draw(drawing_board *board) {}
 
 void select_tool(drawing_board *board) {
-  joystick_update(drivers->joystick);
-  uint8_t direction = joystick_get_direction(drivers->joystick);
+  joystick_update(&(drivers->joystick));
+  uint8_t direction = joystick_get_direction(&(drivers->joystick));
   if (direction == E && board->selected_tool_index < BOARD_BITMAP_NUM) {
     haptic_auto_pulse();
     board->tools[board->selected_tool_index]->bitmap_def->is_inverted = false;
@@ -167,7 +167,7 @@ void select_tool(drawing_board *board) {
     board->tools[board->selected_tool_index]->bitmap_def->is_inverted = false;
     board->selected_tool_index--;
     sleep_ms(INPUT_INTERVAL_MS);
-  } else if (drivers->joystick->button_pressed) {
+  } else if ((drivers->joystick).button_pressed) {
     haptic_auto_pulse();
     ssd1306_clear(&(drivers->ssd1306));
     board->select_mode = false;
@@ -195,10 +195,10 @@ void draw_pointer(drawing_board *board) {
 }
 
 void draw_loop(drawing_board *board) {
-  joystick_update(drivers->joystick);
-  board->board_pointer->posx = SCREEN_KP_X_AXIS * drivers->joystick->x_value +
+  joystick_update(&(drivers->joystick));
+  board->board_pointer->posx = SCREEN_KP_X_AXIS * (drivers->joystick).x_value +
                                SCREEN_KI_X_AXIS;
-  board->board_pointer->posy = SCREEN_KP_Y_AXIS * drivers->joystick->y_value +
+  board->board_pointer->posy = SCREEN_KP_Y_AXIS * (drivers->joystick).y_value +
                                SCREEN_KI_Y_AXIS;
   if (board->board_pointer->posx < POINTER_RADIUS)
     board->board_pointer->posx = POINTER_RADIUS;
@@ -211,7 +211,7 @@ void draw_loop(drawing_board *board) {
   draw_pointer(board);
   layer *drawing_area = get_layer_by_name(board->board_layout,
       DRAWING_AREA_LAYER);
-  if (drivers->joystick->button_pressed) {
+  if ((drivers->joystick).button_pressed) {
     point p = create_point(board->board_pointer->posx,
         board->board_pointer->posy);
     layer_add_point(drawing_area, p);

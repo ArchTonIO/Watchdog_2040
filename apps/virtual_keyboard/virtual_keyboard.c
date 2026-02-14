@@ -85,13 +85,13 @@ virtual_keyboard *virtual_keyboard_init() {
  */
 char virtual_keyboard_read(virtual_keyboard *keyboard) {
   highlight_key(keyboard, keyboard->last_key, true);
-  joystick_update(drivers->joystick);
+  joystick_update(&(drivers->joystick));
   keyboard->target_key = select_key(keyboard,
-      joystick_get_direction(drivers->joystick),
+      joystick_get_direction(&(drivers->joystick)),
       keyboard->last_key);
   if (keyboard->target_key->label != NSK)
     keyboard->last_key = keyboard->target_key;
-  if (!drivers->joystick->button_pressed) {
+  if (!(drivers->joystick).button_pressed) {
     sleep_ms(INPUT_TIMEOUT);
     return NOW;
   }

@@ -23,8 +23,8 @@ void enter_flashlight_screen() {
   set_flashlight_on();
   bool flashlight_state = false;
   while (true) {
-    joystick_update(drivers->joystick);
-    if (joystick_get_direction(drivers->joystick) == W) {
+    joystick_update(&(drivers->joystick));
+    if (joystick_get_direction(&(drivers->joystick)) == W) {
       break;
     }
   }

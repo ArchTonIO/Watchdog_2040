@@ -69,8 +69,8 @@ void enter_stopwatch_submenu() {
   stopwatch_milliseconds_digits->millisecond_units = 0;
   draw_symbols(stopwatch_go, stopwatch_stop, stopwatch_exit, stopwatch_zero);
   while (true) {
-    joystick_update(drivers->joystick);
-    uint8_t direction = joystick_get_direction(drivers->joystick);
+    joystick_update(&(drivers->joystick));
+    uint8_t direction = joystick_get_direction(&(drivers->joystick));
     time_digits_show(stopwatch_digits, 16, 23, 2);
     milliseconds_show(stopwatch_milliseconds_digits, 86, 23, 2);
     ssd1306_show(&(drivers->ssd1306));
@@ -106,7 +106,7 @@ void reset_stopwatch(time_digits *digits,
 void start_stopwatch(time_digits *digits,
     milliseconds_digits *stopwatch_milliseconds_digits) {
   absolute_time_t start_time = get_absolute_time();
-  while (joystick_get_direction(drivers->joystick) != S) {
+  while (joystick_get_direction(&(drivers->joystick)) != S) {
     absolute_time_t current_time = get_absolute_time();
     uint64_t elapsed_ms = absolute_time_diff_us(start_time, current_time) /
                           1000;
@@ -121,7 +121,7 @@ void start_stopwatch(time_digits *digits,
     time_digits_show(digits, 16, 23, 2);
     milliseconds_show(stopwatch_milliseconds_digits, 86, 23, 2);
     ssd1306_show(&(drivers->ssd1306));
-    joystick_update(drivers->joystick);
+    joystick_update(&(drivers->joystick));
   }
   haptic_short_pulse();
 }

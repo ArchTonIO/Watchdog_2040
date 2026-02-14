@@ -39,17 +39,17 @@ void enter_timer_submenu() {
   ssd1306_print(&(drivers->ssd1306), "Press to start", 3, 0, false);
   time_digits_show(digits, 28, 23, 2);
   ssd1306_show(&(drivers->ssd1306));
-  while (!drivers->joystick->button_pressed)
-    joystick_update(drivers->joystick);
+  while (!(drivers->joystick).button_pressed)
+    joystick_update(&(drivers->joystick));
   if (!start_countdown(digits)) {
     free(digits);
     return;
   }
   ssd1306_print(&(drivers->ssd1306), " Press to stop alarm ", 0, 0, false);
   ssd1306_show(&(drivers->ssd1306));
-  joystick_update(drivers->joystick);
-  while (!drivers->joystick->button_pressed) {
-    joystick_update(drivers->joystick);
+  joystick_update(&(drivers->joystick));
+  while (!(drivers->joystick).button_pressed) {
+    joystick_update(&(drivers->joystick));
     haptic_auto_pulse();
   }
   free(digits);
@@ -66,8 +66,8 @@ bool start_countdown(time_digits *digits) {
                               60 +
                           (digits->second_tens * 10 + digits->second_units);
   while (total_seconds > 0) {
-    joystick_update(drivers->joystick);
-    if (joystick_get_direction(drivers->joystick) == W)
+    joystick_update(&(drivers->joystick));
+    if (joystick_get_direction(&(drivers->joystick)) == W)
       return false;
     sleep_ms(1000);
     total_seconds--;
