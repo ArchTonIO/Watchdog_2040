@@ -25,7 +25,7 @@ typedef struct {
   ens160_t ens160;
   ssd1306_t ssd1306;
   sx1278_t *sx1278;
-  battery *battery;
+  battery_t battery;
   joystick_t joystick;
   sdcard *sd_card;
   ds3231_rtc_t external_rtc;

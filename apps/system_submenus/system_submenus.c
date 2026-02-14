@@ -126,19 +126,19 @@ void display_battery_status() {
     ssd1306_print(&(drivers->ssd1306), "Battery status", 3, 0, false);
     ssd1306_print(&(drivers->ssd1306), "Percentage:     ", 0, 2, false);
     ssd1306_print(&(drivers->ssd1306),
-        battery_get_percentage_str(drivers->battery),
+        battery_get_percentage_str(&(drivers->battery)),
         12,
         2,
         false);
     ssd1306_print(&(drivers->ssd1306), "Voltage:        ", 0, 3, false);
     ssd1306_print(&(drivers->ssd1306),
-        battery_get_voltage_str(drivers->battery),
+        battery_get_voltage_str(&(drivers->battery)),
         12,
         3,
         false);
     ssd1306_print(&(drivers->ssd1306), "Crude ADC:      ", 0, 4, false);
     ssd1306_print(&(drivers->ssd1306),
-        battery_get_crude_adc_str(drivers->battery),
+        battery_get_crude_adc_str(&(drivers->battery)),
         12,
         4,
         false);

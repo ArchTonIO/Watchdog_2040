@@ -67,7 +67,7 @@ void check_peripherals() {
 }
 
 void process_system_state() {
-  home_page_inst->battery_level = battery_get_percentage(drivers->battery);
+  home_page_inst->battery_level = battery_get_percentage(&(drivers->battery));
   home_page_inst->alarm_set = drivers->rtc->alarm_set;
   home_page_inst->aqi = ens160_read_aqi(&(drivers->ens160));
   home_page_inst->notifications = msg_man_inst->received_msgs_count;

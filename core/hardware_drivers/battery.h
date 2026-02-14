@@ -26,18 +26,19 @@ typedef struct {
   char *battery_voltage_str;
   char *battery_crude_adc_str;
   bool is_working;
-} battery;
+} battery_t;
 
-battery *battery_init(float adc_max_value,
+void battery_init(battery_t *battery,
+    float adc_max_value,
     float min_voltage,
     float max_voltage,
     pin battery_control_pin,
     uint8_t adc_channel);
-uint32_t battery_get_crude_adc(battery *battery);
-uint8_t battery_get_percentage(battery *battery);
-float battery_get_voltage(battery *battery);
-char *battery_get_crude_adc_str(battery *battery);
-char *battery_get_voltage_str(battery *battery);
-char *battery_get_percentage_str(battery *battery);
+uint32_t battery_get_crude_adc(battery_t *battery);
+uint8_t battery_get_percentage(battery_t *battery);
+float battery_get_voltage(battery_t *battery);
+char *battery_get_crude_adc_str(battery_t *battery);
+char *battery_get_voltage_str(battery_t *battery);
+char *battery_get_percentage_str(battery_t *battery);
 
 #endif

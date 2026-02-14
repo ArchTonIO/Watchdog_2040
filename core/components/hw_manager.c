@@ -80,12 +80,15 @@ hw_drivers *hardware_drivers_init() {
   else
     core1_push_instruction(SX1278_ERR);
 
-  hw_man->battery = battery_init(ADC_MAX_VALUE,
+  battery_t battery;
+  battery_init(&battery,
+      ADC_MAX_VALUE,
       BATTERY_MIN_VOLTAGE,
       BATTERY_MAX_VOLTAGE,
       BATTERY_PIN,
       ADC_CHANNEL);
-  if (hw_man->battery->is_working)
+  hw_man->battery = battery;
+  if (hw_man->battery.is_working)
     core1_push_instruction(BATTERY_OK);
   else
     core1_push_instruction(BATTERY_ERR);
