@@ -22,7 +22,7 @@
 /*hw_driver just contains instances of all connected hardware modules
  * drivers.*/
 typedef struct {
-  ens160 *air_quality_sensor;
+  ens160_t ens160;
   ssd1306_t ssd1306;
   sx1278 *lora_module;
   battery *battery;

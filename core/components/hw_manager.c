@@ -55,8 +55,10 @@ hw_drivers *hardware_drivers_init() {
   sleep_ms(1000);
   core1_push_instruction(SHOW_BOOTUP);
   init_i2c1_bus();
-  hw_man->air_quality_sensor = ens160_init(ENS160_I2C_PORT, ENS160_ADDR);
-  if (hw_man->air_quality_sensor->is_working)
+  ens160_t ens160;
+  ens160_init(&ens160, ENS160_I2C_PORT, ENS160_ADDR);
+  hw_man->ens160 = ens160;
+  if (hw_man->ens160.is_working)
     core1_push_instruction(ENS160_OK);
   else
     core1_push_instruction(ENS160_ERR);
@@ -164,7 +166,7 @@ void joystick_irq(uint gpio, uint32_t events) {
 }
 
 void enter_idle() {
-  ens160_power_down(drivers->air_quality_sensor);
+  ens160_power_down(&(drivers->ens160));
   ssd1306_clear(&(drivers->ssd1306));
   ssd1306_show(&(drivers->ssd1306));
   ssd1306_enable_mutex_support(&(drivers->ssd1306));
@@ -190,7 +192,7 @@ void wait_joystick_interrupt() {
 }
 
 void exit_idle() {
-  ens160_power_up(drivers->air_quality_sensor);
+  ens160_power_up(&(drivers->ens160));
   if (!continuous_rx) {
     gpio_set_irq_enabled_with_callback(JOYSTICK_BUTTON_PIN,
         GPIO_IRQ_EDGE_FALL,

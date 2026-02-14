@@ -116,7 +116,7 @@ The drivers struct is defined inside [`core/components/hw_manager.h`](core/compo
 ```c
 #include "core/components/hw_manager.h"
 
-drivers->air_quality_sensor // pointer to the air quality sensor driver struct
+&(drivers->ens160) // pointer to the air quality sensor driver struct
 &(drivers->ssd1306)   // pointer to the screen driver struct
 drivers->lora_module // pointer to the lora module driver struct
 drivers->battery // pointer to the battery driver struct

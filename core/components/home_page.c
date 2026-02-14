@@ -60,8 +60,7 @@ void check_peripherals() {
     home_page_inst->sx1278_status = 1;
   else
     home_page_inst->sx1278_status = 0;
-  if (drivers->air_quality_sensor->is_working &&
-      drivers->air_quality_sensor->is_on)
+  if ((&(drivers->ens160))->is_working && (&(drivers->ens160))->is_on)
     home_page_inst->en160_status = 1;
   else
     home_page_inst->en160_status = 0;
@@ -70,7 +69,7 @@ void check_peripherals() {
 void process_system_state() {
   home_page_inst->battery_level = battery_get_percentage(drivers->battery);
   home_page_inst->alarm_set = drivers->rtc->alarm_set;
-  home_page_inst->aqi = ens160_read_aqi(drivers->air_quality_sensor);
+  home_page_inst->aqi = ens160_read_aqi(&(drivers->ens160));
   home_page_inst->notifications = msg_man_inst->received_msgs_count;
 }
 
@@ -290,7 +289,7 @@ void update_clock(uint8_t start_pix_w, uint8_t start_pix_h, uint8_t spacing) {
 }
 
 void update_texts() {
-  uint8_t aqi_value = ens160_read_aqi(drivers->air_quality_sensor);
+  uint8_t aqi_value = ens160_read_aqi(&(drivers->ens160));
   char *aqi_value_str;
   if (aqi_value == 1) {
     aqi_value_str = "good";

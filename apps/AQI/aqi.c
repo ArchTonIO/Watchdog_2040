@@ -14,9 +14,9 @@ void display_air_quality_indexes() {
   graph *g_tvoc = graph_init("TVOC", 48, 40, 86, 16, 0, 600);
   while (joystick_get_direction(drivers->joystick) != W) {
     joystick_update(drivers->joystick);
-    graph_push_value(g_aqi, ens160_read_aqi(drivers->air_quality_sensor));
-    graph_push_value(g_co2, ens160_read_co2(drivers->air_quality_sensor));
-    graph_push_value(g_tvoc, ens160_read_tvoc(drivers->air_quality_sensor));
+    graph_push_value(g_aqi, ens160_read_aqi(&(drivers->ens160)));
+    graph_push_value(g_co2, ens160_read_co2(&(drivers->ens160)));
+    graph_push_value(g_tvoc, ens160_read_tvoc(&(drivers->ens160)));
     ssd1306_clear(&(drivers->ssd1306));
     graph_update(g_aqi);
     graph_update(g_co2);
