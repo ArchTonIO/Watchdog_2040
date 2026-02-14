@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "battery.h"
+#include "include/battery.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -9,8 +9,8 @@
 
 #include "pico/time.h"
 
-#include "config.h"
 #include "hardware/adc.h"
+#include "include/config.h"
 
 voltage_level battery_table[] = {
     {1640, 3.98, 75},

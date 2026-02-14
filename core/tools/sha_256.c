@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/tools/sha_256.h"
+#include "core/tools/include/sha_256.h"
 
 #include <stdint.h>
 #include <stdio.h>

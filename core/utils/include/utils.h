@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "core/data_structures/string_list.h"
+#include "core/data_structures/include/string_list.h"
 
 /*Testing functions*/
 void wait_for_serial_input();

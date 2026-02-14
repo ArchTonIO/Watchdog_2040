@@ -14,10 +14,10 @@
 #include "apps/pwd_manager/aes_ctr.h"
 #include "apps/pwd_manager/key.h"
 #include "apps/text_editor/text_editor.h"
-#include "core/components/sys_paths_manager.h"
-#include "core/tools/crud_list.h"
-#include "core/utils/path.h"
-#include "core/utils/utils.h"
+#include "core/components/include/sys_paths_manager.h"
+#include "core/tools/include/crud_list.h"
+#include "core/utils/include/path.h"
+#include "core/utils/include/utils.h"
 
 encrypt_fields encrypt;
 

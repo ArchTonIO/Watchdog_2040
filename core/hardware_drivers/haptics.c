@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/hardware_drivers/haptics.h"
+#include "include/haptics.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -10,9 +10,9 @@
 
 #include "pico/time.h"
 
-#include "core/hardware_drivers/core1.h"
-#include "core/hardware_drivers/haptics.h"
-#include "core/utils/utils.h"
+#include "core/hardware_drivers/include/core1.h"
+#include "core/hardware_drivers/include/haptics.h"
+#include "core/utils/include/utils.h"
 #include "hardware/gpio.h"
 
 volatile uint8_t performing_core = 1;

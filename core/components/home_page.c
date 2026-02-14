@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/components/home_page.h"
+#include "core/components/include/home_page.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -10,18 +10,18 @@
 
 #include "apps/msg_manager/msg_manager.h"
 #include "apps/time_submenus/time_utils.h"
-#include "core/components/hw_manager.h"
-#include "core/components/malloc_mascot.h"
-#include "core/data_structures/string_list.h"
-#include "core/graphics/bitmaps.h"
-#include "core/graphics/graphic_primitives.h"
-#include "core/graphics/layout.h"
-#include "core/hardware_drivers/battery.h"
-#include "core/hardware_drivers/ens160.h"
-#include "core/hardware_drivers/rtc_time.h"
-#include "core/hardware_drivers/sdcard.h"
-#include "core/hardware_drivers/ssd1306.h"
-#include "core/hardware_drivers/sx1278.h"
+#include "core/components/include/hw_manager.h"
+#include "core/components/include/malloc_mascot.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/graphics/include/bitmaps.h"
+#include "core/graphics/include/graphic_primitives.h"
+#include "core/graphics/include/layout.h"
+#include "core/hardware_drivers/include/battery.h"
+#include "core/hardware_drivers/include/ens160.h"
+#include "core/hardware_drivers/include/rtc_time.h"
+#include "core/hardware_drivers/include/sdcard.h"
+#include "core/hardware_drivers/include/ssd1306.h"
+#include "core/hardware_drivers/include/sx1278.h"
 
 home_page *home_page_inst;
 

@@ -7,8 +7,8 @@
 #include <pico/types.h>
 #include <sys/_intsup.h>
 
-#include "core/data_structures/string_list.h"
-#include "core/ulmp/ulmp.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/ulmp/include/ulmp.h"
 
 #define MESSAGES_CHUNK_SIZE 10
 

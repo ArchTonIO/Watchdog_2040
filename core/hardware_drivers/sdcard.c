@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "sdcard.h"
+#include "include/sdcard.h"
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "core/components/sys_paths_manager.h"
-#include "core/data_structures/string_list.h"
-#include "core/utils/path.h"
+#include "core/components/include/sys_paths_manager.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/utils/include/path.h"
 #include "ff.h"
 #include "sd_card.h"
 

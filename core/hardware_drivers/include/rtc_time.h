@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "core/hardware_drivers/ds3231.h"
+#include "core/hardware_drivers/include/ds3231.h"
 #include "hardware/rtc.h"
 
 typedef struct {

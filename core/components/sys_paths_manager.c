@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/components/sys_paths_manager.h"
+#include "core/components/include/sys_paths_manager.h"
 
 #include <stdlib.h>
 
-#include "core/components/hw_manager.h"
-#include "core/components/malloc_mascot.h"
-#include "core/hardware_drivers/ssd1306.h"
-#include "core/utils/path.h"
+#include "core/components/include/hw_manager.h"
+#include "core/components/include/malloc_mascot.h"
+#include "core/hardware_drivers/include/ssd1306.h"
+#include "core/utils/include/path.h"
 
 sys_paths_manager *sys_paths;
 

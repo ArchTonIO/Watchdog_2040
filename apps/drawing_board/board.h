@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#include "core/graphics/graphic_primitives.h"
-#include "core/graphics/layout.h"
+#include "core/graphics/include/graphic_primitives.h"
+#include "core/graphics/include/layout.h"
 
 #define BOARD_BITMAP_H 13
 #define BOARD_BITMAP_W 13

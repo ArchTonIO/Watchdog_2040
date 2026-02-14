@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/graphics/graphic_primitives.h"
+#include "core/graphics/include/graphic_primitives.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "core/components/hw_manager.h"
-#include "core/hardware_drivers/ssd1306.h"
+#include "core/components/include/hw_manager.h"
+#include "core/hardware_drivers/include/ssd1306.h"
 
 /**
  * @brief Create a point with given x and y coordinates.

@@ -8,10 +8,10 @@
 #include <stdlib.h>
 
 #include "apps/time_submenus/time_utils.h"
-#include "core/components/hw_manager.h"
-#include "core/data_structures/string_list.h"
-#include "core/graphics/bitmaps.h"
-#include "core/hardware_drivers/ssd1306.h"
+#include "core/components/include/hw_manager.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/graphics/include/bitmaps.h"
+#include "core/hardware_drivers/include/ssd1306.h"
 
 void save_time(time_digits *digits);
 void set_time(time_digits *digits);

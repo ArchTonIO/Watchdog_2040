@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/tools/launcher.h"
+#include "core/tools/include/launcher.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "core/components/hw_manager.h"
-#include "core/data_structures/string_list.h"
-#include "core/hardware_drivers/haptics.h"
-#include "core/hardware_drivers/ssd1306.h"
-#include "core/tools/options_gen.h"
+#include "core/components/include/hw_manager.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/hardware_drivers/include/haptics.h"
+#include "core/hardware_drivers/include/ssd1306.h"
+#include "core/tools/include/options_gen.h"
 
 application create_application(char *name,
     const uint8_t *icon,

@@ -5,8 +5,8 @@
 #define SDCARD_H
 #include <stdbool.h>
 
-#include "core/data_structures/string_list.h"
-#include "core/utils/path.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/utils/include/path.h"
 #include "ff.h"
 
 typedef struct {

@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/tools/crud_list.h"
+#include "core/tools/include/crud_list.h"
 
 #include <stdio.h>
 #include <string.h>
 
-#include "core/data_structures/string_list.h"
-#include "core/tools/options_gen.h"
-#include "core/utils/path.h"
-#include "core/utils/utils.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/tools/include/options_gen.h"
+#include "core/utils/include/path.h"
+#include "core/utils/include/utils.h"
 
 void edit_or_delete_item(crud_list *list, const char *item_name);
 

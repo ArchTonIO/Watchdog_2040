@@ -9,11 +9,11 @@
 #include <sys/_intsup.h>
 
 #include "apps/msg_manager/contacts.h"
-#include "core/components/hw_manager.h"
-#include "core/components/sys_paths_manager.h"
-#include "core/data_structures/string_list.h"
-#include "core/utils/path.h"
-#include "core/utils/utils.h"
+#include "core/components/include/hw_manager.h"
+#include "core/components/include/sys_paths_manager.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/utils/include/path.h"
+#include "core/utils/include/utils.h"
 
 msg_record *
 msg_record_init(uint16_t contact_addr, char *message, uint8_t status) {

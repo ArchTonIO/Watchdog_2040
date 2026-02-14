@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "lora_send.h"
+#include "include/lora_send.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 #include "pico/time.h"
 
-#include "core/hardware_drivers/sx1278.h"
-#include "core/ulmp/ulmp.h"
+#include "core/hardware_drivers/include/sx1278.h"
+#include "core/ulmp/include/ulmp.h"
 #include "stdint.h"
 
 uint8_t *serialize_packet(message *msg);

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "rtc_time.h"
+#include "include/rtc_time.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -9,7 +9,7 @@
 #include "pico/time.h"
 #include "pico/util/datetime.h"
 
-#include "core/hardware_drivers/ds3231.h"
+#include "core/hardware_drivers/include/ds3231.h"
 #include "hardware/rtc.h"
 
 void internal_rtc_init(internal_rtc_t *rtc,

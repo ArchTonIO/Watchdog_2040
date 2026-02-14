@@ -7,8 +7,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "core/data_structures/string_list.h"
-#include "core/hardware_drivers/config.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/hardware_drivers/include/config.h"
 
 #define ROWS 4
 #define COLS 15

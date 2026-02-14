@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "core/graphics/graphic_primitives.h"
+#include "core/graphics/include/graphic_primitives.h"
 
 typedef struct {
   char *name;

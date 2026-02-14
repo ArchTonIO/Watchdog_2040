@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/utils/utils.h"
+#include "core/utils/include/utils.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -13,11 +13,11 @@
 #include "pico/stdio_usb.h"
 
 #include "apps/text_editor/text_editor.h"
-#include "core/components/hw_manager.h"
-#include "core/components/malloc_mascot.h"
-#include "core/data_structures/string_list.h"
-#include "core/hardware_drivers/ssd1306.h"
-#include "core/tools/sha_256.h"
+#include "core/components/include/hw_manager.h"
+#include "core/components/include/malloc_mascot.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/hardware_drivers/include/ssd1306.h"
+#include "core/tools/include/sha_256.h"
 
 bool request_password() {
   text_editor *pwd_editor = text_editor_launch("#Enter your password", true);

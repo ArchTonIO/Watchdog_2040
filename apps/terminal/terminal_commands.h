@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "core/data_structures/string_list.h"
+#include "core/data_structures/include/string_list.h"
 
 typedef struct terminal terminal;
 

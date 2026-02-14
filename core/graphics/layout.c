@@ -1,13 +1,13 @@
 
-#include "core/graphics/layout.h"
+#include "core/graphics/include/layout.h"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "core/components/hw_manager.h"
-#include "core/hardware_drivers/ssd1306.h"
+#include "core/components/include/hw_manager.h"
+#include "core/hardware_drivers/include/ssd1306.h"
 
 layer *get_layer_by_name(layout *lo, char *layer_name) {
   for (size_t i = 0; i < lo->layers_count; i++) {

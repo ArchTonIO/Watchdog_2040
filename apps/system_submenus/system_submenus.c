@@ -7,16 +7,16 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "core/components/hw_manager.h"
-#include "core/components/sys_paths_manager.h"
-#include "core/data_structures/string_list.h"
-#include "core/graphics/graphic_primitives.h"
-#include "core/hardware_drivers/battery.h"
-#include "core/hardware_drivers/joystick.h"
-#include "core/hardware_drivers/ssd1306.h"
-#include "core/tools/options_gen.h"
-#include "core/utils/path.h"
-#include "core/utils/utils.h"
+#include "core/components/include/hw_manager.h"
+#include "core/components/include/sys_paths_manager.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/graphics/include/graphic_primitives.h"
+#include "core/hardware_drivers/include/battery.h"
+#include "core/hardware_drivers/include/joystick.h"
+#include "core/hardware_drivers/include/ssd1306.h"
+#include "core/tools/include/options_gen.h"
+#include "core/utils/include/path.h"
+#include "core/utils/include/utils.h"
 #include "device.h"
 #include "hardware/watchdog.h"
 

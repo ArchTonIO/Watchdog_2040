@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "ds3231.h"
+#include "include/ds3231.h"
 
 #include <stdio.h>
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "sx1278.h"
+#include "include/sx1278.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -10,8 +10,8 @@
 
 #include "pico/time.h"
 
-#include "config.h"
 #include "hardware/gpio.h"
+#include "include/config.h"
 
 sx1278_t *instance = NULL;
 

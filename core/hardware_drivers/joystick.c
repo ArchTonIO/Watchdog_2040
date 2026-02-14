@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "joystick.h"
+#include "include/joystick.h"
 
 #include <math.h>
 #include <stdbool.h>
@@ -9,10 +9,10 @@
 
 #include "pico/time.h"
 
-#include "config.h"
-#include "core/hardware_drivers/haptics.h"
-#include "core/utils/utils.h"
+#include "core/utils/include/utils.h"
 #include "hardware/adc.h"
+#include "include/config.h"
+#include "include/haptics.h"
 
 void auto_calibrate(joystick_t *joystick);
 bool joystick_is_working(joystick_t *joystick);

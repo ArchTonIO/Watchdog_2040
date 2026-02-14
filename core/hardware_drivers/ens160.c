@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "ens160.h"
+#include "include/ens160.h"
 
 #include <stdbool.h>
 #include <stdint.h>

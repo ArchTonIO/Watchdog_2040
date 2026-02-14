@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "lora_receive.h"
+#include "include/lora_receive.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-#include "core/data_structures/string_list.h"
-#include "core/ulmp/ulmp.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/ulmp/include/ulmp.h"
 #include "stdint.h"
 
 message *deserialize_packet(uint8_t *packet) {

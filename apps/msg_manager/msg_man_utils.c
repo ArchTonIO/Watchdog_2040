@@ -13,12 +13,12 @@
 #include "apps/msg_manager/msg_manager.h"
 #include "apps/msg_manager/msg_record.h"
 #include "apps/text_editor/text_editor.h"
-#include "core/components/sys_paths_manager.h"
-#include "core/data_structures/string_list.h"
-#include "core/tools/options_gen.h"
-#include "core/ulmp/ulmp.h"
-#include "core/utils/path.h"
-#include "core/utils/utils.h"
+#include "core/components/include/sys_paths_manager.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/tools/include/options_gen.h"
+#include "core/ulmp/include/ulmp.h"
+#include "core/utils/include/path.h"
+#include "core/utils/include/utils.h"
 
 void show_fetching_screen();
 char *get_displayable_msg_by_uid(uint16_t contact_addr, char *msg_uid);

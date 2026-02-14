@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "ssd1306.h"
+#include "include/ssd1306.h"
 
 #include <hardware/adc.h>
 #include <hardware/structs/io_bank0.h>
@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "core/hardware_drivers/config.h"
+#include "core/hardware_drivers/include/config.h"
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "onboard_led.h"
+#include "include/onboard_led.h"
 
 #include <stdbool.h>
 

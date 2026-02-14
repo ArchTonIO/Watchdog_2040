@@ -7,7 +7,7 @@ An Uncomplicated LoRa Messaging Protocol (ULMP)
 
 #include <stdint.h>
 
-#include "core/hardware_drivers/sx1278.h"
+#include "core/hardware_drivers/include/sx1278.h"
 
 #ifndef ULMP_H
 #define ULMP_H

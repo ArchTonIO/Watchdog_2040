@@ -1,26 +1,26 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/components/hw_manager.h"
+#include "core/components/include/hw_manager.h"
 
 #include <malloc.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "core/data_structures/string_list.h"
-#include "core/hardware_drivers/battery.h"
-#include "core/hardware_drivers/config.h"
-#include "core/hardware_drivers/core1.h"
-#include "core/hardware_drivers/ds3231.h"
-#include "core/hardware_drivers/ens160.h"
-#include "core/hardware_drivers/haptics.h"
-#include "core/hardware_drivers/joystick.h"
-#include "core/hardware_drivers/onboard_led.h"
-#include "core/hardware_drivers/rtc_time.h"
-#include "core/hardware_drivers/sdcard.h"
-#include "core/hardware_drivers/ssd1306.h"
-#include "core/hardware_drivers/sx1278.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/hardware_drivers/include/battery.h"
+#include "core/hardware_drivers/include/config.h"
+#include "core/hardware_drivers/include/core1.h"
+#include "core/hardware_drivers/include/ds3231.h"
+#include "core/hardware_drivers/include/ens160.h"
+#include "core/hardware_drivers/include/haptics.h"
+#include "core/hardware_drivers/include/joystick.h"
+#include "core/hardware_drivers/include/onboard_led.h"
+#include "core/hardware_drivers/include/rtc_time.h"
+#include "core/hardware_drivers/include/sdcard.h"
+#include "core/hardware_drivers/include/ssd1306.h"
+#include "core/hardware_drivers/include/sx1278.h"
 #include "hardware/adc.h"
 #include "hardware/clocks.h"
 

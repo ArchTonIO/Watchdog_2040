@@ -6,7 +6,7 @@
 
 #include <stdbool.h>
 
-#include "core/utils/path.h"
+#include "core/utils/include/path.h"
 
 typedef struct crud_list crud_list;
 

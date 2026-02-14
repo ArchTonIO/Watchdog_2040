@@ -114,7 +114,7 @@ This was done to provide a simple and extensible hardware abstraction layer, whe
 The drivers struct is defined inside [`core/components/hw_manager.h`](core/components/hw_manager.h) and is used to store all the initialized hardware drivers, so they can be easily accessed from anywhere in the code, here is a code snippet showing the drivers present right now for this project:
 
 ```c
-#include "core/components/hw_manager.h"
+#include "core/components/include/hw_manager.h"
 
 &(drivers->ens160) // pointer to the air quality sensor driver struct
 &(drivers->ssd1306)   // pointer to the screen driver struct

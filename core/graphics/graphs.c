@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/graphics/graphs.h"
+#include "core/graphics/include/graphs.h"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "core/components/hw_manager.h"
-#include "core/graphics/graphic_primitives.h"
-#include "core/hardware_drivers/ssd1306.h"
+#include "core/components/include/hw_manager.h"
+#include "core/graphics/include/graphic_primitives.h"
+#include "core/hardware_drivers/include/ssd1306.h"
 
 uint8_t normalize(graph *g, int16_t val, int16_t min, int16_t max);
 void shift_and_add(graph *g, uint8_t new_val);

@@ -6,7 +6,7 @@
 
 #include <stdbool.h>
 
-#include "core/data_structures/string_list.h"
+#include "core/data_structures/include/string_list.h"
 
 void display_main_menu();
 void display_tutorial_menu();

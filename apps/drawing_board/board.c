@@ -4,14 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "core/components/hw_manager.h"
-#include "core/graphics/bitmaps.h"
-#include "core/graphics/graphic_primitives.h"
-#include "core/graphics/layout.h"
-#include "core/hardware_drivers/config.h"
-#include "core/hardware_drivers/haptics.h"
-#include "core/hardware_drivers/joystick.h"
-#include "core/hardware_drivers/ssd1306.h"
+#include "core/components/include/hw_manager.h"
+#include "core/graphics/include/bitmaps.h"
+#include "core/graphics/include/graphic_primitives.h"
+#include "core/graphics/include/layout.h"
+#include "core/hardware_drivers/include/config.h"
+#include "core/hardware_drivers/include/haptics.h"
+#include "core/hardware_drivers/include/joystick.h"
+#include "core/hardware_drivers/include/ssd1306.h"
 
 void board_run(drawing_board *board);
 

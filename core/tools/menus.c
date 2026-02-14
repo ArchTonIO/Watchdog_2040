@@ -17,10 +17,10 @@
 #include "apps/time_submenus/stopwatch_submenu.h"
 #include "apps/time_submenus/timer_submenu.h"
 #include "apps/todo/todo.h"
-#include "core/data_structures/string_list.h"
-#include "core/graphics/bitmaps.h"
-#include "core/hardware_drivers/haptics.h"
-#include "core/tools/launcher.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/graphics/include/bitmaps.h"
+#include "core/hardware_drivers/include/haptics.h"
+#include "core/tools/include/launcher.h"
 
 void display_ulmp_menu();
 void display_time_menu();

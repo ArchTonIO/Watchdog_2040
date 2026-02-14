@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "string_list.h"
+#include "include/string_list.h"
 
 #include <stdbool.h>
 #include <stdio.h>

@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/boot/bootup.h"
+#include "core/boot/include/bootup.h"
 
 #include <string.h>
 
 #include "pico/multicore.h"
 
-#include "core/components/hw_manager.h"
-#include "core/graphics/bitmaps.h"
-#include "core/hardware_drivers/config.h"
-#include "core/hardware_drivers/core1.h"
-#include "core/hardware_drivers/ssd1306.h"
+#include "core/components/include/hw_manager.h"
+#include "core/graphics/include/bitmaps.h"
+#include "core/hardware_drivers/include/config.h"
+#include "core/hardware_drivers/include/core1.h"
+#include "core/hardware_drivers/include/ssd1306.h"
 #include "device.h"
 
 void display_boot_animation() {

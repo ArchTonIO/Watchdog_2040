@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/hardware_drivers/core1.h"
+#include "core/hardware_drivers/include/core1.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -10,8 +10,8 @@
 
 #include "pico/multicore.h"
 
-#include "core/boot/bootup.h"
-#include "core/hardware_drivers/haptics.h"
+#include "core/boot/include/bootup.h"
+#include "core/hardware_drivers/include/haptics.h"
 
 core1_scheduler *core1_scheduler_inst = NULL;
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "core/graphics/bitmaps.h"
+#include "core/graphics/include/bitmaps.h"
 
 #include <stdint.h>
 

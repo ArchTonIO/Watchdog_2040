@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "core/ulmp/ulmp.h"
+#include "core/ulmp/include/ulmp.h"
 
 #define INFO_PAGES_TIMEOUT 2000
 #define MAX_CONVERSATION_UPDATES 50

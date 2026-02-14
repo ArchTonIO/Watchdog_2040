@@ -10,11 +10,11 @@
 #include <string.h>
 
 #include "apps/virtual_keyboard/virtual_keyboard.h"
-#include "core/components/hw_manager.h"
-#include "core/data_structures/string_list.h"
-#include "core/hardware_drivers/config.h"
-#include "core/hardware_drivers/joystick.h"
-#include "core/hardware_drivers/ssd1306.h"
+#include "core/components/include/hw_manager.h"
+#include "core/data_structures/include/string_list.h"
+#include "core/hardware_drivers/include/config.h"
+#include "core/hardware_drivers/include/joystick.h"
+#include "core/hardware_drivers/include/ssd1306.h"
 
 void push_video_buf_to_screen(text_editor *editor);
 void write_char(uint8_t col, uint8_t row, char to_write);

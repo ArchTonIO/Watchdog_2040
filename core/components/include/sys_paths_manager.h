@@ -6,7 +6,7 @@
 
 #include <stdbool.h>
 
-#include "core/utils/path.h"
+#include "core/utils/include/path.h"
 
 #define FIRST_BOOT_FILE "/.booted"
 #define USER_FILE "/.user"

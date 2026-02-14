@@ -7,8 +7,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "core/components/hw_manager.h"
-#include "core/data_structures/string_list.h"
+#include "core/components/include/hw_manager.h"
+#include "core/data_structures/include/string_list.h"
 
 #define MAX_OPTIONS 100
 #define MAX_OPTIONS_ON_SCREEN 6
