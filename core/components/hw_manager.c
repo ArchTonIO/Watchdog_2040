@@ -108,9 +108,11 @@ hw_drivers *hardware_drivers_init() {
   else
     core1_push_instruction(JOYSTICK_ERR);
 
-  hw_man->sd_card = sdcard_init();
-  sdcard_mount(hw_man->sd_card);
-  if (hw_man->sd_card->is_working)
+  sdcard_t sd_card;
+  sdcard_init(&sd_card);
+  hw_man->sd_card = sd_card;
+  sdcard_mount(&(hw_man->sd_card));
+  if (hw_man->sd_card.is_working)
     core1_push_instruction(SDCARD_OK);
   else
     core1_push_instruction(SDCARD_ERR);

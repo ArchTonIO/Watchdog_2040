@@ -27,7 +27,7 @@ typedef struct {
   sx1278_t *sx1278;
   battery_t battery;
   joystick_t joystick;
-  sdcard *sd_card;
+  sdcard_t sd_card;
   ds3231_rtc_t external_rtc;
   rtc_time *rtc;
   bool power_saving;

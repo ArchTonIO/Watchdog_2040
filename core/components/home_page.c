@@ -52,7 +52,7 @@ home_page *home_page_init() {
 }
 
 void check_peripherals() {
-  if (drivers->sd_card->is_working)
+  if ((drivers->sd_card).is_working)
     home_page_inst->sd_status = 1;
   else
     home_page_inst->sd_status = 0;

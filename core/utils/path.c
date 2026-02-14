@@ -36,7 +36,7 @@ path *path_init(const char *abs_path) {
     *dot = '\0';
   } else
     new_path->ext = NULL;
-  new_path->is_dir = (sdcard_path_is_dir(drivers->sd_card, new_path));
+  new_path->is_dir = (sdcard_path_is_dir(&(drivers->sd_card), new_path));
   new_path->is_hidden = (new_path->full_name[0] == '.');
   generate_parent(new_path);
   return new_path;
@@ -51,7 +51,7 @@ path *path_init(const char *abs_path) {
  * @return true if the write was successful, false otherwise.
  */
 bool path_fwrite(path *file, const char *data, char mode) {
-  return sdcard_write_file(drivers->sd_card, file, data, mode);
+  return sdcard_write_file(&(drivers->sd_card), file, data, mode);
 }
 
 /**
@@ -62,7 +62,7 @@ bool path_fwrite(path *file, const char *data, char mode) {
  * if an error occurred.
  */
 str_list *path_fread(path *file) {
-  return sdcard_read_file(drivers->sd_card, file);
+  return sdcard_read_file(&(drivers->sd_card), file);
 }
 
 /**
@@ -73,7 +73,7 @@ str_list *path_fread(path *file) {
  * @return true if the touch operation was successful, false otherwise.
  */
 bool path_ftouch(path *file) {
-  return sdcard_touch_file(drivers->sd_card, file);
+  return sdcard_touch_file(&(drivers->sd_card), file);
 }
 
 /**
@@ -83,7 +83,7 @@ bool path_ftouch(path *file) {
  * @return true if the deletion was successful, false otherwise.
  */
 bool path_fdelete(path *path) {
-  return sdcard_delete_file(drivers->sd_card, path);
+  return sdcard_delete_file(&(drivers->sd_card), path);
 }
 
 /**
@@ -92,7 +92,7 @@ bool path_fdelete(path *path) {
  * @param dir The path structure representing the directory to create.
  * @return true if the directory was created successfully, false otherwise.
  */
-bool path_mkdir(path *dir) { return sdcard_mkdir(drivers->sd_card, dir); }
+bool path_mkdir(path *dir) { return sdcard_mkdir(&(drivers->sd_card), dir); }
 
 /**
  * @brief Removes a directory at the specified path.
@@ -100,7 +100,7 @@ bool path_mkdir(path *dir) { return sdcard_mkdir(drivers->sd_card, dir); }
  * @param dir The path structure representing the directory to remove.
  * @return true if the directory was removed successfully, false otherwise.
  */
-bool path_rmdir(path *dir) { return sdcard_rmdir(drivers->sd_card, dir); }
+bool path_rmdir(path *dir) { return sdcard_rmdir(&(drivers->sd_card), dir); }
 
 /**
  * @brief Removes all of the childs (either files or directories) of a
@@ -110,7 +110,7 @@ bool path_rmdir(path *dir) { return sdcard_rmdir(drivers->sd_card, dir); }
  * @return true if the directory and its contents were removed successfully,
  * false otherwise.
  */
-bool path_rmtree(path *dir) { return sdcard_rmtree(drivers->sd_card, dir); }
+bool path_rmtree(path *dir) { return sdcard_rmtree(&(drivers->sd_card), dir); }
 
 /**
  * @brief Renames a file or directory from the source path to the destination
@@ -122,7 +122,7 @@ bool path_rmtree(path *dir) { return sdcard_rmtree(drivers->sd_card, dir); }
  * @return true if the rename operation was successful, false otherwise.
  */
 bool path_rename(path *src, path *dest) {
-  return sdcard_rename(drivers->sd_card, src, dest);
+  return sdcard_rename(&(drivers->sd_card), src, dest);
 }
 
 /**
@@ -134,9 +134,9 @@ bool path_rename(path *src, path *dest) {
  * @return true if the copy operation was successful, false otherwise.
  */
 bool path_fcopy(path *src, path *dest) {
-  str_list *src_content = sdcard_read_file(drivers->sd_card, src);
+  str_list *src_content = sdcard_read_file(&(drivers->sd_card), src);
   char *concat_content = str_list_concat(src_content, '\n');
-  bool ret = sdcard_write_file(drivers->sd_card, dest, concat_content, 'w');
+  bool ret = sdcard_write_file(&(drivers->sd_card), dest, concat_content, 'w');
   free(concat_content);
   str_list_free(src_content);
   return ret;
@@ -150,7 +150,7 @@ bool path_fcopy(path *src, path *dest) {
  * the directory.
  */
 str_list *path_listdir(path *path) {
-  return sdcard_list_files(drivers->sd_card, path);
+  return sdcard_list_files(&(drivers->sd_card), path);
 }
 
 /**
@@ -166,7 +166,7 @@ bool path_key_value_dump(path *file,
     char mode,
     const char *key,
     const char *value) {
-  return sdcard_write_key_value_to_file(drivers->sd_card,
+  return sdcard_write_key_value_to_file(&(drivers->sd_card),
       file,
       mode,
       key,
@@ -176,7 +176,7 @@ bool path_key_value_dump(path *file,
 bool path_replace_value_at_key(path *file,
     const char *key,
     const char *value) {
-  return sdcard_replace_value_at_key(drivers->sd_card, file, key, value);
+  return sdcard_replace_value_at_key(&(drivers->sd_card), file, key, value);
 }
 
 /**
@@ -188,7 +188,7 @@ bool path_replace_value_at_key(path *file,
  * @return true if the value was found, false otherwise.
  */
 char *path_key_value_get(path *file, const char *key) {
-  return sdcard_read_value_from_file(drivers->sd_card, file, key);
+  return sdcard_read_value_from_file(&(drivers->sd_card), file, key);
 }
 
 /**
@@ -198,7 +198,7 @@ char *path_key_value_get(path *file, const char *key) {
  * @return true if the file or directory exists, false otherwise.
  */
 bool path_exists(path *path) {
-  return sdcard_file_exists(drivers->sd_card, path);
+  return sdcard_file_exists(&(drivers->sd_card), path);
 }
 
 path *path_concat(path *path_1, path *path_2) {
