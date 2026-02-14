@@ -74,7 +74,7 @@ void launcher_start(launcher *self) {
 
   options_page_launch(launcher_page);
   options_page_free(launcher_page);
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
 }
 
 /**

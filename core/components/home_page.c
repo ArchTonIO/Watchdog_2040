@@ -393,10 +393,10 @@ void display_home_page() {
   update_clock_bitmaps();
   update_clock(start_pix_w, start_pix_h, spacing);
   update_texts();
-  ssd1306_get_mutex(drivers->oled_screen);
+  ssd1306_get_mutex(&(drivers->ssd1306));
   layout_draw_all_layers(home_page_inst->ly);
-  ssd1306_show(drivers->oled_screen);
-  ssd1306_release_mutex(drivers->oled_screen);
+  ssd1306_show(&(drivers->ssd1306));
+  ssd1306_release_mutex(&(drivers->ssd1306));
   layer *top_bar_bitmaps = get_layer_by_name(home_page_inst->ly,
       "top_bar_bitmaps");
   layer *clock_bitmaps = get_layer_by_name(home_page_inst->ly,

@@ -220,7 +220,7 @@ void layer_draw_all(layer *ly) {
     draw_polyline(ly->polylines[i]);
   }
   for (uint8_t i = 0; i < ly->bitmap_defs_count; i++) {
-    ssd1306_draw_bitmap(drivers->oled_screen,
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
         ly->bitmap_defs[i].posx,
         ly->bitmap_defs[i].posy,
         ly->bitmap_defs[i].bitmap,
@@ -229,7 +229,7 @@ void layer_draw_all(layer *ly) {
         ly->bitmap_defs[i].is_inverted);
   }
   for (uint8_t i = 0; i < ly->text_areas_count; i++) {
-    ssd1306_print(drivers->oled_screen,
+    ssd1306_print(&(drivers->ssd1306),
         ly->text_areas[i].text,
         ly->text_areas[i].posx,
         ly->text_areas[i].posy,

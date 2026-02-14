@@ -18,7 +18,7 @@ void set_time(time_digits *digits);
 
 void enter_set_time_submenu() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
   time_digits *digits = time_digits_init();
   draw_symbols(set_timedate_incr,
       set_timedate_decr,

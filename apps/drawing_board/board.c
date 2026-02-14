@@ -169,7 +169,7 @@ void select_tool(drawing_board *board) {
     sleep_ms(INPUT_INTERVAL_MS);
   } else if (drivers->joystick->button_pressed) {
     haptic_auto_pulse();
-    ssd1306_clear(drivers->oled_screen);
+    ssd1306_clear(&(drivers->ssd1306));
     board->select_mode = false;
     board->tools[board->selected_tool_index]->active = true;
     if (board->tools[9]->active)
@@ -243,11 +243,11 @@ void render_board(drawing_board *board) {
     layer_add_text_area(text_areas, *board->select_or_draw);
   }
   layout_draw_all_layers(board->board_layout);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_show(&(drivers->ssd1306));
 }
 
 void board_run(drawing_board *board) {
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
   render_board(board);
   while (!board->should_quit) {
     if (board->select_mode) {

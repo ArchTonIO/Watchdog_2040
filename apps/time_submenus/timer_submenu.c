@@ -21,7 +21,7 @@ bool start_countdown(time_digits *digits);
 
 void enter_timer_submenu() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
   time_digits *digits = time_digits_init();
   digits->hour_tens = 0;
   digits->hour_units = 0;
@@ -35,18 +35,18 @@ void enter_timer_submenu() {
       set_timedate_rigthmost);
   time_digits_show(digits, 28, 23, 2);
   set_hours_tens(digits, set_timer);
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen, "Press to start", 3, 0, false);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_print(&(drivers->ssd1306), "Press to start", 3, 0, false);
   time_digits_show(digits, 28, 23, 2);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_show(&(drivers->ssd1306));
   while (!drivers->joystick->button_pressed)
     joystick_update(drivers->joystick);
   if (!start_countdown(digits)) {
     free(digits);
     return;
   }
-  ssd1306_print(drivers->oled_screen, " Press to stop alarm ", 0, 0, false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_print(&(drivers->ssd1306), " Press to stop alarm ", 0, 0, false);
+  ssd1306_show(&(drivers->ssd1306));
   joystick_update(drivers->joystick);
   while (!drivers->joystick->button_pressed) {
     joystick_update(drivers->joystick);
@@ -56,10 +56,10 @@ void enter_timer_submenu() {
 }
 
 bool start_countdown(time_digits *digits) {
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
   time_digits_show(digits, 28, 23, 2);
-  ssd1306_print(drivers->oled_screen, "Left <- to exit timer", 0, 0, false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_print(&(drivers->ssd1306), "Left <- to exit timer", 0, 0, false);
+  ssd1306_show(&(drivers->ssd1306));
   int32_t total_seconds = (digits->hour_tens * 10 + digits->hour_units) *
                               3600 +
                           (digits->minute_tens * 10 + digits->minute_units) *
@@ -96,7 +96,7 @@ bool start_countdown(time_digits *digits) {
       }
     }
     time_digits_show(digits, 28, 23, 2);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
   }
   return true;
 }

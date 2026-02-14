@@ -37,14 +37,16 @@ void init_i2c1_bus() {
 
 hw_drivers *hardware_drivers_init() {
   hw_drivers *hw_man = (hw_drivers *)malloc(sizeof(hw_drivers));
-  hw_man->oled_screen = ssd1306_init(SSD1306_SDA,
+  ssd1306_t ssd1306;
+  ssd1306_init(&ssd1306,
+      SSD1306_SDA,
       SSD1306_SCK,
-      SSD1306_PWR,
       SSD1306_I2C_PORT,
       SSD1306_BAUDRATE,
       SSD1306_WIDTH,
       SSD1306_HEIGHT,
       SSD1306_ADDR);
+  hw_man->ssd1306 = ssd1306;
   drivers = hw_man;
   haptics_init(HAPTICS_MOTOR_PIN);
   onboard_led_init(ONBOARD_LED_PIN);
@@ -163,9 +165,9 @@ void joystick_irq(uint gpio, uint32_t events) {
 
 void enter_idle() {
   ens160_power_down(drivers->air_quality_sensor);
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_show(drivers->oled_screen);
-  ssd1306_enable_mutex_support(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_show(&(drivers->ssd1306));
+  ssd1306_enable_mutex_support(&(drivers->ssd1306));
   if (!continuous_rx) {
     gpio_set_irq_enabled_with_callback(JOYSTICK_BUTTON_PIN,
         GPIO_IRQ_EDGE_FALL,

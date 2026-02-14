@@ -71,8 +71,8 @@ void display_system_info(bool serial_output) {
 }
 
 void reset_system() {
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen,
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_print(&(drivers->ssd1306),
       "RISKY STUFF        ->\n"
       "Resetting system is\n"
       "IRREVERSIBLE, data\n"
@@ -83,7 +83,7 @@ void reset_system() {
       0,
       0,
       false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_show(&(drivers->ssd1306));
   sleep_ms(200);
   joystick_update(drivers->joystick);
   while (joystick_get_direction(drivers->joystick) != E) {
@@ -102,59 +102,59 @@ void reset_system() {
   options_page_free(yesno_page);
   if (!request_password())
     return;
-  ssd1306_print(drivers->oled_screen, "Resetting system ...", 0, 0, false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_print(&(drivers->ssd1306), "Resetting system ...", 0, 0, false);
+  ssd1306_show(&(drivers->ssd1306));
   path_fdelete(sys_paths->files->first_boot_file);
   path_fdelete(sys_paths->files->user_file);
   path_rmtree(sys_paths->dirs->home_path);
-  ssd1306_print(drivers->oled_screen,
+  ssd1306_print(&(drivers->ssd1306),
       "System reset done!\n"
       "Rebooting ...",
       0,
       0,
       false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_show(&(drivers->ssd1306));
   watchdog_enable(3000, 1);
   sleep_ms(3000);
 }
 
 void display_battery_status() {
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
   joystick_update(drivers->joystick);
   while (joystick_get_direction(drivers->joystick) != W) {
     joystick_update(drivers->joystick);
-    ssd1306_print(drivers->oled_screen, "Battery status", 3, 0, false);
-    ssd1306_print(drivers->oled_screen, "Percentage:     ", 0, 2, false);
-    ssd1306_print(drivers->oled_screen,
+    ssd1306_print(&(drivers->ssd1306), "Battery status", 3, 0, false);
+    ssd1306_print(&(drivers->ssd1306), "Percentage:     ", 0, 2, false);
+    ssd1306_print(&(drivers->ssd1306),
         battery_get_percentage_str(drivers->battery),
         12,
         2,
         false);
-    ssd1306_print(drivers->oled_screen, "Voltage:        ", 0, 3, false);
-    ssd1306_print(drivers->oled_screen,
+    ssd1306_print(&(drivers->ssd1306), "Voltage:        ", 0, 3, false);
+    ssd1306_print(&(drivers->ssd1306),
         battery_get_voltage_str(drivers->battery),
         12,
         3,
         false);
-    ssd1306_print(drivers->oled_screen, "Crude ADC:      ", 0, 4, false);
-    ssd1306_print(drivers->oled_screen,
+    ssd1306_print(&(drivers->ssd1306), "Crude ADC:      ", 0, 4, false);
+    ssd1306_print(&(drivers->ssd1306),
         battery_get_crude_adc_str(drivers->battery),
         12,
         4,
         false);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
     sleep_ms(100);
   }
 }
 
 void display_joystick_check() {
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen, "Joystick test", 0, 0, false);
-  ssd1306_print(drivers->oled_screen, "Long press to exit", 0, 1, false);
-  ssd1306_print(drivers->oled_screen, "X:", 0, 4, false);
-  ssd1306_print(drivers->oled_screen, "Y:", 0, 5, false);
-  ssd1306_print(drivers->oled_screen, "Theta:", 11, 3, false);
-  ssd1306_print(drivers->oled_screen, "Rho:", 11, 5, false);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_print(&(drivers->ssd1306), "Joystick test", 0, 0, false);
+  ssd1306_print(&(drivers->ssd1306), "Long press to exit", 0, 1, false);
+  ssd1306_print(&(drivers->ssd1306), "X:", 0, 4, false);
+  ssd1306_print(&(drivers->ssd1306), "Y:", 0, 5, false);
+  ssd1306_print(&(drivers->ssd1306), "Theta:", 11, 3, false);
+  ssd1306_print(&(drivers->ssd1306), "Rho:", 11, 5, false);
   char x_str[10];
   char y_str[10];
   char theta_str[10];
@@ -176,11 +176,11 @@ void display_joystick_check() {
     snprintf(y_str, sizeof(y_str), "%u", drivers->joystick->y_value);
     snprintf(theta_str, sizeof(theta_str), "%.2f", polar.theta_deg);
     snprintf(rho_str, sizeof(rho_str), "%.2f", polar.l);
-    ssd1306_print(drivers->oled_screen, x_str, 2, 4, false);
-    ssd1306_print(drivers->oled_screen, y_str, 2, 5, false);
-    ssd1306_print(drivers->oled_screen, theta_str, 11, 4, false);
-    ssd1306_print(drivers->oled_screen, rho_str, 11, 6, false);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_print(&(drivers->ssd1306), x_str, 2, 4, false);
+    ssd1306_print(&(drivers->ssd1306), y_str, 2, 5, false);
+    ssd1306_print(&(drivers->ssd1306), theta_str, 11, 4, false);
+    ssd1306_print(&(drivers->ssd1306), rho_str, 11, 6, false);
+    ssd1306_show(&(drivers->ssd1306));
   }
 }
 

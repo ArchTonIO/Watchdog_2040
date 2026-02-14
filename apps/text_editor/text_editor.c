@@ -43,7 +43,7 @@ void insert_text(text_editor *editor,
  */
 text_editor *text_editor_launch(const char *text, bool is_text_placeholder) {
   virtual_keyboard *keyboard = virtual_keyboard_init();
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
   text_editor *editor = text_editor_init(keyboard, false);
   draw_keyboard(keyboard);
   if (strcmp(text, "") != 0) {
@@ -55,8 +55,8 @@ text_editor *text_editor_launch(const char *text, bool is_text_placeholder) {
 }
 
 void text_editor_kill(text_editor *editor) {
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_show(&(drivers->ssd1306));
   free(editor->keyboard);
   free(editor);
 }
@@ -120,7 +120,7 @@ char *text_editor_get_buf(text_editor *editor) {
   char last_input_char = '\0';
   while (1) {
     blink_cursor(editor, editor->video_cursor_col, editor->video_cursor_row);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
     last_input_char = virtual_keyboard_read(editor->keyboard);
     if (last_input_char == END || editor->logic_cursor_row == MAX_LOGIC_ROWS)
       break;
@@ -142,7 +142,7 @@ void navigate_text(text_editor *editor) {
       break;
     }
     blink_cursor(editor, editor->video_cursor_col, editor->video_cursor_row);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
     joystick_update(drivers->joystick);
     if (joystick_get_direction(drivers->joystick) == N) {
       if (editor->video_cursor_row > 0)
@@ -365,7 +365,7 @@ void push_video_buf_to_screen(text_editor *editor) {
 }
 
 void write_char(uint8_t col, uint8_t row, char to_write) {
-  ssd1306_draw_letter_at(drivers->oled_screen,
+  ssd1306_draw_letter_at(&(drivers->ssd1306),
       col * (CHAR_WIDTH - 2),
       row * CHAR_HEIGHT,
       to_write,
@@ -380,13 +380,13 @@ void blink_cursor(text_editor *editor, uint8_t col, uint8_t row) {
   if (row >= MAX_VIDEO_ROWS)
     row = MAX_VIDEO_ROWS - 1;
   if (editor->show_cursor)
-    ssd1306_draw_letter_at(drivers->oled_screen,
+    ssd1306_draw_letter_at(&(drivers->ssd1306),
         col * (CHAR_WIDTH - 2),
         row * CHAR_HEIGHT,
         '_',
         false);
   else
-    ssd1306_draw_letter_at(drivers->oled_screen,
+    ssd1306_draw_letter_at(&(drivers->ssd1306),
         col * (CHAR_WIDTH - 2),
         row * CHAR_HEIGHT,
         ' ',
@@ -396,14 +396,14 @@ void blink_cursor(text_editor *editor, uint8_t col, uint8_t row) {
 
 void show_scroll_cursor(uint8_t length, uint8_t y_pos) {
   for (uint8_t i = 0; i < (MAX_VIDEO_ROWS * CHAR_HEIGHT); i++) {
-    ssd1306_draw_pixel(drivers->oled_screen, SSD1306_WIDTH - 2, i, 0);
-    ssd1306_draw_pixel(drivers->oled_screen, SSD1306_WIDTH - 1, i, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), SSD1306_WIDTH - 2, i, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), SSD1306_WIDTH - 1, i, 0);
   }
   if (length == 0)
     return;
   for (uint8_t i = 0; i < length; i++) {
-    ssd1306_draw_pixel(drivers->oled_screen, SSD1306_WIDTH - 2, y_pos + i, 1);
-    ssd1306_draw_pixel(drivers->oled_screen, SSD1306_WIDTH - 1, y_pos + i, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), SSD1306_WIDTH - 2, y_pos + i, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), SSD1306_WIDTH - 1, y_pos + i, 1);
   }
 }
 

@@ -23,7 +23,7 @@
  * drivers.*/
 typedef struct {
   ens160 *air_quality_sensor;
-  ssd1306 *oled_screen;
+  ssd1306_t ssd1306;
   sx1278 *lora_module;
   battery *battery;
   joystick *joystick;

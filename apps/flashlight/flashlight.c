@@ -8,15 +8,15 @@
 #include "core/hardware_drivers/ssd1306.h"
 
 void set_flashlight_on() {
-  ssd1306_invert(drivers->oled_screen, true);
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_invert(&(drivers->ssd1306), true);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_show(&(drivers->ssd1306));
 }
 
 void set_flashlight_off() {
-  ssd1306_invert(drivers->oled_screen, false);
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_invert(&(drivers->ssd1306), false);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_show(&(drivers->ssd1306));
 }
 
 void enter_flashlight_screen() {

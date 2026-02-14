@@ -99,8 +99,8 @@ void sys_mainloop() {
           screen_up_seconds)
         break;
     }
-    ssd1306_clear(drivers->oled_screen);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_clear(&(drivers->ssd1306));
+    ssd1306_show(&(drivers->ssd1306));
   }
 }
 

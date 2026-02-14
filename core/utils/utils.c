@@ -53,13 +53,13 @@ bool request_and_get_password(char return_buf[]) {
 }
 
 void print_log(const char *message, uint16_t persistency, bool autoclear) {
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen, message, 0, 0, false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_print(&(drivers->ssd1306), message, 0, 0, false);
+  ssd1306_show(&(drivers->ssd1306));
   sleep_ms(persistency);
   if (autoclear) {
-    ssd1306_clear(drivers->oled_screen);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_clear(&(drivers->ssd1306));
+    ssd1306_show(&(drivers->ssd1306));
   }
 }
 

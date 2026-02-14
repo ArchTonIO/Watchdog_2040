@@ -27,7 +27,7 @@ static void at_change_callback(time_digits *digits) {}
 
 void enter_set_alarm_submenu() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
   if (drivers->rtc->alarm_set) {
     print_usr_error("Alarm already set !\n\n"
                     "If you want to change\n"
@@ -63,20 +63,20 @@ void alarm_callback() { drivers->rtc->alarm_triggered = true; }
 void process_alarm() {
   if (!drivers->rtc->alarm_triggered)
     return;
-  if (!ssd1306_was_mutex_support_enabled(drivers->oled_screen))
+  if (!ssd1306_was_mutex_support_enabled(&(drivers->ssd1306)))
     return;
-  ssd1306_get_mutex(drivers->oled_screen);
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_get_mutex(&(drivers->ssd1306));
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       (SSD1306_HEIGHT - 28) / 2,
       malloc_with_both_eyes_saying_hi,
       26,
       28,
       false);
-  ssd1306_print(drivers->oled_screen, alarm_message, 0, 0, false);
-  ssd1306_print(drivers->oled_screen, "E' tempo !", 4, 5, false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_print(&(drivers->ssd1306), alarm_message, 0, 0, false);
+  ssd1306_print(&(drivers->ssd1306), "E' tempo !", 4, 5, false);
+  ssd1306_show(&(drivers->ssd1306));
   joystick_update(drivers->joystick);
   haptics_switch_performing_core();
   while (joystick_get_direction(drivers->joystick) == C) {
@@ -84,9 +84,9 @@ void process_alarm() {
     haptic_auto_pulse();
   }
   haptics_switch_performing_core();
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_show(drivers->oled_screen);
-  ssd1306_release_mutex(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_show(&(drivers->ssd1306));
+  ssd1306_release_mutex(&(drivers->ssd1306));
   drivers->rtc->alarm_triggered = false;
 }
 

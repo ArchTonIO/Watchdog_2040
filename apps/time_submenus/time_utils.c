@@ -34,28 +34,28 @@ void draw_symbols(const uint8_t *top_symbol,
     const uint8_t *bottom_symbol,
     const uint8_t *left_symbol,
     const uint8_t *right_symbol) {
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       (SSD1306_WIDTH - TIME_NAV_SYMBOLS_L) / 2,
       0,
       top_symbol,
       TIME_NAV_SYMBOLS_L,
       TIME_NAV_SYMBOLS_L,
       false);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       (SSD1306_WIDTH - TIME_NAV_SYMBOLS_L) / 2,
       SSD1306_HEIGHT - TIME_NAV_SYMBOLS_L,
       bottom_symbol,
       TIME_NAV_SYMBOLS_L,
       TIME_NAV_SYMBOLS_L,
       false);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       (SSD1306_HEIGHT - TIME_NAV_SYMBOLS_L) / 2,
       left_symbol,
       TIME_NAV_SYMBOLS_L,
       TIME_NAV_SYMBOLS_L,
       false);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       SSD1306_WIDTH - TIME_NAV_SYMBOLS_L,
       (SSD1306_HEIGHT - TIME_NAV_SYMBOLS_L) / 2,
       right_symbol,
@@ -68,7 +68,7 @@ void time_digits_show(time_digits *digits,
     uint8_t start_x,
     uint8_t start_y,
     uint8_t spacing) {
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       start_x,
       start_y,
       clock_digits[digits->hour_tens],
@@ -76,7 +76,7 @@ void time_digits_show(time_digits *digits,
       CLOCK_DIGIT_BITMAPS_H,
       false);
   start_x += CLOCK_DIGIT_BITMAPS_W + spacing;
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       start_x,
       start_y,
       clock_digits[digits->hour_units],
@@ -84,7 +84,7 @@ void time_digits_show(time_digits *digits,
       CLOCK_DIGIT_BITMAPS_H,
       false);
   start_x += CLOCK_DIGIT_BITMAPS_W + spacing;
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       start_x,
       start_y,
       clock_dots,
@@ -92,7 +92,7 @@ void time_digits_show(time_digits *digits,
       CLOCK_DOTS_BITMAPS_H,
       false);
   start_x += CLOCK_DOTS_BITMAPS_W + spacing;
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       start_x,
       start_y,
       clock_digits[digits->minute_tens],
@@ -100,7 +100,7 @@ void time_digits_show(time_digits *digits,
       CLOCK_DIGIT_BITMAPS_H,
       false);
   start_x += CLOCK_DIGIT_BITMAPS_W + spacing;
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       start_x,
       start_y,
       clock_digits[digits->minute_units],
@@ -108,7 +108,7 @@ void time_digits_show(time_digits *digits,
       CLOCK_DIGIT_BITMAPS_H,
       false);
   start_x += CLOCK_DIGIT_BITMAPS_W + spacing;
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       start_x,
       start_y,
       clock_dots,
@@ -116,7 +116,7 @@ void time_digits_show(time_digits *digits,
       CLOCK_DOTS_BITMAPS_H,
       false);
   start_x += CLOCK_DOTS_BITMAPS_W + spacing;
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       start_x,
       start_y,
       clock_digits[digits->second_tens],
@@ -124,7 +124,7 @@ void time_digits_show(time_digits *digits,
       CLOCK_DIGIT_BITMAPS_H,
       false);
   start_x += CLOCK_DIGIT_BITMAPS_W + spacing;
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       start_x,
       start_y,
       clock_digits[digits->second_units],
@@ -136,7 +136,7 @@ void time_digits_show(time_digits *digits,
 void blink_lines(line underline, line upperline, uint8_t interval) {
   draw_line(underline);
   draw_line(upperline);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_show(&(drivers->ssd1306));
   sleep_ms(interval / 2);
   clear_line(underline);
   clear_line(upperline);
@@ -179,7 +179,7 @@ void set_hours_tens(time_digits *digits,
       break;
     }
     time_digits_show(digits, 28, 23, 2);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
   }
 }
 
@@ -221,7 +221,7 @@ void set_hours_units(time_digits *digits,
       break;
     }
     time_digits_show(digits, 28, 23, 2);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
   }
 }
 
@@ -263,7 +263,7 @@ void set_minutes_tens(time_digits *digits,
       break;
     }
     time_digits_show(digits, 28, 23, 2);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
   }
 }
 
@@ -304,7 +304,7 @@ void set_minutes_units(time_digits *digits,
       break;
     }
     time_digits_show(digits, 28, 23, 2);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
   }
 }
 
@@ -345,7 +345,7 @@ void set_seconds_tens(time_digits *digits,
       break;
     }
     time_digits_show(digits, 28, 23, 2);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
   }
 }
 
@@ -387,7 +387,7 @@ void set_seconds_units(time_digits *digits,
       break;
     }
     time_digits_show(digits, 28, 23, 2);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
   }
 }
 

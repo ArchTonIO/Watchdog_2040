@@ -157,7 +157,7 @@ void populate_keys(virtual_keyboard *keyboard) {
 
 void draw_custom_char(uint8_t row, uint8_t col, char label, bool reversed) {
   if (label == SPC) {
-    ssd1306_draw_bitmap(drivers->oled_screen,
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
         col * CHAR_WIDTH + LEFT_PADDING,
         row * CHAR_HEIGHT + TOP_PADDING,
         SPACE_PIXELS,
@@ -167,7 +167,7 @@ void draw_custom_char(uint8_t row, uint8_t col, char label, bool reversed) {
     return;
   }
   if (label == BCK) {
-    ssd1306_draw_bitmap(drivers->oled_screen,
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
         col * CHAR_WIDTH + LEFT_PADDING,
         row * CHAR_HEIGHT + TOP_PADDING,
         BACKSPACE_PIXELS,
@@ -177,7 +177,7 @@ void draw_custom_char(uint8_t row, uint8_t col, char label, bool reversed) {
     return;
   }
   if (label == SHF) {
-    ssd1306_draw_bitmap(drivers->oled_screen,
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
         col * CHAR_WIDTH + LEFT_PADDING,
         row * CHAR_HEIGHT + TOP_PADDING,
         SHIFT_PIXELS,
@@ -187,7 +187,7 @@ void draw_custom_char(uint8_t row, uint8_t col, char label, bool reversed) {
     return;
   }
   if (label == LFD) {
-    ssd1306_draw_bitmap(drivers->oled_screen,
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
         col * CHAR_WIDTH + LEFT_PADDING,
         row * CHAR_HEIGHT + TOP_PADDING,
         NEWLINE_PIXELS,
@@ -197,7 +197,7 @@ void draw_custom_char(uint8_t row, uint8_t col, char label, bool reversed) {
     return;
   }
   if (label == UPP) {
-    ssd1306_draw_bitmap(drivers->oled_screen,
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
         col * CHAR_WIDTH + LEFT_PADDING,
         row * CHAR_HEIGHT + TOP_PADDING,
         UPPERCASE_PIXELS,
@@ -207,7 +207,7 @@ void draw_custom_char(uint8_t row, uint8_t col, char label, bool reversed) {
     return;
   }
   if (label == LOW) {
-    ssd1306_draw_bitmap(drivers->oled_screen,
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
         col * CHAR_WIDTH + LEFT_PADDING,
         row * CHAR_HEIGHT + TOP_PADDING,
         LOWERCASE_PIXELS,
@@ -217,7 +217,7 @@ void draw_custom_char(uint8_t row, uint8_t col, char label, bool reversed) {
     return;
   }
   if (label == NAV) {
-    ssd1306_draw_bitmap(drivers->oled_screen,
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
         col * CHAR_WIDTH + LEFT_PADDING,
         row * CHAR_HEIGHT + TOP_PADDING,
         NAVIGATE_PIXELS,
@@ -227,7 +227,7 @@ void draw_custom_char(uint8_t row, uint8_t col, char label, bool reversed) {
     return;
   }
   if (label == END) {
-    ssd1306_draw_bitmap(drivers->oled_screen,
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
         col * CHAR_WIDTH + LEFT_PADDING,
         row * CHAR_HEIGHT + TOP_PADDING,
         END_INPUT_PIXELS,
@@ -250,13 +250,13 @@ void draw_keyboard(virtual_keyboard *keyboard) {
         draw_custom_char(i, j, keyboard->keys[i][j].label, false);
         continue;
       }
-      ssd1306_draw_letter_at(drivers->oled_screen,
+      ssd1306_draw_letter_at(&(drivers->ssd1306),
           j * CHAR_WIDTH + LEFT_PADDING,
           i * CHAR_HEIGHT + TOP_PADDING,
           keyboard->keys[i][j].label,
           false);
     }
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_show(&(drivers->ssd1306));
 }
 
 void draw_uppercase(virtual_keyboard *keyboard) {
@@ -288,7 +288,7 @@ void highlight_key(virtual_keyboard *keyboard, key *key, bool highlight) {
     draw_custom_char(key->row, key->col, key->label, highlight);
     return;
   }
-  ssd1306_draw_letter_at(drivers->oled_screen,
+  ssd1306_draw_letter_at(&(drivers->ssd1306),
       key->col * CHAR_WIDTH + LEFT_PADDING,
       key->row * CHAR_HEIGHT + TOP_PADDING,
       key->label,

@@ -47,8 +47,8 @@ malloc_memories *malloc_memories_init() {
 }
 
 void right_to_continue() {
-  ssd1306_print(drivers->oled_screen, "Right to continue ->", 0, 7, 0);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_print(&(drivers->ssd1306), "Right to continue ->", 0, 7, 0);
+  ssd1306_show(&(drivers->ssd1306));
   joystick_update(drivers->joystick);
   while (joystick_get_direction(drivers->joystick) != E) {
     joystick_update(drivers->joystick);
@@ -58,29 +58,23 @@ void right_to_continue() {
 
 void clear_text_area() {
   for (uint8_t i = 0; i < 8; i++)
-    ssd1306_print(drivers->oled_screen, "                 ", 3, i, 0);
-  ssd1306_print(drivers->oled_screen, "                     ", 0, 7, 0);
-  ssd1306_show(drivers->oled_screen);
+    ssd1306_print(&(drivers->ssd1306), "                 ", 3, i, 0);
+  ssd1306_print(&(drivers->ssd1306), "                     ", 0, 7, 0);
+  ssd1306_show(&(drivers->ssd1306));
 }
 
 void clear_text_area_reduced() {
   for (uint8_t i = 2; i < 8; i++)
-    ssd1306_print(drivers->oled_screen, "                 ", 3, i, 0);
-  ssd1306_print(drivers->oled_screen, "                     ", 0, 7, 0);
-  ssd1306_show(drivers->oled_screen);
+    ssd1306_print(&(drivers->ssd1306), "                 ", 3, i, 0);
+  ssd1306_print(&(drivers->ssd1306), "                     ", 0, 7, 0);
+  ssd1306_show(&(drivers->ssd1306));
 }
 
 void malloc_greets_you() {
-  ssd1306_draw_bitmap(drivers->oled_screen,
-      0,
-      19,
-      malloc_saying_hi,
-      26,
-      28,
-      0);
-  ssd1306_print_gradually(drivers->oled_screen, "Ciao!", 4, 0, 0);
+  ssd1306_draw_bitmap(&(drivers->ssd1306), 0, 19, malloc_saying_hi, 26, 28, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306), "Ciao!", 4, 0, 0);
   sleep_ms(50);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Io sono Malloc e\n"
       "mi occupo di\n"
       "tutto qui dentro",
@@ -92,14 +86,14 @@ void malloc_greets_you() {
 }
 
 void malloc_explains_you_joystick() {
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_both_eyes,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Per iniziare\n"
       "impara ad usare\n"
       "il joystick\n",
@@ -111,14 +105,14 @@ void malloc_explains_you_joystick() {
 }
 
 void malloc_explains_you_menu() {
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_glasses,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Per interagire\n"
       "con i menu a\n"
       "lista, basta\n"
@@ -131,7 +125,7 @@ void malloc_explains_you_menu() {
       0);
   right_to_continue();
   clear_text_area();
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Oppure vai a\n"
       "sinistra per\n"
       "tornare alla\n"
@@ -145,14 +139,14 @@ void malloc_explains_you_menu() {
   sleep_ms(200);
   display_tutorial_menu();
   clear_text_area();
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_both_eyes,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Bene vedo che\n"
       "hai il pollice\n"
       "opponibile!",
@@ -164,7 +158,7 @@ void malloc_explains_you_menu() {
 }
 
 void malloc_explains_keyboard_commands() {
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Sulla tastiera\n"
       "virtuale, oltre\n"
       "che a lettere\n"
@@ -176,72 +170,72 @@ void malloc_explains_keyboard_commands() {
       0);
   right_to_continue();
   clear_text_area();
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       27,
       0,
       (uint8_t *)NEWLINE_PIXELS,
       8,
       8,
       0);
-  ssd1306_print_gradually(drivers->oled_screen, "-> Invio", 5, 0, 0);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306), "-> Invio", 5, 0, 0);
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       27,
       8,
       (uint8_t *)BACKSPACE_PIXELS,
       8,
       8,
       0);
-  ssd1306_print_gradually(drivers->oled_screen, "-> Backspace", 5, 1, 0);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306), "-> Backspace", 5, 1, 0);
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       27,
       16,
       (uint8_t *)SHIFT_PIXELS,
       8,
       8,
       0);
-  ssd1306_print_gradually(drivers->oled_screen, "-> Shift", 5, 2, 0);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306), "-> Shift", 5, 2, 0);
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       27,
       24,
       (uint8_t *)SPACE_PIXELS,
       8,
       8,
       0);
-  ssd1306_print_gradually(drivers->oled_screen, "-> Spazio", 5, 3, 0);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306), "-> Spazio", 5, 3, 0);
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       27,
       32,
       (uint8_t *)UPPERCASE_PIXELS,
       8,
       8,
       0);
-  ssd1306_print_gradually(drivers->oled_screen, "-> Maiuscolo", 5, 4, 0);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306), "-> Maiuscolo", 5, 4, 0);
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       27,
       40,
       (uint8_t *)NAVIGATE_PIXELS,
       8,
       8,
       0);
-  ssd1306_print_gradually(drivers->oled_screen, "-> Naviga testo", 5, 5, 0);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306), "-> Naviga testo", 5, 5, 0);
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       27,
       48,
       (uint8_t *)END_INPUT_PIXELS,
       8,
       8,
       0);
-  ssd1306_print_gradually(drivers->oled_screen, "-> Salva e esci", 5, 6, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306), "-> Salva e esci", 5, 6, 0);
   right_to_continue();
   clear_text_area();
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_both_eyes,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Se ti perdi\n"
       "e non sai come\n"
       "uscire, il\n"
@@ -257,14 +251,14 @@ void malloc_explains_keyboard_commands() {
 }
 
 void malloc_explains_you_text_editor() {
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_glasses,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Abituati all'\n"
       "editor di testo\n"
       "adesso.",
@@ -277,16 +271,16 @@ void malloc_explains_you_text_editor() {
   text_editor *editor = text_editor_launch("# Try the text editor", true);
   char *text = text_editor_get_buf(editor);
   text_editor_kill(editor);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_the_mascot,
       22,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen, "Sai scrivere!", 4, 0, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306), "Sai scrivere!", 4, 0, 0);
   sleep_ms(50);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Bravo impari\n"
       "in fretta!",
       4,
@@ -297,14 +291,14 @@ void malloc_explains_you_text_editor() {
 }
 
 void malloc_asks_your_name() {
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_pointy_eyes,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Ma veniamo al\n"
       "tuo nome:\n"
       "Come vuoi essere\n"
@@ -323,14 +317,14 @@ void malloc_asks_your_name() {
       break;
     }
     text_editor_kill(editor);
-    ssd1306_draw_bitmap(drivers->oled_screen,
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
         0,
         19,
         malloc_with_both_eyes,
         26,
         28,
         0);
-    ssd1306_print_gradually(drivers->oled_screen,
+    ssd1306_print_gradually(&(drivers->ssd1306),
         "Uoah! nome\n"
         "troppo lungo!,\n"
         "Rimani entro\n"
@@ -343,25 +337,19 @@ void malloc_asks_your_name() {
     clear_text_area();
   }
   strcpy(malloc_memories_inst->username, name);
-  ssd1306_draw_bitmap(drivers->oled_screen,
-      0,
-      19,
-      malloc_saying_hi,
-      26,
-      28,
-      0);
-  ssd1306_print_gradually(drivers->oled_screen, "Ciao", 4, 0, 0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306), 0, 19, malloc_saying_hi, 26, 28, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306), "Ciao", 4, 0, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306),
       malloc_memories_inst->username,
       4,
       1,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "!",
       strlen(malloc_memories_inst->username) + 4,
       1,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Sono felice di\n"
       "conoscerti.",
       4,
@@ -385,14 +373,14 @@ void get_password() {
     strcpy(malloc_memories_inst->user_password, password);
     return;
   } else {
-    ssd1306_draw_bitmap(drivers->oled_screen,
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
         0,
         19,
         malloc_with_both_eyes,
         26,
         28,
         0);
-    ssd1306_print_gradually(drivers->oled_screen,
+    ssd1306_print_gradually(&(drivers->ssd1306),
         "Uoah! password\n"
         "troppo lunga!\n"
         "Rimani entro\n"
@@ -408,14 +396,14 @@ void get_password() {
 }
 
 void malloc_asks_for_password() {
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_pointy_eyes,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Ora ti chiedo\n"
       "di impostare una\n"
       "password per\n"
@@ -430,15 +418,15 @@ void malloc_asks_for_password() {
 }
 
 void malloc_explains_you_home_screen() {
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_the_mascot,
       22,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen, "Perfetto !", 4, 0, 0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306), "Perfetto !", 4, 0, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Ora ti spiego\n"
       "come funziona\n"
       "la tua\n"
@@ -448,15 +436,15 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area();
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_glasses,
       26,
       28,
       0);
-  ssd1306_draw_bitmap(drivers->oled_screen, 0, 0, battery_4_bars, 21, 16, 0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306), 0, 0, battery_4_bars, 21, 16, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "In alto a \n"
       "sinistra trovi\n"
       "lo stato di\n"
@@ -467,8 +455,8 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_draw_bitmap(drivers->oled_screen, 21, 0, microsd_working, 21, 16, 0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306), 21, 0, microsd_working, 21, 16, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Di fianco\n"
       "c'e' l'icona\n"
       "della microsd",
@@ -477,7 +465,7 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Se la microsd\n"
       "e' inserita e\n"
       "funziona\n"
@@ -488,14 +476,14 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       21,
       0,
       microsd_not_working,
       21,
       16,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Se la microsd\n"
       "non e' inserita\n"
       "o non funziona\n"
@@ -506,8 +494,8 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_draw_bitmap(drivers->oled_screen, 42, 0, lora_working, 21, 16, 0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306), 42, 0, lora_working, 21, 16, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Poi c'e' l'icona\n"
       "del modulo\n"
       "LoRa.",
@@ -516,7 +504,7 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Se il modulo\n"
       "LoRa funziona\n"
       "correttamente\n"
@@ -526,14 +514,8 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_draw_bitmap(drivers->oled_screen,
-      42,
-      0,
-      lora_not_working,
-      21,
-      16,
-      0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306), 42, 0, lora_not_working, 21, 16, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Se il modulo\n"
       "LoRa non\n"
       "funziona\n"
@@ -544,8 +526,8 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_draw_bitmap(drivers->oled_screen, 63, 0, ens160_working, 21, 16, 0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306), 63, 0, ens160_working, 21, 16, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Poi c'e' l'icona\n"
       "del sensore di\n"
       "qualita' dell'\n"
@@ -555,7 +537,7 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Se il sensore\n"
       "ENS160 funziona\n"
       "correttamente\n"
@@ -565,14 +547,14 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       63,
       0,
       ens160_not_working,
       21,
       16,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Se il sensore\n"
       "ENS160 non\n"
       "funziona\n"
@@ -583,14 +565,14 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       84,
       0,
       num_msg_bitmaps[0],
       21,
       16,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Qui trovi\n"
       "l'icona delle\n"
       "notifiche.",
@@ -599,8 +581,8 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_draw_bitmap(drivers->oled_screen, 105, 0, alarm_enabled, 21, 16, 0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306), 105, 0, alarm_enabled, 21, 16, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "In alto a\n"
       "destra trovi\n"
       "l'icona della\n"
@@ -610,7 +592,7 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Se la sveglia\n"
       "e' attiva\n"
       "vedi questo",
@@ -619,8 +601,8 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_draw_bitmap(drivers->oled_screen, 105, 0, alarm_disabled, 21, 16, 0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306), 105, 0, alarm_disabled, 21, 16, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Se la sveglia\n"
       "non e' attiva\n"
       "vedi questo",
@@ -629,7 +611,7 @@ void malloc_explains_you_home_screen() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Dalla home puoi\n"
       "andare al menu\n"
       "principale\n"
@@ -653,14 +635,14 @@ uint16_t malloc_get_ulcp_address() {
 }
 
 void malloc_generates_ulcp_address() {
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_the_mascot,
       22,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Bene, direi che\n"
       "per ora non ho\n"
       "altro da dirti",
@@ -668,7 +650,7 @@ void malloc_generates_ulcp_address() {
       2,
       0);
   sleep_ms(100);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "...Ma ho un\n"
       "regalino per te!",
       4,
@@ -676,28 +658,28 @@ void malloc_generates_ulcp_address() {
       0);
   right_to_continue();
   clear_text_area_reduced();
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_both_eyes,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Il tuo indirizzo\n"
       "ULMP!",
       4,
       2,
       0);
   sleep_ms(50);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_pointy_eyes,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Fammi fare un po\n"
       "di spazio sullo \n"
       "schermo e spiego",
@@ -705,15 +687,15 @@ void malloc_generates_ulcp_address() {
       4,
       0);
   right_to_continue();
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_glasses,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Il tuo indirizzo\n"
       "ULMP e' un\n"
       "identificativo\n"
@@ -726,7 +708,7 @@ void malloc_generates_ulcp_address() {
       0);
   right_to_continue();
   clear_text_area();
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "messaggi a e da\n"
       "chiunque abbia\n"
       "un Watchdog_2040\n"
@@ -739,7 +721,7 @@ void malloc_generates_ulcp_address() {
       0);
   right_to_continue();
   clear_text_area();
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Si tratta di un\n"
       "numero che va\n"
       "da 10000 a 65535\n"
@@ -751,14 +733,14 @@ void malloc_generates_ulcp_address() {
       0);
   right_to_continue();
   clear_text_area();
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_glasses,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Il protocollo di\n"
       "comunicazione\n"
       "(transport\n"
@@ -771,8 +753,8 @@ void malloc_generates_ulcp_address() {
       0);
   right_to_continue();
   clear_text_area();
-  ssd1306_print_gradually(drivers->oled_screen, "e si chiama:", 4, 0, 0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306), "e si chiama:", 4, 0, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "U(ncomplicated)\n"
       "L(oRa)\n"
       "M(messaging)\n"
@@ -782,7 +764,7 @@ void malloc_generates_ulcp_address() {
       0);
   right_to_continue();
   clear_text_area();
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_both_eyes,
@@ -791,7 +773,7 @@ void malloc_generates_ulcp_address() {
       0);
   char *addr_str = malloc(6);
   sprintf(addr_str, "%d", malloc_get_ulcp_address());
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Ma basta parlare\n"
       "di me!, ecco il\n"
       "tuo indirizzo\n"
@@ -799,8 +781,8 @@ void malloc_generates_ulcp_address() {
       4,
       0,
       0);
-  ssd1306_print_gradually(drivers->oled_screen, addr_str, 9, 3, 0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306), addr_str, 9, 3, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "Rimarra' scritto\n"
       "In basso alla\n"
       "home screen",
@@ -809,14 +791,14 @@ void malloc_generates_ulcp_address() {
       0);
   right_to_continue();
   clear_text_area();
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_both_eyes,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "in caso ne\n"
       "avessi bisogno",
       4,
@@ -827,14 +809,14 @@ void malloc_generates_ulcp_address() {
 }
 
 void malloc_says_goodbye() {
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
       malloc_with_both_eyes,
       26,
       28,
       0);
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "E' stata una\n"
       "bella\n"
       "chiacchierata\n"
@@ -847,7 +829,7 @@ void malloc_says_goodbye() {
       0);
   right_to_continue();
   clear_text_area();
-  ssd1306_print_gradually(drivers->oled_screen,
+  ssd1306_print_gradually(&(drivers->ssd1306),
       "a venirmi a\n"
       "trovare\n"
       "nel menu\n"
@@ -856,17 +838,11 @@ void malloc_says_goodbye() {
       0,
       0);
   sleep_ms(100);
-  ssd1306_draw_bitmap(drivers->oled_screen,
-      0,
-      19,
-      malloc_saying_hi,
-      26,
-      28,
-      0);
-  ssd1306_print_gradually(drivers->oled_screen, "Ciao! :)", 4, 4, 0);
+  ssd1306_draw_bitmap(&(drivers->ssd1306), 0, 19, malloc_saying_hi, 26, 28, 0);
+  ssd1306_print_gradually(&(drivers->ssd1306), "Ciao! :)", 4, 4, 0);
   right_to_continue();
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_show(&(drivers->ssd1306));
 }
 
 void dump_malloc_memories_to_sd() {

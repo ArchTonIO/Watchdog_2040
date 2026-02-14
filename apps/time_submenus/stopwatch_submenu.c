@@ -28,7 +28,7 @@ void milliseconds_show(milliseconds_digits *digits,
     uint8_t start_y,
     uint8_t spacing) {
   start_x += spacing;
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       start_x,
       start_y,
       clock_dots,
@@ -36,7 +36,7 @@ void milliseconds_show(milliseconds_digits *digits,
       CLOCK_DOTS_BITMAPS_H,
       false);
   start_x += CLOCK_DOTS_BITMAPS_W + spacing;
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       start_x,
       start_y,
       clock_digits[digits->millisecond_tens],
@@ -44,7 +44,7 @@ void milliseconds_show(milliseconds_digits *digits,
       CLOCK_DIGIT_BITMAPS_H,
       false);
   start_x += CLOCK_DIGIT_BITMAPS_W + spacing;
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       start_x,
       start_y,
       clock_digits[digits->millisecond_units],
@@ -55,7 +55,7 @@ void milliseconds_show(milliseconds_digits *digits,
 
 void enter_stopwatch_submenu() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
   time_digits *stopwatch_digits = time_digits_init();
   stopwatch_digits->hour_tens = 0;
   stopwatch_digits->hour_units = 0;
@@ -73,7 +73,7 @@ void enter_stopwatch_submenu() {
     uint8_t direction = joystick_get_direction(drivers->joystick);
     time_digits_show(stopwatch_digits, 16, 23, 2);
     milliseconds_show(stopwatch_milliseconds_digits, 86, 23, 2);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
     if (direction == N) {
       haptic_short_pulse();
       start_stopwatch(stopwatch_digits, stopwatch_milliseconds_digits);
@@ -120,7 +120,7 @@ void start_stopwatch(time_digits *digits,
     stopwatch_milliseconds_digits->millisecond_tens = (elapsed_ms / 100) % 10;
     time_digits_show(digits, 16, 23, 2);
     milliseconds_show(stopwatch_milliseconds_digits, 86, 23, 2);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
     joystick_update(drivers->joystick);
   }
   haptic_short_pulse();

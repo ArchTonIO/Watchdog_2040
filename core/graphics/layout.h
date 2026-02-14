@@ -113,7 +113,7 @@ layer layer_draw functions
 
 Whenever called all geometry by the specified type (or all)
 will be wrote to screen memory.
-Be aware that only a final call to ssd1306_show(drivers->oled_screen)
+Be aware that only a final call to ssd1306_show(&(drivers->ssd1306))
 will make them actually visible (when to call it is your responsibility,
 it is good practice to call it only once in your loop)
 */
@@ -133,7 +133,7 @@ Symmetric to geometry_draw functions,
 whenever called all geometry by the specified type (or all)
 will be cleared from the screen (screen memory of the pixels
 belonging to the geometry will be zeroed)
-Be aware that only a final call to ssd1306_show(drivers->oled_screen)
+Be aware that only a final call to ssd1306_show(&(drivers->ssd1306))
 will make them actually go away (when to call it is your responsibility,
 it is good practice to call it only once in your loop).
 Be aware that this will not remove the geometries from the layer.

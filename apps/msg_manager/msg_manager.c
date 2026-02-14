@@ -118,8 +118,8 @@ void update_conversations() {
   }
   msg_man_inst->conversation_updates_count = 0;
   if (should_clear) {
-    ssd1306_clear(drivers->oled_screen);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_clear(&(drivers->ssd1306));
+    ssd1306_show(&(drivers->ssd1306));
   }
 }
 
@@ -136,7 +136,7 @@ void read_messages() { show_read_messages_menu(); }
 void send_message_status_update_callback(uint8_t progress) {
   char progress_str[2];
   sprintf(progress_str, "%u", progress);
-  ssd1306_print(drivers->oled_screen,
+  ssd1306_print(&(drivers->ssd1306),
       "Message sent\n"
       "Waiting for ack...",
       0,
@@ -144,11 +144,11 @@ void send_message_status_update_callback(uint8_t progress) {
       false);
   char max_sending_attempts_buf[3];
   sprintf(max_sending_attempts_buf, "%u", MAX_SENDING_ATTEMPTS);
-  ssd1306_print(drivers->oled_screen, "Attempts: ", 0, 4, false);
-  ssd1306_print(drivers->oled_screen, progress_str, 9, 4, false);
-  ssd1306_print(drivers->oled_screen, "/", 10, 4, false);
-  ssd1306_print(drivers->oled_screen, max_sending_attempts_buf, 11, 4, false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_print(&(drivers->ssd1306), "Attempts: ", 0, 4, false);
+  ssd1306_print(&(drivers->ssd1306), progress_str, 9, 4, false);
+  ssd1306_print(&(drivers->ssd1306), "/", 10, 4, false);
+  ssd1306_print(&(drivers->ssd1306), max_sending_attempts_buf, 11, 4, false);
+  ssd1306_show(&(drivers->ssd1306));
 }
 
 /**
@@ -157,8 +157,8 @@ void send_message_status_update_callback(uint8_t progress) {
 void send_message() {
   uint16_t dest_addr = choose_from_online_contacts();
   if (dest_addr == 0) {
-    ssd1306_clear(drivers->oled_screen);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_clear(&(drivers->ssd1306));
+    ssd1306_show(&(drivers->ssd1306));
     return;
   }
   char *msg = compose_message();
@@ -185,7 +185,7 @@ void notify(uint16_t src_address) {
   haptics_switch_performing_core();
   haptic_double_pulse();
   haptics_switch_performing_core();
-  if (!ssd1306_was_mutex_support_enabled(drivers->oled_screen)) {
+  if (!ssd1306_was_mutex_support_enabled(&(drivers->ssd1306))) {
     push_conversation_update((conversation_update){.contact_addr = src_address,
         .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
         .status = 3});
@@ -194,9 +194,9 @@ void notify(uint16_t src_address) {
     return;
   }
   sleep_ms(2);
-  ssd1306_get_mutex(drivers->oled_screen);
+  ssd1306_get_mutex(&(drivers->ssd1306));
   display_received_message(name, src_address);
-  ssd1306_release_mutex(drivers->oled_screen);
+  ssd1306_release_mutex(&(drivers->ssd1306));
   free(name);
 }
 
@@ -208,24 +208,24 @@ char *compose_message() {
 }
 
 void display_sent_message_status(uint8_t status, uint16_t dest_addr) {
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
   char *name = get_contact_name_by_addr(dest_addr);
-  ssd1306_print(drivers->oled_screen, "Message status:", 0, 0, false);
-  ssd1306_print(drivers->oled_screen, "sent to", 4, 2, false);
-  ssd1306_print(drivers->oled_screen, "recv by", 4, 4, false);
-  ssd1306_print(drivers->oled_screen, name, 10, 2, false);
-  ssd1306_print(drivers->oled_screen, name, 10, 4, false);
+  ssd1306_print(&(drivers->ssd1306), "Message status:", 0, 0, false);
+  ssd1306_print(&(drivers->ssd1306), "sent to", 4, 2, false);
+  ssd1306_print(&(drivers->ssd1306), "recv by", 4, 4, false);
+  ssd1306_print(&(drivers->ssd1306), name, 10, 2, false);
+  ssd1306_print(&(drivers->ssd1306), name, 10, 4, false);
   if (status == 0) {
-    ssd1306_print(drivers->oled_screen, "[OK]", 0, 2, false);
-    ssd1306_print(drivers->oled_screen, "[OK]", 0, 4, false);
+    ssd1306_print(&(drivers->ssd1306), "[OK]", 0, 2, false);
+    ssd1306_print(&(drivers->ssd1306), "[OK]", 0, 4, false);
   } else if (status == 1) {
-    ssd1306_print(drivers->oled_screen, "[OK]", 0, 2, false);
-    ssd1306_print(drivers->oled_screen, "[NO]", 0, 4, false);
+    ssd1306_print(&(drivers->ssd1306), "[OK]", 0, 2, false);
+    ssd1306_print(&(drivers->ssd1306), "[NO]", 0, 4, false);
   } else if (status == 2) {
-    ssd1306_print(drivers->oled_screen, "[NO]", 0, 2, false);
-    ssd1306_print(drivers->oled_screen, "[NO]", 0, 4, false);
+    ssd1306_print(&(drivers->ssd1306), "[NO]", 0, 2, false);
+    ssd1306_print(&(drivers->ssd1306), "[NO]", 0, 4, false);
   }
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_show(&(drivers->ssd1306));
   free(name);
   sleep_ms(INFO_PAGES_TIMEOUT);
 }
@@ -234,31 +234,31 @@ void display_received_message(char *name, uint16_t src_address) {
   uint8_t persistency = 10;
   uint32_t start;
   start = to_us_since_boot(get_absolute_time()) / 1000000;
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen, "New message from:", 0, 0, false);
-  ssd1306_print(drivers->oled_screen, name, 0, 1, false);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_print(&(drivers->ssd1306), "New message from:", 0, 0, false);
+  ssd1306_print(&(drivers->ssd1306), name, 0, 1, false);
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       22,
       22,
       message_received,
       28,
       20,
       0);
-  ssd1306_draw_bitmap(drivers->oled_screen, 50, 24, easyarrow, 28, 20, 0);
-  ssd1306_draw_bitmap(drivers->oled_screen,
+  ssd1306_draw_bitmap(&(drivers->ssd1306), 50, 24, easyarrow, 28, 20, 0);
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
       78,
       22,
       message_received_open,
       28,
       20,
       0);
-  ssd1306_print(drivers->oled_screen, "Right to read -> ", 0, 7, false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_print(&(drivers->ssd1306), "Right to read -> ", 0, 7, false);
+  ssd1306_show(&(drivers->ssd1306));
   while (true) {
     if ((to_us_since_boot(get_absolute_time()) / 1000000) - start >
         persistency) {
-      ssd1306_clear(drivers->oled_screen);
-      ssd1306_show(drivers->oled_screen);
+      ssd1306_clear(&(drivers->ssd1306));
+      ssd1306_show(&(drivers->ssd1306));
       push_conversation_update((conversation_update){
           .contact_addr = src_address,
           .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
@@ -338,30 +338,30 @@ uint16_t choose_from_online_contacts() {
 
 void enable_message_notifications() {
   msg_man_inst->should_notify = true;
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen,
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_print(&(drivers->ssd1306),
       "Notifications\n"
       "enabled",
       0,
       0,
       false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_show(&(drivers->ssd1306));
   sleep_ms(INFO_PAGES_TIMEOUT);
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_show(&(drivers->ssd1306));
 }
 
 void disable_message_notifications() {
   msg_man_inst->should_notify = false;
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen,
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_print(&(drivers->ssd1306),
       "Notifications\n"
       "disabled",
       0,
       0,
       false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_show(&(drivers->ssd1306));
   sleep_ms(INFO_PAGES_TIMEOUT);
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_show(&(drivers->ssd1306));
 }

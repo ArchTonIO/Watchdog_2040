@@ -3,11 +3,15 @@
 
 #include "ssd1306.h"
 
+#include <hardware/adc.h>
+#include <hardware/structs/io_bank0.h>
 #include <pico/mutex.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "core/hardware_drivers/config.h"
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
 
@@ -117,12 +121,12 @@ const uint8_t ssd1306_font6x8[] =
 
 // clang-format on
 
-void init_i2c(ssd1306 *display);
-void write_cmd(ssd1306 *display, uint8_t cmd);
-void send2(ssd1306 *display, uint8_t v1, uint8_t v2);
-void send_data(ssd1306 *display, uint8_t *data, int nbytes);
-int pages(ssd1306 *display);
-void ssd1306_invert(ssd1306 *display, uint8_t invert) {
+void init_i2c(ssd1306_t *display);
+void write_cmd(ssd1306_t *display, uint8_t cmd);
+void send2(ssd1306_t *display, uint8_t v1, uint8_t v2);
+void send_data(ssd1306_t *display, uint8_t *data, int nbytes);
+int pages(ssd1306_t *display);
+void ssd1306_invert(ssd1306_t *display, uint8_t invert) {
   write_cmd(display, SET_NORM_INV | (invert & 1));
 }
 
@@ -137,33 +141,36 @@ void ssd1306_invert(ssd1306 *display, uint8_t invert) {
  * @param SID: the slave address of the display
  * @return the display
  */
-ssd1306 *ssd1306_init(pin sda,
+void ssd1306_init(ssd1306_t *display,
+    pin sda,
     pin sck,
     i2c_inst_t *i2c_port,
     uint32_t baudrate,
     uint8_t width,
     uint8_t height,
     uint8_t SID) {
-  ssd1306 *new_display = (ssd1306 *)malloc(sizeof(ssd1306));
-  new_display->sda = sda;
-  new_display->sck = sck;
-  new_display->i2c_port = i2c_port;
-  new_display->baudrate = baudrate;
-  new_display->width = width;
-  new_display->height = height;
-  new_display->SID = SID;
-  new_display->cursorx = 0;
-  new_display->cursory = 0;
-  new_display->mutex_support_enabled = false;
-  mutex_init(&new_display->mutex);
-  int buf_size = (height / 8) * width + 1;
-  new_display->scr = (uint8_t *)malloc(buf_size);
-  if (!new_display->scr) {
-    free(new_display);
-    return NULL;
-  }
-  memset(new_display->scr, 0, buf_size);
-  init_i2c(new_display);
+  ssd1306_t *new_display = (ssd1306_t *)malloc(sizeof(ssd1306_t));
+  display->sda = sda;
+  display->sck = sck;
+  display->i2c_port = i2c_port;
+  display->baudrate = baudrate;
+  display->width = width;
+  display->height = height;
+  display->SID = SID;
+  display->cursorx = 0;
+  display->cursory = 0;
+  display->mutex_support_enabled = false;
+
+  mutex_init(&display->mutex);
+  memset(display->scr, 0, SSD1306_BUF_SIZE);
+
+  // setting photo resistor
+  photoresistor_t photoresistor;
+  photoresistor_init(PHOTORESISTOR_PIN, PHOTORESISTOR_CHANNEL, &photoresistor);
+  display->photoresistor = photoresistor;
+  display->auto_brightness = true;
+
+  init_i2c(display);
   static const uint8_t cmds[] = {SET_DISP | 0x00,
       SET_MEM_ADDR,
       0x00,
@@ -190,10 +197,50 @@ ssd1306 *ssd1306_init(pin sda,
       0x14,
       SET_DISP | 0x01};
   for (int i = 0; i < sizeof(cmds); i++)
-    write_cmd(new_display, cmds[i]);
-  ssd1306_clear(new_display);
-  ssd1306_show(new_display);
-  return new_display;
+    write_cmd(display, cmds[i]);
+  ssd1306_clear(display);
+  ssd1306_show(display);
+}
+
+void photoresistor_init(pin analog_pin,
+    uint8_t channel,
+    photoresistor_t *photoresistor) {
+  photoresistor->photo_channel = channel;
+  adc_gpio_init(analog_pin);
+}
+
+uint16_t photoresistor_read(photoresistor_t *photoresistor) {
+  adc_select_input(photoresistor->photo_channel);
+  return adc_read();
+}
+
+/**
+ * @brief Set the screen brightness to a level between MAX_BRIGHTNESS and
+ * MIN_BRIGHTNESS
+ * @param display: The target display
+ * @param level: the level number (going from 1 to 255)
+ */
+void ssd1306_set_brightness(ssd1306_t *display, uint8_t level) {
+  if (level < MIN_BRIGHTNESS)
+    level = MIN_BRIGHTNESS;
+  if (level > MAX_BRIGHTNESS)
+    level = MAX_BRIGHTNESS;
+  write_cmd(display, SET_CONTRAST);
+  write_cmd(display, level);
+}
+
+/**
+ * @brief Make the screen brightness automatically adjust by using the
+ * connected photo resistor
+ * @param display: The target display
+ */
+void ssd1306_auto_adjust_brightness(ssd1306_t *display) {
+  uint16_t light = photoresistor_read(&(display->photoresistor));
+  for (size_t i = MIN_BRIGHTNESS; i < MAX_BRIGHTNESS; i++)
+    if (light < MIN_PHOTORESISTOR_ADC_VALUE + BRIGHTNESS_STEP_WIDTH * i) {
+      ssd1306_set_brightness(display, i);
+      return;
+    }
 }
 
 /**
@@ -206,7 +253,7 @@ ssd1306 *ssd1306_init(pin sda,
  * @param color: the color of the pixel (1 for white, 0 for black, -1 for
  * invert)
  */
-void ssd1306_draw_pixel(ssd1306 *display, int16_t x, int16_t y, int color) {
+void ssd1306_draw_pixel(ssd1306_t *display, int16_t x, int16_t y, int color) {
   if (x < 0 || x >= display->width || y < 0 || y >= display->height)
     return;
   int page = y / 8;
@@ -238,7 +285,7 @@ void ssd1306_draw_pixel(ssd1306 *display, int16_t x, int16_t y, int color) {
  * @param reversed: whether to draw the character in reversed colors (thus
  * making it black fg in white bg)
  */
-void ssd1306_draw_letter_at(ssd1306 *display,
+void ssd1306_draw_letter_at(ssd1306_t *display,
     uint8_t x,
     uint8_t y,
     char c,
@@ -273,7 +320,7 @@ void ssd1306_draw_letter_at(ssd1306 *display,
  * @param reversed: whether to print the string in reversed colors (thus making
  * it black fg in white bg)
  */
-void ssd1306_print(ssd1306 *display,
+void ssd1306_print(ssd1306_t *display,
     const char *str,
     uint8_t x,
     uint8_t y,
@@ -297,7 +344,7 @@ void ssd1306_print(ssd1306 *display,
   }
 }
 
-void ssd1306_print_gradually(ssd1306 *display,
+void ssd1306_print_gradually(ssd1306_t *display,
     const char *str,
     uint8_t x,
     uint8_t y,
@@ -334,7 +381,7 @@ void ssd1306_print_gradually(ssd1306 *display,
  * @param height: the height of the bitmap in pixels
  * @param color: the color of the bitmap (1 for white, 0 for black)
  */
-void ssd1306_draw_bitmap(ssd1306 *display,
+void ssd1306_draw_bitmap(ssd1306_t *display,
     uint8_t x,
     uint8_t y,
     const uint8_t bitmap[],
@@ -361,7 +408,7 @@ void ssd1306_draw_bitmap(ssd1306 *display,
  *
  * @param display: the display to show
  */
-void ssd1306_show(ssd1306 *display) {
+void ssd1306_show(ssd1306_t *display) {
   write_cmd(display, SET_MEM_ADDR);
   write_cmd(display, 0b01);
   write_cmd(display, SET_COL_ADDR);
@@ -373,9 +420,11 @@ void ssd1306_show(ssd1306 *display) {
   display->scr[0] = 0x40;
   int size = (display->height / 8) * display->width + 1;
   send_data(display, display->scr, size);
+  if (display->auto_brightness)
+    ssd1306_auto_adjust_brightness(display);
 }
 
-void init_i2c(ssd1306 *display) {
+void init_i2c(ssd1306_t *display) {
   i2c_init(display->i2c_port, display->baudrate);
   gpio_set_function(display->sda, GPIO_FUNC_I2C);
   gpio_set_function(display->sck, GPIO_FUNC_I2C);
@@ -388,13 +437,12 @@ void init_i2c(ssd1306 *display) {
  *
  * @param display: the display to clear
  */
-void ssd1306_clear(ssd1306 *display) {
+void ssd1306_clear(ssd1306_t *display) {
   int buf_size = (display->height / 8) * display->width + 1;
-  if (display->scr)
-    memset(display->scr, 0, buf_size);
+  memset(display->scr, 0, buf_size);
 }
 
-uint8_t *ssd1306_take_screenshot(ssd1306 *display) {
+uint8_t *ssd1306_take_screenshot(ssd1306_t *display) {
   int buf_size = (display->height / 8) * display->width + 1;
   uint8_t *buf = (uint8_t *)malloc(buf_size);
   if (!buf)
@@ -411,24 +459,24 @@ uint8_t *ssd1306_take_screenshot(ssd1306 *display) {
  * @param y: the y position of the cursor in characters coordinates
  * (CHAR_HEIGHT will be multiplied by this value)
  */
-void ssd1306_set_cursor(ssd1306 *display, uint8_t x, uint8_t y) {
+void ssd1306_set_cursor(ssd1306_t *display, uint8_t x, uint8_t y) {
   display->cursorx = CHAR_WIDTH * x;
   display->cursory = CHAR_HEIGHT * y;
 }
 
-inline void write_cmd(ssd1306 *display, uint8_t cmd) {
+inline void write_cmd(ssd1306_t *display, uint8_t cmd) {
   send2(display, 0x80, cmd);
 }
 
-void send2(ssd1306 *display, uint8_t v1, uint8_t v2) {
+void send2(ssd1306_t *display, uint8_t v1, uint8_t v2) {
   uint8_t buf[2];
   buf[0] = v1;
   buf[1] = v2;
   send_data(display, buf, 2);
 }
 
-inline void send_data(ssd1306 *display, uint8_t *data, int nbytes) {
+inline void send_data(ssd1306_t *display, uint8_t *data, int nbytes) {
   i2c_write_blocking(display->i2c_port, display->SID, data, nbytes, false);
 }
 
-inline int pages(ssd1306 *display) { return display->height / 8; }
+inline int pages(ssd1306_t *display) { return display->height / 8; }

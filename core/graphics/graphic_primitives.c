@@ -29,7 +29,7 @@ point create_point(uint8_t x, uint8_t y) {
  * @param p The point to draw.
  */
 void draw_point(point p) {
-  ssd1306_draw_pixel(drivers->oled_screen, p.x, p.y, 1);
+  ssd1306_draw_pixel(&(drivers->ssd1306), p.x, p.y, 1);
 }
 
 /**
@@ -37,7 +37,7 @@ void draw_point(point p) {
  * @param p The point to clear.
  */
 void clear_point(point p) {
-  ssd1306_draw_pixel(drivers->oled_screen, p.x, p.y, 0);
+  ssd1306_draw_pixel(&(drivers->ssd1306), p.x, p.y, 0);
 }
 
 /**
@@ -66,7 +66,7 @@ void draw_line(line l) {
   float x = l.start.x;
   float y = l.start.y;
   for (int i = 0; i <= steps; i++) {
-    ssd1306_draw_pixel(drivers->oled_screen, (int)x, (int)y, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), (int)x, (int)y, 1);
     x += x_inc;
     y += y_inc;
   }
@@ -78,12 +78,12 @@ void draw_line(line l) {
  */
 void clear_line(line l) {
   for (int x = l.start.x; x <= l.end.x; x++) {
-    ssd1306_draw_pixel(drivers->oled_screen, x, l.start.y, 0);
-    ssd1306_draw_pixel(drivers->oled_screen, x, l.end.y, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), x, l.start.y, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), x, l.end.y, 0);
   }
   for (int y = l.start.y; y <= l.end.y; y++) {
-    ssd1306_draw_pixel(drivers->oled_screen, l.start.x, y, 0);
-    ssd1306_draw_pixel(drivers->oled_screen, l.end.x, y, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), l.start.x, y, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), l.end.x, y, 0);
   }
 }
 
@@ -109,38 +109,14 @@ void draw_circle(circle c) {
   int16_t y = 0;
   int16_t err = 0;
   while (x >= y) {
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x + x,
-        c.center.y + y,
-        1);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x + y,
-        c.center.y + x,
-        1);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x - y,
-        c.center.y + x,
-        1);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x - x,
-        c.center.y + y,
-        1);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x - x,
-        c.center.y - y,
-        1);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x - y,
-        c.center.y - x,
-        1);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x + y,
-        c.center.y - x,
-        1);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x + x,
-        c.center.y - y,
-        1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x + x, c.center.y + y, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x + y, c.center.y + x, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x - y, c.center.y + x, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x - x, c.center.y + y, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x - x, c.center.y - y, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x - y, c.center.y - x, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x + y, c.center.y - x, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x + x, c.center.y - y, 1);
     if (err <= 0) {
       y++;
       err += 2 * y + 1;
@@ -161,38 +137,14 @@ void clear_circle(circle c) {
   int16_t y = 0;
   int16_t err = 0;
   while (x >= y) {
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x + x,
-        c.center.y + y,
-        0);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x + y,
-        c.center.y + x,
-        0);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x - y,
-        c.center.y + x,
-        0);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x - x,
-        c.center.y + y,
-        0);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x - x,
-        c.center.y - y,
-        0);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x - y,
-        c.center.y - x,
-        0);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x + y,
-        c.center.y - x,
-        0);
-    ssd1306_draw_pixel(drivers->oled_screen,
-        c.center.x + x,
-        c.center.y - y,
-        0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x + x, c.center.y + y, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x + y, c.center.y + x, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x - y, c.center.y + x, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x - x, c.center.y + y, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x - x, c.center.y - y, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x - y, c.center.y - x, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x + y, c.center.y - x, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), c.center.x + x, c.center.y - y, 0);
     if (err <= 0) {
       y++;
       err += 2 * y + 1;
@@ -227,12 +179,12 @@ create_rectangle(point top_left, point bottom_right, uint8_t radius) {
  */
 void draw_rectangle(rectangle r) {
   for (uint8_t x = r.top_left.x; x <= r.bottom_right.x; x++) {
-    ssd1306_draw_pixel(drivers->oled_screen, x, r.top_left.y, 1);
-    ssd1306_draw_pixel(drivers->oled_screen, x, r.bottom_right.y, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), x, r.top_left.y, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), x, r.bottom_right.y, 1);
   }
   for (uint8_t y = r.top_left.y; y <= r.bottom_right.y; y++) {
-    ssd1306_draw_pixel(drivers->oled_screen, r.top_left.x, y, 1);
-    ssd1306_draw_pixel(drivers->oled_screen, r.bottom_right.x, y, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), r.top_left.x, y, 1);
+    ssd1306_draw_pixel(&(drivers->ssd1306), r.bottom_right.x, y, 1);
   }
 }
 
@@ -242,12 +194,12 @@ void draw_rectangle(rectangle r) {
  */
 void clear_rectangle(rectangle r) {
   for (uint8_t x = r.top_left.x; x <= r.bottom_right.x; x++) {
-    ssd1306_draw_pixel(drivers->oled_screen, x, r.top_left.y, 0);
-    ssd1306_draw_pixel(drivers->oled_screen, x, r.bottom_right.y, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), x, r.top_left.y, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), x, r.bottom_right.y, 0);
   }
   for (uint8_t y = r.top_left.y; y <= r.bottom_right.y; y++) {
-    ssd1306_draw_pixel(drivers->oled_screen, r.top_left.x, y, 0);
-    ssd1306_draw_pixel(drivers->oled_screen, r.bottom_right.x, y, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), r.top_left.x, y, 0);
+    ssd1306_draw_pixel(&(drivers->ssd1306), r.bottom_right.x, y, 0);
   }
 }
 

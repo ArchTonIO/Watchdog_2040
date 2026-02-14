@@ -109,18 +109,18 @@ void sys_paths_manager_mkdirs() {
       sys_paths->dirs->todo_path,
       sys_paths->dirs->pwd_manager_path,
   };
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen, "Creating sys dir tree", 0, 0, false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_print(&(drivers->ssd1306), "Creating sys dir tree", 0, 0, false);
+  ssd1306_show(&(drivers->ssd1306));
   for (uint8_t i = 0; i < sizeof(paths) / sizeof(paths[0]); i++) {
     if (path_mkdir(paths[i])) {
-      ssd1306_print(drivers->oled_screen, "[OK] ", 0, 1 + i, false);
-      ssd1306_print(drivers->oled_screen, paths[i]->abs_path, 4, 1 + i, false);
+      ssd1306_print(&(drivers->ssd1306), "[OK] ", 0, 1 + i, false);
+      ssd1306_print(&(drivers->ssd1306), paths[i]->abs_path, 4, 1 + i, false);
     } else {
-      ssd1306_print(drivers->oled_screen, "[ERR] ", 0, 1 + i, false);
-      ssd1306_print(drivers->oled_screen, paths[i]->abs_path, 5, 1 + i, false);
+      ssd1306_print(&(drivers->ssd1306), "[ERR] ", 0, 1 + i, false);
+      ssd1306_print(&(drivers->ssd1306), paths[i]->abs_path, 5, 1 + i, false);
     }
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
   }
 }
 
@@ -154,19 +154,19 @@ void sys_paths_manager_ftouch() {
       sys_paths->files->log_file,
       sys_paths->files->config_file,
   };
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_print(drivers->oled_screen, "Creating sys files", 0, 0, false);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_print(&(drivers->ssd1306), "Creating sys files", 0, 0, false);
+  ssd1306_show(&(drivers->ssd1306));
   for (uint8_t i = 0; i < sizeof(files) / sizeof(files[0]); i++) {
     if (path_ftouch(files[i])) {
-      ssd1306_print(drivers->oled_screen, "[OK] ", 0, 1 + i, false);
-      ssd1306_print(drivers->oled_screen, files[i]->abs_path, 4, 1 + i, false);
+      ssd1306_print(&(drivers->ssd1306), "[OK] ", 0, 1 + i, false);
+      ssd1306_print(&(drivers->ssd1306), files[i]->abs_path, 4, 1 + i, false);
     } else {
-      ssd1306_print(drivers->oled_screen, "[ERR] ", 0, 1 + i, false);
-      ssd1306_print(drivers->oled_screen, files[i]->abs_path, 5, 1 + i, false);
+      ssd1306_print(&(drivers->ssd1306), "[ERR] ", 0, 1 + i, false);
+      ssd1306_print(&(drivers->ssd1306), files[i]->abs_path, 5, 1 + i, false);
     }
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
   }
-  ssd1306_clear(drivers->oled_screen);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_show(&(drivers->ssd1306));
 }

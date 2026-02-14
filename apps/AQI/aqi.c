@@ -17,11 +17,11 @@ void display_air_quality_indexes() {
     graph_push_value(g_aqi, ens160_read_aqi(drivers->air_quality_sensor));
     graph_push_value(g_co2, ens160_read_co2(drivers->air_quality_sensor));
     graph_push_value(g_tvoc, ens160_read_tvoc(drivers->air_quality_sensor));
-    ssd1306_clear(drivers->oled_screen);
+    ssd1306_clear(&(drivers->ssd1306));
     graph_update(g_aqi);
     graph_update(g_co2);
     graph_update(g_tvoc);
-    ssd1306_show(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
     sleep_ms(500);
   }
   graph_free(g_aqi);

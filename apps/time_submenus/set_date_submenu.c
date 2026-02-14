@@ -36,7 +36,7 @@ date *date_init(int8_t dotw, int8_t day, int8_t month, int16_t year) {
 
 void enter_set_date_submenu() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
   date *actual_date = date_init(drivers->rtc->internal_datetime.dotw,
       drivers->rtc->internal_datetime.day,
       drivers->rtc->internal_datetime.month,
@@ -62,13 +62,13 @@ void show_set_date(date *d) {
       d->day,
       d->month,
       d->year - 2000);
-  ssd1306_print(drivers->oled_screen,
+  ssd1306_print(&(drivers->ssd1306),
       date_str,
       (start_pix_w / 6) - 1,
       (start_pix_h / 8) + 1,
       false);
   free(date_str);
-  ssd1306_show(drivers->oled_screen);
+  ssd1306_show(&(drivers->ssd1306));
 }
 
 void save_date(date *d) {
@@ -84,7 +84,7 @@ void save_date(date *d) {
       drivers->rtc->internal_datetime.hour,
       drivers->rtc->internal_datetime.min,
       drivers->rtc->internal_datetime.sec);
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_clear(&(drivers->ssd1306));
 }
 
 void set_weekday(date *d) {

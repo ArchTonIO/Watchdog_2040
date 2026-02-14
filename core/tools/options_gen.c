@@ -105,19 +105,19 @@ void attach_flag_callback_to_option(options_page *page,
  */
 char *options_page_launch(options_page *page) {
   sleep_ms(INTERAC_TIMEOUT);
-  ssd1306_enable_mutex_support(drivers->oled_screen);
-  ssd1306_clear(drivers->oled_screen);
+  ssd1306_enable_mutex_support(&(drivers->ssd1306));
+  ssd1306_clear(&(drivers->ssd1306));
   uint8_t left_padding;
   while (1) {
-    ssd1306_get_mutex(drivers->oled_screen);
-    ssd1306_print(drivers->oled_screen,
+    ssd1306_get_mutex(&(drivers->ssd1306));
+    ssd1306_print(&(drivers->ssd1306),
         page->title,
         (uint8_t)((MAX_X_CHARS - strlen(page->title)) / 2),
         0,
         false);
 
     if (page->options[page->selected_option].icon != NULL) {
-      ssd1306_draw_bitmap(drivers->oled_screen,
+      ssd1306_draw_bitmap(&(drivers->ssd1306),
           0,
           0,
           page->options[page->selected_option].icon,
@@ -133,13 +133,13 @@ char *options_page_launch(options_page *page) {
 
       if (i == page->selected_option) {
         left_padding = page->options[i].icon != NULL ? 2 : 0;
-        ssd1306_print(drivers->oled_screen,
+        ssd1306_print(&(drivers->ssd1306),
             page->options[i].display_name,
             left_padding,
             screen_row,
             true);
         if (page->options[i].icon != NULL) {
-          ssd1306_draw_bitmap(drivers->oled_screen,
+          ssd1306_draw_bitmap(&(drivers->ssd1306),
               0,
               screen_row * 8,
               page->options[i].icon,
@@ -148,13 +148,13 @@ char *options_page_launch(options_page *page) {
               true);
         }
       } else {
-        ssd1306_print(drivers->oled_screen,
+        ssd1306_print(&(drivers->ssd1306),
             page->options[i].display_name,
             left_padding,
             screen_row,
             false);
         if (page->options[i].icon != NULL) {
-          ssd1306_draw_bitmap(drivers->oled_screen,
+          ssd1306_draw_bitmap(&(drivers->ssd1306),
               0,
               screen_row * 8,
               page->options[i].icon,
@@ -164,8 +164,8 @@ char *options_page_launch(options_page *page) {
         }
       }
     }
-    ssd1306_show(drivers->oled_screen);
-    ssd1306_release_mutex(drivers->oled_screen);
+    ssd1306_show(&(drivers->ssd1306));
+    ssd1306_release_mutex(&(drivers->ssd1306));
     joystick_update(drivers->joystick);
     uint8_t joystick_dir = joystick_get_direction(drivers->joystick);
     if (drivers->joystick->button_pressed) {
@@ -190,19 +190,19 @@ char *options_page_launch(options_page *page) {
     } else if (joystick_dir == E) {
       haptic_short_pulse();
       if (page->options[page->selected_option].callback != NULL) {
-        ssd1306_disable_mutex_support(drivers->oled_screen);
+        ssd1306_disable_mutex_support(&(drivers->ssd1306));
         page->options[page->selected_option].callback();
       } else {
-        ssd1306_disable_mutex_support(drivers->oled_screen);
+        ssd1306_disable_mutex_support(&(drivers->ssd1306));
         return page->options[page->selected_option].name;
       }
-      ssd1306_get_mutex(drivers->oled_screen);
-      ssd1306_clear(drivers->oled_screen);
-      ssd1306_show(drivers->oled_screen);
-      ssd1306_release_mutex(drivers->oled_screen);
+      ssd1306_get_mutex(&(drivers->ssd1306));
+      ssd1306_clear(&(drivers->ssd1306));
+      ssd1306_show(&(drivers->ssd1306));
+      ssd1306_release_mutex(&(drivers->ssd1306));
     } else if (joystick_dir == W) {
       haptic_short_pulse();
-      ssd1306_disable_mutex_support(drivers->oled_screen);
+      ssd1306_disable_mutex_support(&(drivers->ssd1306));
       return "";
     }
     handle_scroll(page);

@@ -71,12 +71,12 @@ void graph_push_value(graph *g, uint16_t value) {
  * @param g Pointer to the graph structure.
  */
 void graph_update(graph *g) {
-  ssd1306_print(drivers->oled_screen,
+  ssd1306_print(&(drivers->ssd1306),
       g->title,
       g->x_offset / 7,
       g->y_offset / 8 - 2,
       false);
-  ssd1306_print(drivers->oled_screen,
+  ssd1306_print(&(drivers->ssd1306),
       g->last_value_buf,
       g->x_offset / 7,
       g->y_offset / 8 - 1,

@@ -31,12 +31,14 @@ typedef uint8_t pin;
 /*SSD1306 oled screen settings*/
 #define SSD1306_SDA 0
 #define SSD1306_SCK 1
-#define SSD1306_PWR 9
 #define SSD1306_I2C_PORT i2c0
 #define SSD1306_BAUDRATE 100 * 1000
 #define SSD1306_WIDTH 128
 #define SSD1306_HEIGHT 64
+#define SSD1306_BUF_SIZE (SSD1306_HEIGHT / 8) * SSD1306_WIDTH + 1
 #define SSD1306_ADDR 0x3C
+#define PHOTORESISTOR_PIN 28
+#define PHOTORESISTOR_CHANNEL 2
 
 /*SX1278 lora module settings*/
 #define SX1278_MOSI 19
