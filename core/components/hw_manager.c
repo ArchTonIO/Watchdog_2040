@@ -120,8 +120,10 @@ hw_drivers *hardware_drivers_init() {
   ds3231_rtc_t external_rtc;
   ds3231_init(DS3231_I2C_PORT, DS3231_I2C_ADDRESS, &external_rtc);
   hw_man->external_rtc = external_rtc;
-  hw_man->rtc = rtc_time_init(external_rtc, 2025, 5, 9, 4, 20, 37, 00);
-  rtc_time_load_time_from_external_rtc(hw_man->rtc, &external_rtc);
+  internal_rtc_t internal_rtc;
+  internal_rtc_init(&internal_rtc, external_rtc, 2025, 5, 9, 4, 20, 37, 00);
+  hw_man->internal_rtc = internal_rtc;
+  rtc_time_load_time_from_external_rtc(&hw_man->internal_rtc, &external_rtc);
   core1_push_instruction(RTC_OK);
   core1_push_instruction(CHECKS_END);
   hw_man->power_saving = false;

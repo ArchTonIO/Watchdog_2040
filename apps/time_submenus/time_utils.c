@@ -16,10 +16,10 @@
 #include "core/hardware_drivers/ssd1306.h"
 
 time_digits *time_digits_init() {
-  update_time(drivers->rtc);
-  int8_t hour = drivers->rtc->internal_datetime.hour;
-  int8_t minute = drivers->rtc->internal_datetime.min;
-  int8_t second = drivers->rtc->internal_datetime.sec;
+  update_time(&(drivers->internal_rtc));
+  int8_t hour = drivers->internal_rtc.internal_datetime.hour;
+  int8_t minute = drivers->internal_rtc.internal_datetime.min;
+  int8_t second = drivers->internal_rtc.internal_datetime.sec;
   time_digits *digits = malloc(sizeof(time_digits));
   digits->hour_tens = hour / 10;
   digits->hour_units = hour % 10;

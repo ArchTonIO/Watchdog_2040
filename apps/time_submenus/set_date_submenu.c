@@ -37,10 +37,10 @@ date *date_init(int8_t dotw, int8_t day, int8_t month, int16_t year) {
 void enter_set_date_submenu() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
   ssd1306_clear(&(drivers->ssd1306));
-  date *actual_date = date_init(drivers->rtc->internal_datetime.dotw,
-      drivers->rtc->internal_datetime.day,
-      drivers->rtc->internal_datetime.month,
-      drivers->rtc->internal_datetime.year);
+  date *actual_date = date_init(drivers->internal_rtc.internal_datetime.dotw,
+      drivers->internal_rtc.internal_datetime.day,
+      drivers->internal_rtc.internal_datetime.month,
+      drivers->internal_rtc.internal_datetime.year);
   draw_symbols(set_timedate_incr,
       set_timedate_decr,
       set_timedate_leftmost,
@@ -72,18 +72,18 @@ void show_set_date(date *d) {
 }
 
 void save_date(date *d) {
-  drivers->rtc->internal_datetime.dotw = d->dotw;
-  drivers->rtc->internal_datetime.day = d->day;
-  drivers->rtc->internal_datetime.month = d->month;
-  drivers->rtc->internal_datetime.year = d->year;
-  rtc_time_set_time(drivers->rtc,
+  drivers->internal_rtc.internal_datetime.dotw = d->dotw;
+  drivers->internal_rtc.internal_datetime.day = d->day;
+  drivers->internal_rtc.internal_datetime.month = d->month;
+  drivers->internal_rtc.internal_datetime.year = d->year;
+  rtc_time_set_time(&(drivers->internal_rtc),
       d->year,
       d->month,
       d->day,
       d->dotw,
-      drivers->rtc->internal_datetime.hour,
-      drivers->rtc->internal_datetime.min,
-      drivers->rtc->internal_datetime.sec);
+      drivers->internal_rtc.internal_datetime.hour,
+      drivers->internal_rtc.internal_datetime.min,
+      drivers->internal_rtc.internal_datetime.sec);
   ssd1306_clear(&(drivers->ssd1306));
 }
 

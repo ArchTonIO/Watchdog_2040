@@ -30,11 +30,11 @@ void enter_set_time_submenu() {
 }
 
 void save_time(time_digits *digits) {
-  rtc_time_set_time(drivers->rtc,
-      drivers->rtc->internal_datetime.year,
-      drivers->rtc->internal_datetime.month,
-      drivers->rtc->internal_datetime.day,
-      drivers->rtc->internal_datetime.dotw,
+  rtc_time_set_time(&(drivers->internal_rtc),
+      drivers->internal_rtc.internal_datetime.year,
+      drivers->internal_rtc.internal_datetime.month,
+      drivers->internal_rtc.internal_datetime.day,
+      drivers->internal_rtc.internal_datetime.dotw,
       digits->hour_tens * 10 + digits->hour_units,
       digits->minute_tens * 10 + digits->minute_units,
       digits->second_tens * 10 + digits->second_units);

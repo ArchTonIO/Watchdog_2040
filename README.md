@@ -122,7 +122,7 @@ drivers->sx1278 // pointer to the lora module driver struct
 drivers->battery // pointer to the battery driver struct
 &(drivers->joystick) // pointer to the joystick driver struct
 &(drivers->sd_card) // pointer to the sd card driver struct
-drivers->rtc // pointer to the rtc driver struct
+&(drivers->internal_rtc) // pointer to the rtc driver struct
 ```
 
 > *drivers* is just the name of the global pointer to the singleton instance of *hw_manager* struct

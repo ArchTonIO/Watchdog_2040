@@ -29,7 +29,7 @@ typedef struct {
   joystick_t joystick;
   sdcard_t sd_card;
   ds3231_rtc_t external_rtc;
-  rtc_time *rtc;
+  internal_rtc_t internal_rtc;
   bool power_saving;
 } hw_drivers;
 

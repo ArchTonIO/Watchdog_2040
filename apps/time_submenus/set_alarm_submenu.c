@@ -28,7 +28,7 @@ static void at_change_callback(time_digits *digits) {}
 void enter_set_alarm_submenu() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
   ssd1306_clear(&(drivers->ssd1306));
-  if (drivers->rtc->alarm_set) {
+  if (drivers->internal_rtc.alarm_set) {
     print_usr_error("Alarm already set !\n\n"
                     "If you want to change\n"
                     "The alarm time or\n"
@@ -50,7 +50,7 @@ void enter_set_alarm_submenu() {
   int8_t alarm_hour = digits->hour_tens * 10 + digits->hour_units;
   int8_t alarm_minute = digits->minute_tens * 10 + digits->minute_units;
   int8_t alarm_second = digits->second_tens * 10 + digits->second_units;
-  rtc_time_add_alarm(drivers->rtc,
+  rtc_time_add_alarm(&(drivers->internal_rtc),
       alarm_hour,
       alarm_minute,
       alarm_second,
@@ -58,10 +58,10 @@ void enter_set_alarm_submenu() {
   free(digits);
 }
 
-void alarm_callback() { drivers->rtc->alarm_triggered = true; }
+void alarm_callback() { drivers->internal_rtc.alarm_triggered = true; }
 
 void process_alarm() {
-  if (!drivers->rtc->alarm_triggered)
+  if (!drivers->internal_rtc.alarm_triggered)
     return;
   if (!ssd1306_was_mutex_support_enabled(&(drivers->ssd1306)))
     return;
@@ -87,10 +87,10 @@ void process_alarm() {
   ssd1306_clear(&(drivers->ssd1306));
   ssd1306_show(&(drivers->ssd1306));
   ssd1306_release_mutex(&(drivers->ssd1306));
-  drivers->rtc->alarm_triggered = false;
+  drivers->internal_rtc.alarm_triggered = false;
 }
 
 void unset_alarm() {
-  rtc_time_remove_alarm(drivers->rtc);
+  rtc_time_remove_alarm(&(drivers->internal_rtc));
   print_info("Alarm was disabled");
 }

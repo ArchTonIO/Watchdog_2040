@@ -24,9 +24,10 @@ typedef struct {
   int8_t hour;
   int8_t minute;
   int8_t second;
-} rtc_time;
+} internal_rtc_t;
 
-rtc_time *rtc_time_init(ds3231_rtc_t external_rtc,
+void internal_rtc_init(internal_rtc_t *rtc,
+    ds3231_rtc_t external_rtc,
     int16_t year,
     int8_t month,
     int8_t day,
@@ -34,7 +35,7 @@ rtc_time *rtc_time_init(ds3231_rtc_t external_rtc,
     int8_t hour,
     int8_t minute,
     int8_t second);
-void rtc_time_set_time(rtc_time *rtc,
+void rtc_time_set_time(internal_rtc_t *rtc,
     int16_t year,
     int8_t month,
     int8_t day,
@@ -42,15 +43,15 @@ void rtc_time_set_time(rtc_time *rtc,
     int8_t hour,
     int8_t minute,
     int8_t second);
-char *rtc_time_now(rtc_time *rtc);
-void rtc_time_add_alarm(rtc_time *rtc,
+char *rtc_time_now(internal_rtc_t *rtc);
+void rtc_time_add_alarm(internal_rtc_t *rtc,
     int8_t hour,
     int8_t minute,
     int8_t second,
     rtc_callback_t callback);
-void rtc_time_remove_alarm(rtc_time *rtc);
-void update_time(rtc_time *rtc);
-void rtc_time_load_time_from_external_rtc(rtc_time *rtc,
+void rtc_time_remove_alarm(internal_rtc_t *rtc);
+void update_time(internal_rtc_t *rtc);
+void rtc_time_load_time_from_external_rtc(internal_rtc_t *rtc,
     ds3231_rtc_t *external_rtc);
 
 #endif

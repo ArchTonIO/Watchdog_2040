@@ -5,7 +5,6 @@
 
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "pico/time.h"
 #include "pico/util/datetime.h"
@@ -13,7 +12,8 @@
 #include "core/hardware_drivers/ds3231.h"
 #include "hardware/rtc.h"
 
-rtc_time *rtc_time_init(ds3231_rtc_t external_rtc,
+void internal_rtc_init(internal_rtc_t *rtc,
+    ds3231_rtc_t external_rtc,
     int16_t year,
     int8_t month,
     int8_t day,
@@ -21,16 +21,14 @@ rtc_time *rtc_time_init(ds3231_rtc_t external_rtc,
     int8_t hour,
     int8_t minute,
     int8_t second) {
-
-  rtc_time *new_rtc = (rtc_time *)malloc(sizeof(rtc_time));
-  new_rtc->external_rtc = external_rtc;
-  new_rtc->year = year;
-  new_rtc->month = month;
-  new_rtc->day = day;
-  new_rtc->weekday = weekday;
-  new_rtc->hour = hour;
-  new_rtc->minute = minute;
-  new_rtc->second = second;
+  rtc->external_rtc = external_rtc;
+  rtc->year = year;
+  rtc->month = month;
+  rtc->day = day;
+  rtc->weekday = weekday;
+  rtc->hour = hour;
+  rtc->minute = minute;
+  rtc->second = second;
   char datetime_buf[256];
   char *datetime_str = &datetime_buf[0];
   datetime_t t = {.year = year,
@@ -40,13 +38,12 @@ rtc_time *rtc_time_init(ds3231_rtc_t external_rtc,
       .hour = hour,
       .min = minute,
       .sec = second};
-  new_rtc->internal_datetime = t;
-  new_rtc->alarm_set = false;
-  new_rtc->alarm_triggered = false;
+  rtc->internal_datetime = t;
+  rtc->alarm_set = false;
+  rtc->alarm_triggered = false;
   rtc_init();
-  rtc_set_datetime(&new_rtc->internal_datetime);
+  rtc_set_datetime(&rtc->internal_datetime);
   sleep_us(64);
-  return new_rtc;
 }
 
 /**
@@ -61,7 +58,7 @@ rtc_time *rtc_time_init(ds3231_rtc_t external_rtc,
   * @param minute The minute to set (0-59).
   * @param second The second to set (0-59).
  */
-void rtc_time_set_time(rtc_time *rtc,
+void rtc_time_set_time(internal_rtc_t *rtc,
     int16_t year,
     int8_t month,
     int8_t day,
@@ -93,7 +90,7 @@ void rtc_time_set_time(rtc_time *rtc,
   sleep_us(64);
 }
 
-void rtc_time_load_time_from_external_rtc(rtc_time *rtc,
+void rtc_time_load_time_from_external_rtc(internal_rtc_t *rtc,
     ds3231_rtc_t *external_rtc) {
   ds3231_datetime_t ds3231_time;
   ds3231_get_datetime(&ds3231_time, external_rtc);
@@ -111,14 +108,16 @@ void rtc_time_load_time_from_external_rtc(rtc_time *rtc,
   sleep_us(64);
 }
 
-void update_time(rtc_time *rtc) { rtc_get_datetime(&rtc->internal_datetime); }
+void update_time(internal_rtc_t *rtc) {
+  rtc_get_datetime(&rtc->internal_datetime);
+}
 
 /**
  * @brief Gets the current RTC time as a formatted string.
  * @param rtc Pointer to the rtc_time instance.
  * @return A string representation of the current RTC time.
  */
-char *rtc_time_now(rtc_time *rtc) {
+char *rtc_time_now(internal_rtc_t *rtc) {
   update_time(rtc);
   datetime_to_str(rtc->internal_datetime_buf,
       sizeof(rtc->internal_datetime_buf),
@@ -134,7 +133,7 @@ char *rtc_time_now(rtc_time *rtc) {
  * @param second The second for the alarm (0-59).
  * @param callback The callback function to be called when the alarm triggers.
  */
-void rtc_time_add_alarm(rtc_time *rtc,
+void rtc_time_add_alarm(internal_rtc_t *rtc,
     int8_t hour,
     int8_t minute,
     int8_t second,
@@ -156,7 +155,7 @@ void rtc_time_add_alarm(rtc_time *rtc,
  * @param rtc Pointer to the rtc_time instance.
  * @return True if the alarm is triggered, false otherwise.
  */
-void rtc_time_remove_alarm(rtc_time *rtc) {
+void rtc_time_remove_alarm(internal_rtc_t *rtc) {
   rtc_disable_alarm();
   rtc->alarm_set = false;
 }

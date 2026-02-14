@@ -54,12 +54,12 @@ msg_record_init(uint16_t contact_addr, char *message, uint8_t status) {
   }
   sprintf(record->timestamp,
       "%02d:%02d:%02d %02d/%02d/%04d",
-      drivers->rtc->internal_datetime.hour,
-      drivers->rtc->internal_datetime.min,
-      drivers->rtc->internal_datetime.sec,
-      drivers->rtc->internal_datetime.day,
-      drivers->rtc->internal_datetime.month,
-      drivers->rtc->internal_datetime.year);
+      (drivers->internal_rtc).internal_datetime.hour,
+      (drivers->internal_rtc).internal_datetime.min,
+      (drivers->internal_rtc).internal_datetime.sec,
+      (drivers->internal_rtc).internal_datetime.day,
+      (drivers->internal_rtc).internal_datetime.month,
+      (drivers->internal_rtc).internal_datetime.year);
   return record;
 }
 

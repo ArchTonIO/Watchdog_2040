@@ -68,7 +68,7 @@ void check_peripherals() {
 
 void process_system_state() {
   home_page_inst->battery_level = battery_get_percentage(&(drivers->battery));
-  home_page_inst->alarm_set = drivers->rtc->alarm_set;
+  home_page_inst->alarm_set = drivers->internal_rtc.alarm_set;
   home_page_inst->aqi = ens160_read_aqi(&(drivers->ens160));
   home_page_inst->notifications = msg_man_inst->received_msgs_count;
 }
@@ -129,10 +129,10 @@ const uint8_t *get_rxcontinuous_indicator_bitmap() {
 }
 
 void update_clock_bitmaps() {
-  update_time(drivers->rtc);
-  int8_t hour = drivers->rtc->internal_datetime.hour;
-  int8_t minute = drivers->rtc->internal_datetime.min;
-  int8_t second = drivers->rtc->internal_datetime.sec;
+  update_time(&(drivers->internal_rtc));
+  int8_t hour = drivers->internal_rtc.internal_datetime.hour;
+  int8_t minute = drivers->internal_rtc.internal_datetime.min;
+  int8_t second = drivers->internal_rtc.internal_datetime.sec;
   int8_t hour_tens = hour / 10;
   int8_t hour_units = hour % 10;
   int8_t minute_tens = minute / 10;
@@ -332,14 +332,15 @@ void update_texts() {
       .posx = 12,
       .posy = 7,
       .is_inverted = false};
-  char *weekday = from_dotw_to_weekday(drivers->rtc->internal_datetime.dotw);
+  char *weekday = from_dotw_to_weekday(
+      drivers->internal_rtc.internal_datetime.dotw);
   static char date_str[13];
   snprintf(date_str,
       10,
       "%02d/%02d/%02d",
-      drivers->rtc->internal_datetime.day,
-      drivers->rtc->internal_datetime.month,
-      drivers->rtc->internal_datetime.year - 2000);
+      drivers->internal_rtc.internal_datetime.day,
+      drivers->internal_rtc.internal_datetime.month,
+      drivers->internal_rtc.internal_datetime.year - 2000);
   text_area day_text = {.text = weekday,
       .posx = 7,
       .posy = 6,
