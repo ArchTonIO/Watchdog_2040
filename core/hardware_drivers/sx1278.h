@@ -69,9 +69,9 @@ typedef struct {
   bool is_working;
   bool is_on;
 
-} sx1278;
+} sx1278_t;
 
-sx1278 *sx1278_init(pin mosi,
+sx1278_t *sx1278_init(pin mosi,
     pin miso,
     pin sck,
     pin cs,
@@ -81,14 +81,14 @@ sx1278 *sx1278_init(pin mosi,
     uint8_t tx_power,
     void (*message_received_callback)(char *msg, float rssi));
 
-void sx1278_sleep(sx1278 *radio);
-void sx1278_reset(sx1278 *radio);
-void sx1278_attach_isr(sx1278 *radio,
+void sx1278_sleep(sx1278_t *radio);
+void sx1278_reset(sx1278_t *radio);
+void sx1278_attach_isr(sx1278_t *radio,
     void (*new_callback)(char *msg, float rssi));
-void sx1278_set_mode_tx(sx1278 *radio);
-void sx1278_set_mode_rx(sx1278 *radio);
-void sx1278_set_mode_idle(sx1278 *radio);
-void sx1278_send_str(sx1278 *radio, char *data);
-void sx1278_send_raw(sx1278 *radio, uint8_t *data, size_t length);
+void sx1278_set_mode_tx(sx1278_t *radio);
+void sx1278_set_mode_rx(sx1278_t *radio);
+void sx1278_set_mode_idle(sx1278_t *radio);
+void sx1278_send_str(sx1278_t *radio, char *data);
+void sx1278_send_raw(sx1278_t *radio, uint8_t *data, size_t length);
 
 #endif

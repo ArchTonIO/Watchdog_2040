@@ -13,19 +13,19 @@
 #include "config.h"
 #include "hardware/gpio.h"
 
-sx1278 *instance = NULL;
+sx1278_t *instance = NULL;
 
-void spi_write_reg_single_byte(sx1278 *radio, uint8_t reg, uint8_t payload);
-void spi_write_reg_multi_byte(sx1278 *radio,
+void spi_write_reg_single_byte(sx1278_t *radio, uint8_t reg, uint8_t payload);
+void spi_write_reg_multi_byte(sx1278_t *radio,
     uint8_t reg,
     uint8_t *payload,
     size_t length);
-uint8_t spi_read_reg_single_byte(sx1278 *radio, uint8_t reg);
-void spi_read_reg_multi_byte(sx1278 *radio,
+uint8_t spi_read_reg_single_byte(sx1278_t *radio, uint8_t reg);
+void spi_read_reg_multi_byte(sx1278_t *radio,
     uint8_t reg,
     uint8_t *buffer,
     size_t length);
-bool wait_packet_sent(sx1278 *radio);
+bool wait_packet_sent(sx1278_t *radio);
 void irq_handler(uint gpio, uint32_t events);
 void message_sent_callback();
 void message_received_callback();
@@ -48,7 +48,7 @@ void message_received_callback();
  * messages.
  * @return A pointer to the initialized sx1278 instance.
  */
-sx1278 *sx1278_init(pin mosi,
+sx1278_t *sx1278_init(pin mosi,
     pin miso,
     pin sck,
     pin cs,
@@ -57,7 +57,7 @@ sx1278 *sx1278_init(pin mosi,
     uint32_t baudrate,
     uint8_t tx_power,
     void (*message_received_callback)(char *msg, float rssi)) {
-  sx1278 *new_radio = (sx1278 *)malloc(sizeof(sx1278));
+  sx1278_t *new_radio = (sx1278_t *)malloc(sizeof(sx1278_t));
   new_radio->mosi = mosi;
   new_radio->miso = miso;
   new_radio->sck = sck;
@@ -150,12 +150,12 @@ sx1278 *sx1278_init(pin mosi,
  * @param new_callback The callback function to be called when a message is
  * received.
  */
-void sx1278_attach_isr(sx1278 *radio,
+void sx1278_attach_isr(sx1278_t *radio,
     void (*new_callback)(char *msg, float rssi)) {
   radio->message_received_callback = new_callback;
 }
 
-void sx1278_reset(sx1278 *radio) {
+void sx1278_reset(sx1278_t *radio) {
   spi_write_reg_single_byte(radio,
       REG_01_OP_MODE,
       MODE_SLEEP | LONG_RANGE_MODE);
@@ -171,7 +171,7 @@ void sx1278_reset(sx1278 *radio) {
  *
  * @param radio Pointer to the sx1278 radio instance.
  */
-void sx1278_sleep(sx1278 *radio) {
+void sx1278_sleep(sx1278_t *radio) {
   if (radio->mode != MODE_SLEEP) {
     spi_write_reg_single_byte(radio, REG_01_OP_MODE, MODE_SLEEP);
     radio->mode = MODE_SLEEP;
@@ -187,7 +187,7 @@ void sx1278_sleep(sx1278 *radio) {
  *
  * @param radio Pointer to the sx1278 radio instance.
  */
-void sx1278_set_mode_tx(sx1278 *radio) {
+void sx1278_set_mode_tx(sx1278_t *radio) {
   if (radio->mode != MODE_TX) {
     spi_write_reg_single_byte(radio, REG_01_OP_MODE, MODE_TX);
     spi_write_reg_single_byte(radio, REG_40_DIO_MAPPING1, 0x40);
@@ -204,7 +204,7 @@ void sx1278_set_mode_tx(sx1278 *radio) {
  *
  * @param radio Pointer to the sx1278 radio instance.
  */
-void sx1278_set_mode_rx(sx1278 *radio) {
+void sx1278_set_mode_rx(sx1278_t *radio) {
   if (radio->mode != MODE_RXCONTINUOUS) {
     spi_write_reg_single_byte(radio, REG_01_OP_MODE, MODE_RXCONTINUOUS);
     spi_write_reg_single_byte(radio, REG_40_DIO_MAPPING1, 0x00);
@@ -221,7 +221,7 @@ void sx1278_set_mode_rx(sx1278 *radio) {
  *
  * @param radio Pointer to the sx1278 radio instance.
  */
-void sx1278_set_mode_idle(sx1278 *radio) {
+void sx1278_set_mode_idle(sx1278_t *radio) {
   if (radio->mode != MODE_STDBY) {
     spi_write_reg_single_byte(radio, REG_01_OP_MODE, MODE_STDBY);
     radio->mode = MODE_STDBY;
@@ -239,7 +239,7 @@ void sx1278_set_mode_idle(sx1278 *radio) {
  * @return `true` if the packet was sent successfully, `false` if the timeout
  * occurred.
  */
-bool wait_packet_sent(sx1278 *radio) {
+bool wait_packet_sent(sx1278_t *radio) {
   uint32_t start_ms = to_ms_since_boot(get_absolute_time());
   while ((to_ms_since_boot(get_absolute_time()) - start_ms) <
          radio->packet_sent_timeout_ms) {
@@ -260,7 +260,7 @@ bool wait_packet_sent(sx1278 *radio) {
  * @param radio Pointer to the sx1278 radio instance.
  * @param data The string data to be sent (null-terminated).
  */
-void sx1278_send_str(sx1278 *radio, char *data) {
+void sx1278_send_str(sx1278_t *radio, char *data) {
   wait_packet_sent(radio);
   sx1278_set_mode_idle(radio);
   spi_write_reg_single_byte(radio, REG_0D_FIFO_ADDR_PTR, 0x00);
@@ -280,7 +280,7 @@ void sx1278_send_str(sx1278 *radio, char *data) {
  * @param data Pointer to the raw data to be sent.
  * @param length The length of the raw data in bytes.
  */
-void sx1278_send_raw(sx1278 *radio, uint8_t *data, size_t length) {
+void sx1278_send_raw(sx1278_t *radio, uint8_t *data, size_t length) {
   wait_packet_sent(radio);
   sx1278_set_mode_idle(radio);
   spi_write_reg_single_byte(radio, REG_0D_FIFO_ADDR_PTR, 0x00);
@@ -289,14 +289,14 @@ void sx1278_send_raw(sx1278 *radio, uint8_t *data, size_t length) {
   sx1278_set_mode_tx(radio);
 }
 
-void spi_write_reg_single_byte(sx1278 *radio, uint8_t reg, uint8_t payload) {
+void spi_write_reg_single_byte(sx1278_t *radio, uint8_t reg, uint8_t payload) {
   uint8_t buffer[2] = {reg | 0x80, payload};
   gpio_put(radio->cs, 0);
   spi_write_blocking(radio->spi_port, buffer, 2);
   gpio_put(radio->cs, 1);
 }
 
-void spi_write_reg_multi_byte(sx1278 *radio,
+void spi_write_reg_multi_byte(sx1278_t *radio,
     uint8_t reg,
     uint8_t *payload,
     size_t length) {
@@ -308,7 +308,7 @@ void spi_write_reg_multi_byte(sx1278 *radio,
   gpio_put(radio->cs, 1);
 }
 
-uint8_t spi_read_reg_single_byte(sx1278 *radio, uint8_t reg) {
+uint8_t spi_read_reg_single_byte(sx1278_t *radio, uint8_t reg) {
   uint8_t tx_buffer = reg & 0x7F;
   uint8_t rx_buffer[2] = {0};
   gpio_put(radio->cs, 0);
@@ -317,7 +317,7 @@ uint8_t spi_read_reg_single_byte(sx1278 *radio, uint8_t reg) {
   return rx_buffer[1];
 }
 
-void spi_read_reg_multi_byte(sx1278 *radio,
+void spi_read_reg_multi_byte(sx1278_t *radio,
     uint8_t reg,
     uint8_t *buffer,
     size_t length) {

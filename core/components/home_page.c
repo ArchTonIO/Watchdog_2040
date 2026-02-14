@@ -56,7 +56,7 @@ void check_peripherals() {
     home_page_inst->sd_status = 1;
   else
     home_page_inst->sd_status = 0;
-  if (drivers->lora_module->is_working && drivers->lora_module->is_on)
+  if (drivers->sx1278->is_working && drivers->sx1278->is_on)
     home_page_inst->sx1278_status = 1;
   else
     home_page_inst->sx1278_status = 0;

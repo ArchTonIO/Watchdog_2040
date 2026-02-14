@@ -71,7 +71,7 @@ typedef struct {
 } rx_fields;
 
 typedef struct {
-  sx1278 *radio;
+  sx1278_t *radio;
   uint16_t address;
   tx_fields *tx;
   rx_fields *rx;
@@ -92,7 +92,7 @@ typedef struct {
 
 extern lora_instance *this_lora;
 
-lora_instance *lora_init(uint16_t this_addr, sx1278 *sx1278_radio);
+lora_instance *lora_init(uint16_t this_addr, sx1278_t *sx1278_radio);
 void lora_receive();
 uint8_t lora_send_msg(uint16_t dest_address,
     char *payload,

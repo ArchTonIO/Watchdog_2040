@@ -57,7 +57,7 @@ msg_manager *msg_manager_init(uint16_t my_addr) {
   msg_man->new_msg_arrived = false;
   msg_man->should_notify = true;
   msg_man->received_msgs_count = 0;
-  msg_man->ulmp_impl = lora_init(my_addr, drivers->lora_module);
+  msg_man->ulmp_impl = lora_init(my_addr, drivers->sx1278);
   msg_man->conversation_updates_count = 0;
   lora_receive();
   contacts_list_init();

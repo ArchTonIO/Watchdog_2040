@@ -33,7 +33,7 @@ void reset_ack() {
  * @param sx1278_radio Pointer to the SX1278 radio instance.
  * @return Pointer to the initialized LoRa instance.
  */
-lora_instance *lora_init(uint16_t this_addr, sx1278 *sx1278_radio) {
+lora_instance *lora_init(uint16_t this_addr, sx1278_t *sx1278_radio) {
   this_lora = malloc(sizeof(lora_instance));
   this_lora->tx = malloc(sizeof(tx_fields));
   this_lora->rx = malloc(sizeof(rx_fields));

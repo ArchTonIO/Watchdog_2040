@@ -66,7 +66,7 @@ hw_drivers *hardware_drivers_init() {
   else
     core1_push_instruction(ENS160_ERR);
 
-  hw_man->lora_module = sx1278_init(SX1278_MOSI,
+  hw_man->sx1278 = sx1278_init(SX1278_MOSI,
       SX1278_MISO,
       SX1278_SCK,
       SX1278_CS,
@@ -75,7 +75,7 @@ hw_drivers *hardware_drivers_init() {
       SX1278_SPI_BAUDRATE,
       SX1278_TX_POWER,
       NULL);
-  if (hw_man->lora_module->is_working)
+  if (hw_man->sx1278->is_working)
     core1_push_instruction(SX1278_OK);
   else
     core1_push_instruction(SX1278_ERR);
@@ -185,7 +185,7 @@ void enter_idle() {
         GPIO_IRQ_EDGE_FALL,
         true,
         &joystick_irq);
-    sx1278_sleep(drivers->lora_module);
+    sx1278_sleep(drivers->sx1278);
     set_sys_clock_khz(25000, true);
     sleep_ms(50);
   }
@@ -208,7 +208,7 @@ void exit_idle() {
         GPIO_IRQ_EDGE_FALL,
         false,
         &joystick_irq);
-    drivers->lora_module = sx1278_init(SX1278_MOSI,
+    drivers->sx1278 = sx1278_init(SX1278_MOSI,
         SX1278_MISO,
         SX1278_SCK,
         SX1278_CS,
@@ -216,8 +216,8 @@ void exit_idle() {
         SX1278_SPI_PORT,
         SX1278_SPI_BAUDRATE,
         SX1278_TX_POWER,
-        drivers->lora_module->message_received_callback);
-    sx1278_set_mode_rx(drivers->lora_module);
+        drivers->sx1278->message_received_callback);
+    sx1278_set_mode_rx(drivers->sx1278);
     set_sys_clock_khz(125000, true);
     sleep_ms(50);
   }
