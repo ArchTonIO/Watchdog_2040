@@ -35,50 +35,90 @@ add_subdirectory(core/lib/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(Watchdog_2040
-# APPS SECTION
+########################################################################
+############################# APPS SECTION #############################
+########################################################################
+
+## AQI ##
 apps/AQI/aqi.c
+apps/AQI/bitmaps.c
+
+## drawing board ##
+apps/drawing_board/bitmaps.c
 apps/drawing_board/board.c
+
+## flashlight ##
+apps/flashlight/bitmaps.c
 apps/flashlight/flashlight.c
+
+## messaging ##
+apps/msg_manager/bitmaps.c
 apps/msg_manager/contacts.c
 apps/msg_manager/msg_man_utils.c
 apps/msg_manager/msg_manager.c
 apps/msg_manager/msg_record.c
+
+## notes ##
+apps/notes/bitmaps.c
 apps/notes/notes.c
+
+## password manager ##
 apps/pwd_manager/aes_ctr.c
+apps/pwd_manager/bitmaps.c
 apps/pwd_manager/key.c
 apps/pwd_manager/pwd_manager.c
+
+## sys submenu ##
+apps/system_submenus/bitmaps.c
 apps/system_submenus/system_submenus.c
+
+## terminal ##
+apps/terminal/bitmaps.c
 apps/terminal/terminal_commands.c
 apps/terminal/terminal.c
+
+## text editor ##
 apps/text_editor/text_editor.c
+
+## time ##
+apps/time_submenus/bitmaps.c
 apps/time_submenus/set_alarm_submenu.c
 apps/time_submenus/set_date_submenu.c
 apps/time_submenus/set_time_submenu.c
 apps/time_submenus/stopwatch_submenu.c
 apps/time_submenus/time_utils.c
 apps/time_submenus/timer_submenu.c
+
+## todo ##
+apps/todo/bitmaps.c
 apps/todo/todo.c
+
+## virtual keyboard ##
 apps/virtual_keyboard/virtual_keyboard.c
 
-# BOOT SECTION
+########################################################################
+############################# SYSTEM SECTION ###########################
+########################################################################
+
+## boot ##
 core/boot/bootup.c
 
-# COMPONENTS SECTION
+## components ##
+core/components/bitmaps.c
 core/components/home_page.c
 core/components/hw_manager.c
 core/components/malloc_mascot.c
 core/components/sys_paths_manager.c
 
-# DATA STRUCTURES SECTION
+## data structures ##
 core/data_structures/string_list.c
 
-# GRAPHICS SECTION
-core/graphics/bitmaps.c
+## graphics ##
 core/graphics/graphic_primitives.c
 core/graphics/graphs.c
 core/graphics/layout.c
 
-# HARDWARE DRIVERS SECTION
+## hardware drivers ##
 core/hardware_drivers/battery.c
 core/hardware_drivers/core1.c
 core/hardware_drivers/ds3231.c
@@ -91,23 +131,23 @@ core/hardware_drivers/sdcard.c
 core/hardware_drivers/ssd1306.c
 core/hardware_drivers/sx1278.c
 
-# TOOLS SECTION
+## tools ##
 core/tools/crud_list.c
 core/tools/launcher.c
 core/tools/menus.c
 core/tools/options_gen.c
 core/tools/sha_256.c
 
-# ULMP SECTION
+## ulmp ##
 core/ulmp/lora_receive.c
 core/ulmp/lora_send.c
 core/ulmp/ulmp.c
 
-# UTILS SECTION
+## utils ##
 core/utils/path.c
 core/utils/utils.c
 
-# ENTRY POINT
+## entry point ##
 Watchdog_2040.c
 )
 

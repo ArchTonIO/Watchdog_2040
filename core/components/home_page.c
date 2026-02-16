@@ -10,10 +10,10 @@
 
 #include "apps/msg_manager/include/msg_manager.h"
 #include "apps/time_submenus/include/time_utils.h"
+#include "core/components/include/bitmaps.h"
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/malloc_mascot.h"
 #include "core/data_structures/include/string_list.h"
-#include "core/graphics/include/bitmaps.h"
 #include "core/graphics/include/graphic_primitives.h"
 #include "core/graphics/include/layout.h"
 #include "core/hardware_drivers/include/battery.h"

@@ -7,8 +7,8 @@
 
 #include "pico/multicore.h"
 
+#include "core/components/include/bitmaps.h"
 #include "core/components/include/hw_manager.h"
-#include "core/graphics/include/bitmaps.h"
 #include "core/hardware_drivers/include/config.h"
 #include "core/hardware_drivers/include/core1.h"
 #include "core/hardware_drivers/include/ssd1306.h"

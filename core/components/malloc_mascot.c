@@ -12,10 +12,10 @@
 
 #include "apps/text_editor/include/text_editor.h"
 #include "apps/virtual_keyboard/virtual_keyboard.h"
+#include "core/components/include/bitmaps.h"
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/sys_paths_manager.h"
 #include "core/data_structures/include/string_list.h"
-#include "core/graphics/include/bitmaps.h"
 #include "core/hardware_drivers/include/joystick.h"
 #include "core/hardware_drivers/include/ssd1306.h"
 #include "core/tools/include/menus.h"

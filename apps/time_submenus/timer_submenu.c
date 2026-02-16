@@ -11,10 +11,10 @@
 #include "apps/time_submenus/include/time_utils.h"
 #include "core/components/include/hw_manager.h"
 #include "core/data_structures/include/string_list.h"
-#include "core/graphics/include/bitmaps.h"
 #include "core/hardware_drivers/include/haptics.h"
 #include "core/hardware_drivers/include/joystick.h"
 #include "core/hardware_drivers/include/ssd1306.h"
+#include "include/bitmaps.h"
 
 void set_timer() {};
 bool start_countdown(time_digits *digits);

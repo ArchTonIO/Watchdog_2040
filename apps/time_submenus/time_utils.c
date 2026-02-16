@@ -8,12 +8,13 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "core/components/include/bitmaps.h"
 #include "core/components/include/hw_manager.h"
 #include "core/data_structures/include/string_list.h"
-#include "core/graphics/include/bitmaps.h"
 #include "core/graphics/include/graphic_primitives.h"
 #include "core/hardware_drivers/include/haptics.h"
 #include "core/hardware_drivers/include/ssd1306.h"
+#include "include/bitmaps.h"
 
 time_digits *time_digits_init() {
   update_time(&(drivers->internal_rtc));

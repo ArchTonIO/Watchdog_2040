@@ -10,8 +10,8 @@
 #include "apps/time_submenus/include/time_utils.h"
 #include "core/components/include/hw_manager.h"
 #include "core/data_structures/include/string_list.h"
-#include "core/graphics/include/bitmaps.h"
 #include "core/hardware_drivers/include/ssd1306.h"
+#include "include/bitmaps.h"
 
 void save_time(time_digits *digits);
 void set_time(time_digits *digits);

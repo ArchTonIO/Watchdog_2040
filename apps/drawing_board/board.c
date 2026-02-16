@@ -5,13 +5,13 @@
 #include <stdlib.h>
 
 #include "core/components/include/hw_manager.h"
-#include "core/graphics/include/bitmaps.h"
 #include "core/graphics/include/graphic_primitives.h"
 #include "core/graphics/include/layout.h"
 #include "core/hardware_drivers/include/config.h"
 #include "core/hardware_drivers/include/haptics.h"
 #include "core/hardware_drivers/include/joystick.h"
 #include "core/hardware_drivers/include/ssd1306.h"
+#include "include/bitmaps.h"
 
 void board_run(drawing_board *board);
 
