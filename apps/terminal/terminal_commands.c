@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/terminal/terminal_commands.h"
+#include "apps/terminal/include/terminal_commands.h"
 
 #include <device.h>
 #include <stdbool.h>
@@ -15,8 +15,8 @@
 #include "pico/stdio_usb.h"
 #include "pico/time.h"
 
-#include "apps/system_submenus/system_submenus.h"
-#include "apps/text_editor/text_editor.h"
+#include "apps/system_submenus/include/system_submenus.h"
+#include "apps/text_editor/include/text_editor.h"
 #include "core/components/include/malloc_mascot.h"
 #include "core/components/include/sys_paths_manager.h"
 #include "core/data_structures/include/string_list.h"
@@ -25,7 +25,7 @@
 #include "core/utils/include/utils.h"
 #include "device.h"
 #include "hardware/watchdog.h"
-#include "terminal.h"
+#include "include/terminal.h"
 
 command create_command(char *name,
     char *description,

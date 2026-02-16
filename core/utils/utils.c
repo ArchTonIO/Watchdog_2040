@@ -12,7 +12,7 @@
 #include "pico/rand.h"
 #include "pico/stdio_usb.h"
 
-#include "apps/text_editor/text_editor.h"
+#include "apps/text_editor/include/text_editor.h"
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/malloc_mascot.h"
 #include "core/data_structures/include/string_list.h"

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/terminal/terminal.h"
+#include "apps/terminal/include/terminal.h"
 
 #include <device.h>
 #include <stdbool.h>
@@ -10,8 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "apps/terminal/terminal_commands.h"
-#include "apps/text_editor/text_editor.h"
+#include "apps/terminal/include/terminal_commands.h"
+#include "apps/text_editor/include/text_editor.h"
 #include "core/components/include/malloc_mascot.h"
 #include "core/components/include/sys_paths_manager.h"
 #include "core/data_structures/include/string_list.h"

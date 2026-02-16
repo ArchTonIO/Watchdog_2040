@@ -10,7 +10,7 @@
 
 #include "pico/rand.h"
 
-#include "apps/text_editor/text_editor.h"
+#include "apps/text_editor/include/text_editor.h"
 #include "apps/virtual_keyboard/virtual_keyboard.h"
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/sys_paths_manager.h"

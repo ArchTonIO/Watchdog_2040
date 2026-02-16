@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "apps/msg_manager/msg_record.h"
+#include "apps/msg_manager/include/msg_record.h"
 #include "core/data_structures/include/string_list.h"
 
 #define MAX_CONTACTS 50

@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/time_submenus/stopwatch_submenu.h"
+#include "apps/time_submenus/include/stopwatch_submenu.h"
 
 #include <pico/time.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "apps/time_submenus/time_utils.h"
+#include "apps/time_submenus/include/time_utils.h"
 #include "core/components/include/hw_manager.h"
 #include "core/data_structures/include/string_list.h"
 #include "core/graphics/include/bitmaps.h"

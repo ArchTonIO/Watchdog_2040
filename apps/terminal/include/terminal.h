@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "apps/terminal/terminal_commands.h"
+#include "apps/terminal/include/terminal_commands.h"
 #include "core/data_structures/include/string_list.h"
 #include "core/utils/include/path.h"
 

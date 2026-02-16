@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/pwd_manager/key.h"
+#include "apps/pwd_manager/include/key.h"
 
 void derive_key(uint8_t key[KEY_SIZE],
     const uint8_t *password,

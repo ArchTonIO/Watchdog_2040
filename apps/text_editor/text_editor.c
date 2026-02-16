@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/text_editor/text_editor.h"
+#include "apps/text_editor/include/text_editor.h"
 
 #include <stdbool.h>
 #include <stdint.h>

@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "apps/msg_manager/msg_manager.h"
-#include "apps/time_submenus/time_utils.h"
+#include "apps/msg_manager/include/msg_manager.h"
+#include "apps/time_submenus/include/time_utils.h"
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/malloc_mascot.h"
 #include "core/data_structures/include/string_list.h"

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/flashlight/flashlight.h"
+#include "apps/flashlight/include/flashlight.h"
 
 #include "core/components/include/hw_manager.h"
 #include "core/hardware_drivers/include/joystick.h"

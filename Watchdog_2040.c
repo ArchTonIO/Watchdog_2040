@@ -9,8 +9,8 @@
 #include "pico/stdio.h"
 #include "pico/time.h"
 
-#include "apps/msg_manager/msg_manager.h"
-#include "apps/time_submenus/set_alarm_submenu.h"
+#include "apps/msg_manager/include/msg_manager.h"
+#include "apps/time_submenus/include/set_alarm_submenu.h"
 #include "core/components/include/home_page.h"
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/malloc_mascot.h"

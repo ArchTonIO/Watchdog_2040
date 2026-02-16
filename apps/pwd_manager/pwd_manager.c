@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/pwd_manager/pwd_manager.h"
+#include "apps/pwd_manager/include/pwd_manager.h"
 
 #include <pico/rand.h>
 #include <stdbool.h>
@@ -11,9 +11,9 @@
 
 #include "pico/unique_id.h"
 
-#include "apps/pwd_manager/aes_ctr.h"
-#include "apps/pwd_manager/key.h"
-#include "apps/text_editor/text_editor.h"
+#include "apps/pwd_manager/include/aes_ctr.h"
+#include "apps/pwd_manager/include/key.h"
+#include "apps/text_editor/include/text_editor.h"
 #include "core/components/include/sys_paths_manager.h"
 #include "core/tools/include/crud_list.h"
 #include "core/utils/include/path.h"

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/AQI/aqi.h"
+#include "apps/AQI/include/aqi.h"
 
 #include "core/components/include/hw_manager.h"
 #include "core/graphics/include/graphs.h"

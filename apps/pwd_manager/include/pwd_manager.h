@@ -4,7 +4,7 @@
 #ifndef PWD_MANAGER_H
 #define PWD_MANAGER_H
 
-#include "apps/pwd_manager/key.h"
+#include "apps/pwd_manager/include/key.h"
 #define MAX_PASSWORD_ENTRIES 50
 #define MAX_USERNAME_LENGTH 32
 #define MAX_PASSWORD_LENGTH 32

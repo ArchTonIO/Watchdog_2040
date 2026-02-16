@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/todo/todo.h"
+#include "apps/todo/include/todo.h"
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "apps/text_editor/text_editor.h"
+#include "apps/text_editor/include/text_editor.h"
 #include "core/components/include/sys_paths_manager.h"
 #include "core/data_structures/include/string_list.h"
 #include "core/tools/include/crud_list.h"

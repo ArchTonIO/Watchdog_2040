@@ -1,4 +1,4 @@
-#include "apps/drawing_board/board.h"
+#include "apps/drawing_board/include/board.h"
 
 #include <stdbool.h>
 #include <stdio.h>

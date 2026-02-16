@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/system_submenus/system_submenus.h"
+#include "apps/system_submenus/include/system_submenus.h"
 
 #include <math.h>
 #include <stdio.h>
