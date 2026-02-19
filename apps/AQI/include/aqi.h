@@ -4,6 +4,6 @@
 #ifndef AQI_H
 #define AQI_H
 
-void display_air_quality_indexes();
+void aqi_launch();
 
 #endif

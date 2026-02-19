@@ -40,7 +40,7 @@ void display_notifications_menu();
 DEFINE_LAUNCHER(main_launcher,
     "Apps",
     {"Time", set_time_icon, time_launch},
-    {"Air quality", AQI_icon, display_air_quality_indexes},
+    {"Air quality", AQI_icon, aqi_launch},
     {"Messaging", ulmp_icon, messaging_launch},
     {"Terminal", cli_icon, terminal_launch},
     {"Notes", notes_icon, notes_launch},

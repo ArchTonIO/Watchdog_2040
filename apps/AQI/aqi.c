@@ -8,7 +8,7 @@
 #include "core/hardware_drivers/include/joystick.h"
 #include "core/hardware_drivers/include/ssd1306.h"
 
-void display_air_quality_indexes() {
+void aqi_launch() {
   graph *g_aqi = graph_init("AQI", 48, 40, 0, 16, 0, 5);
   graph *g_co2 = graph_init("eCO2", 48, 40, 43, 16, 400, 2000);
   graph *g_tvoc = graph_init("TVOC", 48, 40, 86, 16, 0, 600);
