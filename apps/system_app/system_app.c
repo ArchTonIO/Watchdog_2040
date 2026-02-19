@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/system_submenus/include/system_submenus.h"
+#include "apps/system_app/include/system_app.h"
 
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "apps/system_app/include/bitmaps.h"
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/sys_paths_manager.h"
 #include "core/data_structures/include/string_list.h"
@@ -14,11 +15,22 @@
 #include "core/hardware_drivers/include/battery.h"
 #include "core/hardware_drivers/include/joystick.h"
 #include "core/hardware_drivers/include/ssd1306.h"
+#include "core/tools/include/launcher.h"
 #include "core/tools/include/options_gen.h"
 #include "core/utils/include/path.h"
 #include "core/utils/include/utils.h"
 #include "device.h"
 #include "hardware/watchdog.h"
+
+DEFINE_LAUNCHER(system_app_launcher,
+    "System",
+    {"Reboot system", reset_icon, display_reboot_screen},
+    {"System info", system_info_icon, display_system_info_wrapped},
+    {"Battery status", battery_status_icon, display_battery_status},
+    {"Check joystick", check_joystick_icon, display_joystick_check},
+    {"System reset", reset_icon, reset_system})
+
+void system_app_launch() { launcher_start(&system_app_launcher); }
 
 void display_system_info_wrapped() { display_system_info(false); }
 

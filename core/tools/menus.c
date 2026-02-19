@@ -13,8 +13,8 @@
 #include "apps/notes/include/notes.h"
 #include "apps/pwd_manager/include/bitmaps.h"
 #include "apps/pwd_manager/include/pwd_manager.h"
-#include "apps/system_submenus/include/bitmaps.h"
-#include "apps/system_submenus/include/system_submenus.h"
+#include "apps/system_app/include/bitmaps.h"
+#include "apps/system_app/include/system_app.h"
 #include "apps/terminal/include/bitmaps.h"
 #include "apps/terminal/include/terminal.h"
 #include "apps/time/include/bitmaps.h"
@@ -23,19 +23,9 @@
 #include "apps/todo/include/todo.h"
 #include "core/components/include/bitmaps.h"
 #include "core/data_structures/include/string_list.h"
-#include "core/hardware_drivers/include/haptics.h"
 #include "core/tools/include/launcher.h"
 
-void display_ulmp_menu();
-void display_time_menu();
-void display_system_menu();
-void display_hardware_manager_menu();
-void display_sx1278_menu();
-void display_ens160_menu();
-void display_haptic_menu();
-void display_power_save_menu();
 void display_malloc_menu();
-void display_notifications_menu();
 
 DEFINE_LAUNCHER(main_launcher,
     "Apps",
@@ -47,20 +37,7 @@ DEFINE_LAUNCHER(main_launcher,
     {"Todo", todo_icon, todo_launch},
     {"Password manager", password_manager_icon, password_manager_launch},
     {"Flashlight", flashlight_icon, flashlight_launch},
-    {"System", qfn_package_icon, display_system_menu}, )
-
-DEFINE_LAUNCHER(system_launcher,
-    "System",
-    {"Reboot system", reset_icon, display_reboot_screen},
-    {"System info", system_info_icon, display_system_info_wrapped},
-    {"Battery status", battery_status_icon, display_battery_status},
-    {"Check joystick", check_joystick_icon, display_joystick_check},
-    {"System reset", reset_icon, reset_system})
-
-DEFINE_LAUNCHER(haptic_launcher,
-    "Haptic feedback",
-    {"Enable haptic", haptic_icon, haptic_enable},
-    {"Disable haptic", haptic_disabled, haptic_disable})
+    {"System", qfn_package_icon, system_app_launch}, )
 
 DEFINE_LAUNCHER(tutorial_launcher,
     "Tutorial",
@@ -74,8 +51,5 @@ DEFINE_LAUNCHER(tutorial_launcher,
     {"Entry 7", NO_ICON, display_tutorial_page})
 
 void display_main_menu() { launcher_start(&main_launcher); }
-
-void display_system_menu() { launcher_start(&system_launcher); }
-void display_haptic_menu() { launcher_start(&haptic_launcher); }
 
 void display_tutorial_menu() { launcher_start(&tutorial_launcher); }

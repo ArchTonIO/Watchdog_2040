@@ -15,7 +15,7 @@
 #include "pico/stdio_usb.h"
 #include "pico/time.h"
 
-#include "apps/system_submenus/include/system_submenus.h"
+#include "apps/system_app/include/system_app.h"
 #include "apps/text_editor/include/text_editor.h"
 #include "core/components/include/malloc_mascot.h"
 #include "core/components/include/sys_paths_manager.h"

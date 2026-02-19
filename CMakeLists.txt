@@ -69,9 +69,9 @@ apps/pwd_manager/bitmaps.c
 apps/pwd_manager/key.c
 apps/pwd_manager/pwd_manager.c
 
-## sys submenu ##
-apps/system_submenus/bitmaps.c
-apps/system_submenus/system_submenus.c
+## system app ##
+apps/system_app/bitmaps.c
+apps/system_app/system_app.c
 
 ## terminal ##
 apps/terminal/bitmaps.c

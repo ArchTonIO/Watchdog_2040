@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#ifndef SYSTEM_SUBMENUS_H
-#define SYSTEM_SUBMENUS_H
+#ifndef SYSTEM_APP_H
+#define SYSTEM_APP_H
 
 #include <stdbool.h>
 
+void system_app_launch();
 void display_system_info(bool serial_output);
 void display_system_info_wrapped();
 void reset_system();
