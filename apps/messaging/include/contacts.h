@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "apps/msg_manager/include/msg_record.h"
+#include "apps/messaging/include/msg_record.h"
 #include "core/data_structures/include/string_list.h"
 
 #define MAX_CONTACTS 50
@@ -26,8 +26,8 @@ typedef struct {
 contacts_list *contacts_list_init();
 void contacts_list_update(str_list *contacts_from_dir);
 
-/*Submenus*/
-void enter_contacts_submenu();
+/*Menus*/
+void contacts_menu_launch();
 uint16_t select_contact();
 
 /*Contacts accessors*/

@@ -7,9 +7,8 @@
 #include "apps/AQI/include/bitmaps.h"
 #include "apps/flashlight/include/bitmaps.h"
 #include "apps/flashlight/include/flashlight.h"
-#include "apps/msg_manager/include/bitmaps.h"
-#include "apps/msg_manager/include/contacts.h"
-#include "apps/msg_manager/include/msg_manager.h"
+#include "apps/messaging/include/bitmaps.h"
+#include "apps/messaging/include/messaging.h"
 #include "apps/notes/include/bitmaps.h"
 #include "apps/notes/include/notes.h"
 #include "apps/pwd_manager/include/bitmaps.h"
@@ -42,20 +41,13 @@ DEFINE_LAUNCHER(main_launcher,
     "Apps",
     {"Time", set_time_icon, time_launch},
     {"Air quality", AQI_icon, display_air_quality_indexes},
-    {"Messaging", ulmp_icon, display_ulmp_menu},
+    {"Messaging", ulmp_icon, messaging_launch},
     {"Terminal", cli_icon, terminal_launch},
     {"Notes", notes_icon, notes_launch},
     {"Todo", todo_icon, todo_launch},
     {"Password manager", password_manager_icon, password_manager_launch},
     {"Flashlight", flashlight_icon, enter_flashlight_screen},
     {"System", qfn_package_icon, display_system_menu}, )
-
-DEFINE_LAUNCHER(ulmp_launcher,
-    "ULMP",
-    {"Send message", send_msg_icon, send_message},
-    {"Read messages", read_messages_icon, read_messages},
-    {"Contacts", contacts_icon, enter_contacts_submenu},
-    {"Notifications", notifications_icon, display_notifications_menu}, )
 
 DEFINE_LAUNCHER(system_launcher,
     "System",
@@ -70,15 +62,6 @@ DEFINE_LAUNCHER(haptic_launcher,
     {"Enable haptic", haptic_icon, haptic_enable},
     {"Disable haptic", haptic_disabled, haptic_disable})
 
-DEFINE_LAUNCHER(notifications_launcher,
-    "Notifications",
-    {"Enable notifications",
-        enable_notifications_icon,
-        enable_message_notifications},
-    {"Disable notifications",
-        disable_notifications_icon,
-        disable_message_notifications})
-
 DEFINE_LAUNCHER(tutorial_launcher,
     "Tutorial",
     {"Entry 0", NO_ICON, display_tutorial_page},
@@ -91,9 +74,8 @@ DEFINE_LAUNCHER(tutorial_launcher,
     {"Entry 7", NO_ICON, display_tutorial_page})
 
 void display_main_menu() { launcher_start(&main_launcher); }
-void display_ulmp_menu() { launcher_start(&ulmp_launcher); }
 
 void display_system_menu() { launcher_start(&system_launcher); }
 void display_haptic_menu() { launcher_start(&haptic_launcher); }
-void display_notifications_menu() { launcher_start(&notifications_launcher); }
+
 void display_tutorial_menu() { launcher_start(&tutorial_launcher); }

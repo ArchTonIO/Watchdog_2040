@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "apps/msg_manager/include/msg_manager.h"
+#include "apps/messaging/include/msg_manager.h"
 #include "apps/time/include/time_utils.h"
 #include "core/components/include/bitmaps.h"
 #include "core/components/include/hw_manager.h"

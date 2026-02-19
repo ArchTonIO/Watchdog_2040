@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/msg_manager/include/msg_record.h"
+#include "apps/messaging/include/msg_record.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/_intsup.h>
 
-#include "apps/msg_manager/include/contacts.h"
+#include "apps/messaging/include/contacts.h"
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/sys_paths_manager.h"
 #include "core/data_structures/include/string_list.h"

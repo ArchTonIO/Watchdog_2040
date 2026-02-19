@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/msg_manager/include/contacts.h"
+#include "apps/messaging/include/contacts.h"
 
 #include <pico/types.h>
 #include <stdio.h>
@@ -73,7 +73,7 @@ void contacts_list_update(str_list *contacts_from_dir) {
  * @brief Enters the contacts submenu, allowing the user to add,
  * edit or delete contacts.
  */
-void enter_contacts_submenu() {
+void contacts_menu_launch() {
   str_list *contacts = str_list_init();
   str_list *existing_contacts;
   str_list *options;

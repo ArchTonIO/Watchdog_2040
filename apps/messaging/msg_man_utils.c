@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/msg_manager/include/msg_man_utils.h"
+#include "apps/messaging/include/msg_man_utils.h"
 
 #include <pico/types.h>
 #include <stdio.h>
@@ -9,9 +9,9 @@
 #include <string.h>
 #include <sys/_intsup.h>
 
-#include "apps/msg_manager/include/contacts.h"
-#include "apps/msg_manager/include/msg_manager.h"
-#include "apps/msg_manager/include/msg_record.h"
+#include "apps/messaging/include/contacts.h"
+#include "apps/messaging/include/msg_manager.h"
+#include "apps/messaging/include/msg_record.h"
 #include "apps/text_editor/include/text_editor.h"
 #include "core/components/include/sys_paths_manager.h"
 #include "core/data_structures/include/string_list.h"

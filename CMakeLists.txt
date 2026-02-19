@@ -52,11 +52,12 @@ apps/flashlight/bitmaps.c
 apps/flashlight/flashlight.c
 
 ## messaging ##
-apps/msg_manager/bitmaps.c
-apps/msg_manager/contacts.c
-apps/msg_manager/msg_man_utils.c
-apps/msg_manager/msg_manager.c
-apps/msg_manager/msg_record.c
+apps/messaging/bitmaps.c
+apps/messaging/contacts.c
+apps/messaging/messaging.c
+apps/messaging/msg_man_utils.c
+apps/messaging/msg_manager.c
+apps/messaging/msg_record.c
 
 ## notes ##
 apps/notes/bitmaps.c
