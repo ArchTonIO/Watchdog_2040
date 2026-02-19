@@ -4,6 +4,7 @@
 #ifndef LAUNCHER_H
 #define LAUNCHER_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #define MAX_APPS 50

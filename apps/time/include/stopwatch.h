@@ -11,6 +11,6 @@ typedef struct {
   uint8_t millisecond_units;
 } milliseconds_digits;
 
-void enter_stopwatch_submenu();
+void stopwatch_launch();
 
 #endif

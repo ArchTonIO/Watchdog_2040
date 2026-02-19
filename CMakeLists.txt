@@ -81,13 +81,14 @@ apps/terminal/terminal.c
 apps/text_editor/text_editor.c
 
 ## time ##
-apps/time_submenus/bitmaps.c
-apps/time_submenus/set_alarm_submenu.c
-apps/time_submenus/set_date_submenu.c
-apps/time_submenus/set_time_submenu.c
-apps/time_submenus/stopwatch_submenu.c
-apps/time_submenus/time_utils.c
-apps/time_submenus/timer_submenu.c
+apps/time/bitmaps.c
+apps/time/set_alarm.c
+apps/time/set_date.c
+apps/time/set_time.c
+apps/time/stopwatch.c
+apps/time/time_utils.c
+apps/time/time.c
+apps/time/timer.c
 
 ## todo ##
 apps/todo/bitmaps.c

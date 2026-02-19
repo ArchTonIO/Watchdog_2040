@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/time_submenus/include/set_alarm_submenu.h"
+#include "apps/time/include/set_alarm.h"
 
 #include <pico/time.h>
 #include <stdbool.h>
@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 #include "apps/text_editor/include/text_editor.h"
-#include "apps/time_submenus/include/time_utils.h"
+#include "apps/time/include/time_utils.h"
 #include "core/components/include/bitmaps.h"
 #include "core/components/include/hw_manager.h"
 #include "core/data_structures/include/string_list.h"
@@ -26,7 +26,7 @@ void alarm_callback();
 
 static void at_change_callback(time_digits *digits) {}
 
-void enter_set_alarm_submenu() {
+void set_alarm_launch() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
   ssd1306_clear(&(drivers->ssd1306));
   if (drivers->internal_rtc.alarm_set) {

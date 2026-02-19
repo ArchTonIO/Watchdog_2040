@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/time_submenus/include/set_date_submenu.h"
+#include "apps/time/include/set_date.h"
 
 #include <pico/time.h>
 #include <stdbool.h>
@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "apps/time_submenus/include/time_utils.h"
+#include "apps/time/include/time_utils.h"
 #include "core/components/include/hw_manager.h"
 #include "core/data_structures/include/string_list.h"
 #include "core/graphics/include/graphic_primitives.h"
@@ -34,7 +34,7 @@ date *date_init(int8_t dotw, int8_t day, int8_t month, int16_t year) {
   return new_date;
 }
 
-void enter_set_date_submenu() {
+void set_date_launch() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
   ssd1306_clear(&(drivers->ssd1306));
   date *actual_date = date_init(drivers->internal_rtc.internal_datetime.dotw,

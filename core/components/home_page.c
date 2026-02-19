@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 #include "apps/msg_manager/include/msg_manager.h"
-#include "apps/time_submenus/include/time_utils.h"
+#include "apps/time/include/time_utils.h"
 #include "core/components/include/bitmaps.h"
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/malloc_mascot.h"

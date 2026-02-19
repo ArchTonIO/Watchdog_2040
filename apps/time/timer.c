@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/time_submenus/include/timer_submenu.h"
+#include "apps/time/include/timer.h"
 
 #include <pico/time.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "apps/time_submenus/include/time_utils.h"
+#include "apps/time/include/time_utils.h"
 #include "core/components/include/hw_manager.h"
 #include "core/data_structures/include/string_list.h"
 #include "core/hardware_drivers/include/haptics.h"
@@ -19,7 +19,7 @@
 void set_timer() {};
 bool start_countdown(time_digits *digits);
 
-void enter_timer_submenu() {
+void timer_launch() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
   ssd1306_clear(&(drivers->ssd1306));
   time_digits *digits = time_digits_init();

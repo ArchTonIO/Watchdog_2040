@@ -14,6 +14,6 @@ typedef struct {
   int16_t year;
 } date;
 
-void enter_set_date_submenu();
+void set_date_launch();
 
 #endif

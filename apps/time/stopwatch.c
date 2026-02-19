@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Antonio Del Cogliano
 
-#include "apps/time_submenus/include/stopwatch_submenu.h"
+#include "apps/time/include/stopwatch.h"
 
 #include <pico/time.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "apps/time_submenus/include/time_utils.h"
+#include "apps/time/include/time_utils.h"
 #include "core/components/include/bitmaps.h"
 #include "core/components/include/hw_manager.h"
 #include "core/data_structures/include/string_list.h"
@@ -54,7 +54,7 @@ void milliseconds_show(milliseconds_digits *digits,
       false);
 }
 
-void enter_stopwatch_submenu() {
+void stopwatch_launch() {
   sleep_ms(TIME_SUBMENUS_INPUT_TIMEOUT * 2);
   ssd1306_clear(&(drivers->ssd1306));
   time_digits *stopwatch_digits = time_digits_init();

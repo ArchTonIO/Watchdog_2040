@@ -18,12 +18,8 @@
 #include "apps/system_submenus/include/system_submenus.h"
 #include "apps/terminal/include/bitmaps.h"
 #include "apps/terminal/include/terminal.h"
-#include "apps/time_submenus/include/bitmaps.h"
-#include "apps/time_submenus/include/set_alarm_submenu.h"
-#include "apps/time_submenus/include/set_date_submenu.h"
-#include "apps/time_submenus/include/set_time_submenu.h"
-#include "apps/time_submenus/include/stopwatch_submenu.h"
-#include "apps/time_submenus/include/timer_submenu.h"
+#include "apps/time/include/bitmaps.h"
+#include "apps/time/include/time.h"
 #include "apps/todo/include/bitmaps.h"
 #include "apps/todo/include/todo.h"
 #include "core/components/include/bitmaps.h"
@@ -44,7 +40,7 @@ void display_notifications_menu();
 
 DEFINE_LAUNCHER(main_launcher,
     "Apps",
-    {"Time", set_time_icon, display_time_menu},
+    {"Time", set_time_icon, time_launch},
     {"Air quality", AQI_icon, display_air_quality_indexes},
     {"Messaging", ulmp_icon, display_ulmp_menu},
     {"Terminal", cli_icon, terminal_launch},
@@ -60,15 +56,6 @@ DEFINE_LAUNCHER(ulmp_launcher,
     {"Read messages", read_messages_icon, read_messages},
     {"Contacts", contacts_icon, enter_contacts_submenu},
     {"Notifications", notifications_icon, display_notifications_menu}, )
-
-DEFINE_LAUNCHER(time_launcher,
-    "Time",
-    {"Set time", set_time_icon, enter_set_time_submenu},
-    {"Set date", set_date_icon, enter_set_date_submenu},
-    {"Set alarm", set_alarm_icon, enter_set_alarm_submenu},
-    {"Unset alarm", unset_alarm_icon, unset_alarm},
-    {"Stopwatch", stopwatch_icon, enter_stopwatch_submenu},
-    {"Timer", timer_icon, enter_timer_submenu})
 
 DEFINE_LAUNCHER(system_launcher,
     "System",
@@ -105,7 +92,7 @@ DEFINE_LAUNCHER(tutorial_launcher,
 
 void display_main_menu() { launcher_start(&main_launcher); }
 void display_ulmp_menu() { launcher_start(&ulmp_launcher); }
-void display_time_menu() { launcher_start(&time_launcher); }
+
 void display_system_menu() { launcher_start(&system_launcher); }
 void display_haptic_menu() { launcher_start(&haptic_launcher); }
 void display_notifications_menu() { launcher_start(&notifications_launcher); }
