@@ -51,5 +51,4 @@ DEFINE_LAUNCHER(tutorial_launcher,
     {"Entry 7", NO_ICON, display_tutorial_page})
 
 void display_main_menu() { launcher_start(&main_launcher); }
-
 void display_tutorial_menu() { launcher_start(&tutorial_launcher); }

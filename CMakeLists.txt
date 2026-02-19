@@ -111,6 +111,7 @@ core/components/home_page.c
 core/components/hw_manager.c
 core/components/malloc_mascot.c
 core/components/sys_paths_manager.c
+core/components/system_launchers.c
 
 ## data structures ##
 core/data_structures/string_list.c
@@ -136,7 +137,6 @@ core/hardware_drivers/sx1278.c
 ## tools ##
 core/tools/crud_list.c
 core/tools/launcher.c
-core/tools/menus.c
 core/tools/options_gen.c
 core/tools/sha_256.c
 
