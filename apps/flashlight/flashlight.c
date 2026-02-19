@@ -19,7 +19,7 @@ void set_flashlight_off() {
   ssd1306_show(&(drivers->ssd1306));
 }
 
-void enter_flashlight_screen() {
+void flashlight_launch() {
   set_flashlight_on();
   bool flashlight_state = false;
   while (true) {
