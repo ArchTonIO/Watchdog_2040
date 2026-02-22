@@ -22,6 +22,8 @@ void generate_parent(path *path);
  * @return A pointer to the initialized path structure.
  */
 path *path_init(const char *abs_path) {
+  if (strlen(abs_path) > MAX_ABS_PATH_LEN)
+    print_sys_error("No path can be longer\nthan 100 characters");
   path *new_path = malloc(sizeof(path));
   if (!new_path)
     return NULL;
@@ -202,11 +204,13 @@ bool path_exists(path *path) {
 }
 
 path *path_concat(path *path_1, path *path_2) {
-  char *path_1_slash = string_add(path_1->abs_path, "/");
-  char *new_abs_path = string_add(path_1_slash, path_2->abs_path);
+  char new_abs_path[MAX_ABS_PATH_LEN];
+  snprintf(new_abs_path,
+      MAX_ABS_PATH_LEN,
+      "%s/%s",
+      path_1->abs_path,
+      path_2->abs_path);
   path *new_path = path_init(new_abs_path);
-  free(new_abs_path);
-  free(path_1_slash);
   return new_path;
 }
 

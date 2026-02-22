@@ -143,11 +143,14 @@ str_list *get_stored_msg_uids_by_user(uint16_t contact_addr) {
   path *conversation_file = path_concat(sys_paths->dirs->messages_path,
       contact_name_file);
   path_free(contact_name_file);
-  char *keys_file_str = string_add(contact_name, ".keys");
+  char keys_file_str[MAX_CONTACT_NAME_LENGTH + strlen(".keys") + 1];
+  snprintf(keys_file_str,
+      MAX_CONTACT_NAME_LENGTH + strlen(".keys") + 1,
+      "%s.keys",
+      contact_name);
   path *keys_file_temp = path_init(keys_file_str);
   path *keys_file = path_concat(sys_paths->dirs->messages_path,
       keys_file_temp);
-  free(keys_file_str);
   path_free(keys_file_temp);
   str_list *keys = path_fread(keys_file);
   str_list *keys_reversed = str_list_reverse(keys);
@@ -159,14 +162,12 @@ str_list *get_stored_msg_uids_by_user(uint16_t contact_addr) {
 }
 
 str_list *get_chunks_by_msg_uids(str_list *msg_uids, uint8_t chunk_size) {
-  uint64_t num_chunks = (msg_uids->len + chunk_size - 1) / chunk_size;
+  uint8_t num_chunks = (msg_uids->len + chunk_size - 1) / chunk_size;
   str_list *chunks = str_list_init();
-  for (uint64_t i = 0; i < num_chunks; i++) {
-    char index_str[7];
-    sprintf(index_str, "%llu", i);
-    char *chunk_index_str = string_add("chunk: ", index_str);
+  for (size_t i = 0; i < num_chunks; i++) {
+    char chunk_index_str[strlen("chunk: ") + 6];
+    snprintf(chunk_index_str, strlen("chunk: ") + 6, "chunk: %d", i);
     str_list_append(chunks, chunk_index_str);
-    free(chunk_index_str);
   }
   return chunks;
 }

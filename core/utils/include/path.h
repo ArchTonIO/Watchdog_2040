@@ -10,6 +10,8 @@
 
 typedef struct path path;
 
+#define MAX_ABS_PATH_LEN 100
+
 struct path {
   char *abs_path;  /**< The full path of this file or directory */
   char *full_name; /**< The full name of this file or directory, including

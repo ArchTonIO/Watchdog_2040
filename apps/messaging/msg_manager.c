@@ -311,13 +311,15 @@ uint16_t choose_from_online_contacts() {
     print_loading(print_str);
     uint8_t signal_strength = lora_ping(addr);
     if (signal_strength != 0) {
-      char str_buf[10];
       char bar_buf[6];
       make_bar(signal_strength, bar_buf);
-      sprintf(str_buf, "[%s] ", bar_buf);
-      char *option = string_add(str_buf, str_list_get(contacts, i));
+      char option[10 + MAX_CONTACT_NAME_LENGTH + 1];
+      snprintf(option,
+          10 + MAX_CONTACT_NAME_LENGTH + 1,
+          "[%s] %s",
+          bar_buf,
+          str_list_get(contacts, i));
       str_list_append(results, option);
-      free(option);
     }
     sleep_ms(10);
   }

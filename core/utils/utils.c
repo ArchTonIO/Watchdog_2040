@@ -16,6 +16,7 @@
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/malloc_mascot.h"
 #include "core/data_structures/include/string_list.h"
+#include "core/hardware_drivers/include/joystick.h"
 #include "core/hardware_drivers/include/ssd1306.h"
 #include "core/tools/include/sha_256.h"
 
@@ -69,9 +70,12 @@ void print_log(const char *message, uint16_t persistency, bool autoclear) {
  * @param message The message to print.
  */
 void print_info(const char *message) {
-  char *to_print = string_add("[INFO]\n_______\n", message);
+  char to_print[MAX_X_CHARS * MAX_Y_CHARS];
+  snprintf(to_print,
+      MAX_X_CHARS * MAX_Y_CHARS,
+      "[INFO]\n_______\n%s",
+      message);
   print_log(to_print, 2000, true);
-  free(to_print);
 }
 
 /**
@@ -80,9 +84,16 @@ void print_info(const char *message) {
  * @param message The message to print.
  */
 void print_usr_error(const char *message) {
-  char *to_print = string_add("[USER ERROR]\n_______\n", message);
-  print_log(to_print, 2000, true);
-  free(to_print);
+  sleep_ms(200);
+  char to_print[MAX_X_CHARS * MAX_Y_CHARS];
+  snprintf(to_print,
+      MAX_X_CHARS * MAX_Y_CHARS,
+      "[USER ERROR]\n_______\n%s\nPress to continue ->",
+      message);
+  print_log(to_print, 0, false);
+  joystick_update(&(drivers->joystick));
+  while (!(drivers->joystick).button_pressed)
+    joystick_update(&(drivers->joystick));
 }
 
 /**
@@ -91,9 +102,12 @@ void print_usr_error(const char *message) {
  * @param message The message to print.
  */
 void print_sys_error(const char *message) {
-  char *to_print = string_add("[SYSTEM ERROR]\n_______\n", message);
+  char to_print[MAX_X_CHARS * MAX_Y_CHARS];
+  snprintf(to_print,
+      MAX_X_CHARS * MAX_Y_CHARS,
+      "[SYSTEM ERROR]\n_______\n%s",
+      message);
   print_log(to_print, 2000, true);
-  free(to_print);
 }
 
 /**
@@ -102,9 +116,12 @@ void print_sys_error(const char *message) {
  * @param message The message to print.
  */
 void print_debug(const char *message) {
-  char *to_print = string_add("[DEBUG]\n_______\n", message);
+  char to_print[MAX_X_CHARS * MAX_Y_CHARS];
+  snprintf(to_print,
+      MAX_X_CHARS * MAX_Y_CHARS,
+      "[DEBUG]\n_______\n%s",
+      message);
   print_log(to_print, 2000, true);
-  free(to_print);
 }
 
 /**
@@ -113,31 +130,12 @@ void print_debug(const char *message) {
  * @param message The message to print.
  */
 void print_loading(const char *message) {
-  char *to_print = string_add("[LOADING]\n_______\n", message);
+  char to_print[MAX_X_CHARS * MAX_Y_CHARS];
+  snprintf(to_print,
+      MAX_X_CHARS * MAX_Y_CHARS,
+      "[LOADING]\n_______\n%s",
+      message);
   print_log(to_print, 0, false);
-  free(to_print);
-}
-
-/**
- * @brief Concatenates two strings.
- *
- * @param str1 The first string.
- * @param str2 The second string.
- * @return A new string that is the concatenation of str1 and str2, or NULL on
- * failure.
- */
-char *string_add(const char *str1, const char *str2) {
-  size_t len1 = strlen(str1);
-  size_t len2 = strlen(str2);
-  char *result = malloc(len1 + len2 + 1);
-  if (!result)
-    return NULL;
-  for (size_t i = 0; i < len1; ++i)
-    result[i] = str1[i];
-  for (size_t i = 0; i < len2; ++i)
-    result[len1 + i] = str2[i];
-  result[len1 + len2] = '\0';
-  return result;
 }
 
 uint16_t array_find_max(uint16_t *array, size_t len) {

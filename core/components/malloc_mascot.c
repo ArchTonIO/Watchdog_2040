@@ -10,6 +10,7 @@
 
 #include "pico/rand.h"
 
+#include "apps/pwd_manager/include/pwd_manager.h"
 #include "apps/text_editor/include/text_editor.h"
 #include "apps/virtual_keyboard/virtual_keyboard.h"
 #include "core/components/include/bitmaps.h"
@@ -892,11 +893,13 @@ malloc_memories *load_malloc_memories_from_sd() {
   path_free(user_file);
 
   /* loading of the user folder */
-  char *user_folder_dir_str = string_add(HOME_DIR, "/");
-  char *user_dir = string_add(user_folder_dir_str, username);
-  strcpy(memories->user_folder, user_dir);
-  free(user_folder_dir_str);
-  free(user_dir);
+  char user_folder[strlen(HOME_DIR) + MAX_USERNAME_LENGTH + 3];
+  snprintf(user_folder,
+      strlen(HOME_DIR) + MAX_USERNAME_LENGTH + 2,
+      "%s/%s",
+      HOME_DIR,
+      username);
+  strcpy(memories->user_folder, user_folder);
 
   /* building of malloc_memories file path */
   path *user_path = path_init(memories->user_folder);

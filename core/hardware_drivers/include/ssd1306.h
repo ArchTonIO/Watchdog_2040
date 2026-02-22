@@ -41,7 +41,7 @@ extern const uint8_t ssd1306_font6x8[];
 #define MIN_BRIGHTNESS 0X01
 
 #define MAX_PHOTORESISTOR_ADC_VALUE 2000
-#define MIN_PHOTORESISTOR_ADC_VALUE 15
+#define MIN_PHOTORESISTOR_ADC_VALUE 1
 /*the width of the photoresistor adc step that triggers the upper or lower
  * brightness level*/
 #define BRIGHTNESS_STEP_WIDTH                                                 \

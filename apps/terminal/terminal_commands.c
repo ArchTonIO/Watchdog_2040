@@ -721,9 +721,9 @@ int8_t __ser__(command_params params) {
     printf("%s", params.term->prefix);
     fgets(buf, sizeof(buf), stdin);
     char *buf_no_lfd = string_remove_linefeed(buf);
-    char *buf_w_prefix = string_add(params.term->prefix, buf_no_lfd);
+    char buf_w_prefix[100];
+    snprintf(buf_w_prefix, 100, "%s%s", params.term->prefix, buf_no_lfd);
     ret = dispatch_command(params.term, buf_w_prefix);
-    free(buf_w_prefix);
     free(buf_no_lfd);
     terminal_update_prefix(params.term);
     if (ret == -1) {

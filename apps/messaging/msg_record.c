@@ -68,12 +68,15 @@ void msg_record_dump(msg_record *record) {
   path *conversation_file = path_concat(sys_paths->dirs->messages_path,
       contact_file);
   path_free(contact_file);
-  char *keys_file_str = string_add(record->contact_name, ".keys");
+  char keys_file_str[MAX_CONTACT_NAME_LENGTH + strlen(".keys") + 1];
+  snprintf(keys_file_str,
+      MAX_CONTACT_NAME_LENGTH + strlen(".keys") + 1,
+      "%s.keys",
+      record->contact_name);
   path *keys_file_temp = path_init(keys_file_str);
   path *keys_file = path_concat(sys_paths->dirs->messages_path,
       keys_file_temp);
   path_free(keys_file_temp);
-  free(keys_file_str);
   path_ftouch(conversation_file);
   size_t payload_size = (strlen(record->contact_name) +
                          strlen(record->direction) +
@@ -90,9 +93,9 @@ void msg_record_dump(msg_record *record) {
       record->status_str,
       record->timestamp,
       record->message);
-  char *data = string_add(record->record_uid, "\n");
+  char data[RECORD_UID_LENGTH + 2];
+  snprintf(data, RECORD_UID_LENGTH + 2, "%s\n", record->record_uid);
   path_fwrite(keys_file, data, 'a');
-  free(data);
   path_key_value_dump(conversation_file, 'a', record->record_uid, payload);
   path_free(conversation_file);
   path_free(keys_file);

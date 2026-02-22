@@ -29,7 +29,6 @@ uint16_t array_find_max(uint16_t *array, size_t len);
 uint16_t array_find_min(uint16_t *array, size_t len);
 
 /*Strings helpers*/
-char *string_add(const char *str1, const char *str2);
 bool is_string_numeric(const char *str);
 bool is_string_alphanumeric(const char *str);
 bool is_string_alpha(const char *str);
