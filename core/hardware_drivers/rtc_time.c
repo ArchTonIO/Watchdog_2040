@@ -94,8 +94,6 @@ void rtc_time_load_time_from_external_rtc(internal_rtc_t *rtc,
     ds3231_rtc_t *external_rtc) {
   ds3231_datetime_t ds3231_time;
   ds3231_get_datetime(&ds3231_time, external_rtc);
-  printf("LOADING TIME FROM EXTERNAL_RTC\n");
-  printf("%d", ds3231_time.hour);
   datetime_t t = {.year = ds3231_time.year,
       .month = ds3231_time.month,
       .day = ds3231_time.day,

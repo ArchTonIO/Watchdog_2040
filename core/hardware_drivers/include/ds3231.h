@@ -50,7 +50,7 @@ typedef struct ds3231_rtc {
 } ds3231_rtc_t;
 
 static const char *DS3231_WDAYS[7] =
-    {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+    {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
 static const char *DS3231_MONTHS[12] = {"Jan",
     "Feb",

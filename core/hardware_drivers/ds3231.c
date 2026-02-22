@@ -121,7 +121,10 @@ void ds3231_get_datetime(ds3231_datetime_t *dt, ds3231_rtc_t *rtc) {
   /* Day of the week (1~7) */
   val = buffer[3];
   // Bits 2-0 are day of the week
+
   dt->dotw = val & 0x07;
+  if (dt->dotw > 6)
+    dt->dotw = 0;
 
   /* Date (day 1~31) */
   val = buffer[4];
