@@ -90,17 +90,18 @@ void edit_service_credentials(crud_list *list, const char *service_name) {
   encrypted_password_as_uint[password_len] = '\0';
 
   size_t text_len = (strlen(username) + password_len +
-                     strlen("Username: Password: ") + 3);
+                     strlen("Username: Password: ") + 4);
   char text[text_len];
   snprintf(text,
       text_len,
-      "Username: %s\nPassword: %s",
+      "Username: %s\n\nPassword: %s",
       username,
       (char *)encrypted_password_as_uint);
   text_editor *credentials_editor = text_editor_launch(text, false);
   char *buf = text_editor_get_buf(credentials_editor);
 
   str_list *editor_buf = string_split(buf, '\n');
+  str_list_print(editor_buf);
   str_list *username_buf = string_split(str_list_get(editor_buf, 0), ' ');
   str_list *password_buf = string_split(str_list_get(editor_buf, 1), ' ');
 
@@ -223,6 +224,15 @@ void register_new_service(crud_list *list) {
     print_usr_error("Password too long!\nMax length is 32 char");
     return;
   }
+
+  if (strstr(password, " ")) {
+    free(service_name);
+    free(username);
+    free(password);
+    print_usr_error("Blank spaces \nnot allowed !");
+    return;
+  }
+
   encrypt_and_save_credentials(list, service_name, username, password);
   free(service_name);
   free(username);

@@ -9,12 +9,15 @@
 #include "core/utils/include/path.h"
 #include "ff.h"
 
+#define MAX_BUF_LEN 200
+#define MAX_FILENAME_LEN 100
+
 typedef struct {
   FRESULT fr;
   FATFS fs;
   FIL fil;
-  char buf[100];
-  char filename[100];
+  char buf[MAX_BUF_LEN];
+  char filename[MAX_FILENAME_LEN];
   int ret;
   bool is_working;
 } sdcard_t;

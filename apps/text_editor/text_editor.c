@@ -233,7 +233,10 @@ void handle_normal_char(text_editor *editor, char last_char) {
 }
 
 void handle_newline(text_editor *editor) {
-  editor->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] = '\n';
+  if (editor->logic_cursor_col != 0) {
+    editor
+        ->logic_buf[editor->logic_cursor_row][editor->logic_cursor_col] = '\n';
+  }
   editor->logic_cursor_col = 0;
   editor->video_cursor_col = 0;
   editor->logic_cursor_row++;

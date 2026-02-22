@@ -16,3 +16,5 @@
 - [solved]   - bug15 - memory leak when setting alarm (it is not a leak, the alarm message is stored in a static char)
 - [solved]   - bug16 - alarm does not fires if clock speed is reduced during standby (looks like it does works)
 - [solved]   - bug17 - after sx1278 goes to sleep it does not work when set to rx mode (sx1278 needs to be re-initialized)
+- [solved]   - bug18 - passwords longer than 15 characters breaks password manager (was the sdcard buffer size in sdcard_write_file that was splitting the same line across multiple lines)
+- [solved]   - bug19 - when inserting a newline character in text editor it will sometime delete a character and put an empty space instead of it, always happening when a word is wrapped between two lines (it needed a condition on the logical row)

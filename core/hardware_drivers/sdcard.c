@@ -11,6 +11,7 @@
 #include "core/components/include/sys_paths_manager.h"
 #include "core/data_structures/include/string_list.h"
 #include "core/utils/include/path.h"
+#include "core/utils/include/utils.h"
 #include "ff.h"
 #include "sd_card.h"
 
@@ -33,6 +34,23 @@ bool sdcard_mount(sdcard_t *sd) {
 
 void sdcard_unmount(sdcard_t *sd) { f_unmount("0:"); }
 
+bool has_line_longer_than(const char *s, size_t max_length) {
+  size_t count = 0;
+
+  while (*s) {
+    if (*s == '\n') {
+      count = 0;
+    } else {
+      count++;
+      if (count > max_length)
+        return true;
+    }
+    s++;
+  }
+
+  return false;
+}
+
 /**
  * @brief Write content to a file on the SD card.
  * @param sd The sdcard instance
@@ -47,6 +65,11 @@ bool sdcard_write_file(sdcard_t *sd,
     char mode) {
   if (file->is_dir) {
     printf("ERROR: Cannot write to a directory (%s)\r\n", file->abs_path);
+    return false;
+  }
+  if (has_line_longer_than(content, MAX_BUF_LEN - 6)) {
+    print_usr_error("It is not possible\nto write above 194\nconsecutive "
+                    "symbols\nwithout breaking\nthem with an enter");
     return false;
   }
   if (mode == 'w')
