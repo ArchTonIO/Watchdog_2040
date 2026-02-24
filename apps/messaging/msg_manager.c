@@ -27,6 +27,8 @@
 msg_manager *msg_man_inst;
 
 void notify(uint16_t src_address);
+void send(uint16_t dest_addr);
+void answer();
 char *compose_message();
 void display_sent_message_status(uint8_t result, uint16_t dest_addr);
 void update_conversation_file(uint16_t contact_addr,
@@ -50,7 +52,7 @@ char *get_displayable_msg_by_uid(uint16_t contact_addr, char *msg_uid);
  */
 msg_manager *msg_manager_init(uint16_t my_addr) {
   if (my_addr == 0) {
-    printf("[MSG MANAGER] (ERR): the ulcp address of a device cannot be 0\n");
+    printf("[MSG MANAGER] (ERR): the ULMP address of a device cannot be 0\n");
     return NULL;
   }
   msg_manager *msg_man = (msg_manager *)malloc(sizeof(msg_manager));
@@ -59,6 +61,8 @@ msg_manager *msg_manager_init(uint16_t my_addr) {
   msg_man->received_msgs_count = 0;
   msg_man->ulmp_impl = lora_init(my_addr, drivers->sx1278);
   msg_man->conversation_updates_count = 0;
+  msg_man->answer_addr = 0;
+  msg_man->awaiting_answer = false;
   lora_receive();
   contacts_list_init();
   str_list *contacts = get_all_contacts();
@@ -66,6 +70,11 @@ msg_manager *msg_manager_init(uint16_t my_addr) {
   str_list_free(contacts);
   msg_man_inst = msg_man;
   return msg_man;
+}
+
+void process_answer() {
+  if (msg_man_inst->awaiting_answer)
+    answer();
 }
 
 /**
@@ -155,7 +164,19 @@ void send_message_status_update_callback(uint8_t progress) {
  * @brief Sends a message to a selected contact.
  */
 void send_message() {
+  uint16_t dest_addr = choose_from_contacts();
+  send(dest_addr);
+}
+
+/**
+ * @brief Scans for online contacts and sends a message to the selected one.
+ */
+void scan_and_send_message() {
   uint16_t dest_addr = choose_from_online_contacts();
+  send(dest_addr);
+}
+
+void send(uint16_t dest_addr) {
   if (dest_addr == 0) {
     ssd1306_clear(&(drivers->ssd1306));
     ssd1306_show(&(drivers->ssd1306));
@@ -198,6 +219,21 @@ void notify(uint16_t src_address) {
   display_received_message(name, src_address);
   ssd1306_release_mutex(&(drivers->ssd1306));
   free(name);
+}
+
+/**
+ * @brief answer to the message notification.
+ */
+void answer() {
+  str_list *yesno = str_list_init();
+  str_list_append(yesno, "yes");
+  str_list_append(yesno, "no");
+  options_page *yesno_page = options_page_init("Answer now?", yesno);
+  char *res = options_page_launch(yesno_page);
+  if (strcmp(res, "yes") == 0)
+    send(msg_man_inst->answer_addr);
+  options_page_free(yesno_page);
+  msg_man_inst->awaiting_answer = false;
 }
 
 char *compose_message() {
@@ -269,6 +305,7 @@ void display_received_message(char *name, uint16_t src_address) {
     joystick_update(&(drivers->joystick));
     sleep_ms(100);
     if (joystick_get_direction(&(drivers->joystick)) == E) {
+      joystick_update(&(drivers->joystick));
       text_editor *editor = text_editor_launch(
           msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
           false);
@@ -279,6 +316,8 @@ void display_received_message(char *name, uint16_t src_address) {
           .message = strdup(msg_man_inst->ulmp_impl->rx->recv_payloads_buf),
           .status = 4});
       msg_man_inst->received_msgs_count--;
+      msg_man_inst->awaiting_answer = true;
+      msg_man_inst->answer_addr = src_address;
       free(text);
       lora_reset_recv_buffer();
       return;
@@ -338,32 +377,25 @@ uint16_t choose_from_online_contacts() {
   return address;
 }
 
+uint16_t choose_from_contacts() {
+  str_list *contacts = get_all_contacts();
+  options_page *contacts_page = options_page_init("Choose contact", contacts);
+  char *name = options_page_launch(contacts_page);
+  if (strcmp(name, "") == 0) {
+    options_page_free(contacts_page);
+    return 0;
+  }
+  uint16_t addr = get_contact_addr_by_name(name);
+  options_page_free(contacts_page);
+  return addr;
+}
+
 void enable_message_notifications() {
   msg_man_inst->should_notify = true;
-  ssd1306_clear(&(drivers->ssd1306));
-  ssd1306_print(&(drivers->ssd1306),
-      "Notifications\n"
-      "enabled",
-      0,
-      0,
-      false);
-  ssd1306_show(&(drivers->ssd1306));
-  sleep_ms(INFO_PAGES_TIMEOUT);
-  ssd1306_clear(&(drivers->ssd1306));
-  ssd1306_show(&(drivers->ssd1306));
+  print_info("Notifications enabled");
 }
 
 void disable_message_notifications() {
   msg_man_inst->should_notify = false;
-  ssd1306_clear(&(drivers->ssd1306));
-  ssd1306_print(&(drivers->ssd1306),
-      "Notifications\n"
-      "disabled",
-      0,
-      0,
-      false);
-  ssd1306_show(&(drivers->ssd1306));
-  sleep_ms(INFO_PAGES_TIMEOUT);
-  ssd1306_clear(&(drivers->ssd1306));
-  ssd1306_show(&(drivers->ssd1306));
+  print_info("Notifications disabled");
 }

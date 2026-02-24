@@ -74,6 +74,7 @@ void sys_mainloop() {
       sys_idle();
     joystick_update(&(drivers->joystick));
     update_conversations();
+    process_answer();
     haptic_short_pulse();
     first_run = false;
     screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
@@ -81,6 +82,7 @@ void sys_mainloop() {
       check_peripherals();
       process_system_state();
       update_conversations();
+      process_answer();
       display_home_page();
       joystick_update(&(drivers->joystick));
       if ((drivers->joystick).button_pressed)

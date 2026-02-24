@@ -45,7 +45,7 @@
 #define REG_OCP_ON (1 << 5)
 #define OCP_TRIM(x) ((x) & 0x1F)
 
-#define FXOSC = 32000000.0
+#define FXOSC 32000000.0
 
 #include <stdbool.h>
 

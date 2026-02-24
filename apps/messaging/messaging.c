@@ -10,6 +10,7 @@ DEFINE_LAUNCHER(messaging_launcher,
     {"Send message", send_msg_icon, send_message},
     {"Read messages", read_messages_icon, read_messages},
     {"Contacts", contacts_icon, contacts_menu_launch},
+    {"Scan", scan_contacts_icon, scan_and_send_message},
     {"Notifications", notifications_icon, notifications_menu_launch}, )
 
 DEFINE_LAUNCHER(notifications_launcher,

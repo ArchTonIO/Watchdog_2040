@@ -10,11 +10,11 @@
 #define MAX_ULMP_ADDR 65535
 
 typedef struct {
-  char username[15];
-  char user_folder[20];
+  char username[32];
+  char user_folder[64];
   uint32_t ulmp_addr;
   char ulmp_addr_str[6];
-  char user_password[20];
+  char user_password[32];
   char user_password_hashed[65];
 } malloc_memories;
 
