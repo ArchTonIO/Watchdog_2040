@@ -7,7 +7,10 @@
 #include <stdint.h>
 
 // system bitmaps
-extern const uint8_t battery_empty[];
+extern const uint8_t no_battery[];
+extern const uint8_t battery_low[];
+extern const uint8_t charging[];
+extern const uint8_t charging_complete[];
 extern const uint8_t battery_1_bar[];
 extern const uint8_t battery_2_bars[];
 extern const uint8_t battery_3_bars[];

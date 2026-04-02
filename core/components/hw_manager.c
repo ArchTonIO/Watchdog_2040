@@ -80,13 +80,20 @@ hw_drivers *hardware_drivers_init() {
   else
     core1_push_instruction(SX1278_ERR);
 
+  mcp73871_t mcp73871;
+  mcp73871_init(&mcp73871,
+      MCP73871_PG_PIN,
+      MCP73871_STAT1_PIN,
+      MCP73871_STAT2_PIN);
+
   battery_t battery;
   battery_init(&battery,
       ADC_MAX_VALUE,
       BATTERY_MIN_VOLTAGE,
       BATTERY_MAX_VOLTAGE,
       BATTERY_PIN,
-      ADC_CHANNEL);
+      ADC_CHANNEL,
+      mcp73871);
   hw_man->battery = battery;
   if (hw_man->battery.is_working)
     core1_push_instruction(BATTERY_OK);

@@ -68,12 +68,27 @@ void check_peripherals() {
 
 void process_system_state() {
   home_page_inst->battery_level = battery_get_percentage(&(drivers->battery));
+  home_page_inst->battery_status = battery_get_status(&(drivers->battery));
   home_page_inst->alarm_set = drivers->internal_rtc.alarm_set;
   home_page_inst->aqi = ens160_read_aqi(&(drivers->ens160));
   home_page_inst->notifications = msg_man_inst->received_msgs_count;
 }
 
 const uint8_t *get_battery_level_bitmap() {
+  if ((&(drivers->battery))->mcp73871.pg_state) {
+    switch (home_page_inst->battery_status) {
+    case UNDEFINED:
+      return no_battery;
+    case MCP_FAULT:
+      return no_battery;
+    case NO_BATTERY:
+      return no_battery;
+    case CHARGING:
+      return charging;
+    case CHARGE_COMPLETE:
+      return charging_complete;
+    }
+  }
   if (home_page_inst->battery_level >= 75) {
     return battery_4_bars;
   } else if (home_page_inst->battery_level >= 50) {
@@ -83,7 +98,7 @@ const uint8_t *get_battery_level_bitmap() {
   } else if (home_page_inst->battery_level >= 10) {
     return battery_1_bar;
   } else {
-    return battery_empty;
+    return battery_low;
   }
 }
 

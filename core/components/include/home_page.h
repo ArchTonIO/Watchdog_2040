@@ -22,6 +22,7 @@ typedef struct {
 typedef struct {
   char *timedate;
   uint8_t battery_level;
+  uint8_t battery_status;
   bool sd_status;
   bool sx1278_status;
   bool en160_status;

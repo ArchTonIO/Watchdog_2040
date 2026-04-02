@@ -86,5 +86,11 @@ lib/no-Os-FatFS-SD-SPI-RPi-Pico/FatFs_SPI/sd_driver/hw_config.c*/
   29 // there is nothing connected to this pin, cause 29 is directly connected
      // to vsys, and thus to the battery
 #define ADC_CHANNEL 3
+#define MCP73871_PG_PIN 11
+#define MCP73871_STAT1_PIN 9
+#define MCP73871_STAT2_PIN 10
+
+/*flashlight led*/
+#define FLASH_LED_PIN 20
 
 #endif

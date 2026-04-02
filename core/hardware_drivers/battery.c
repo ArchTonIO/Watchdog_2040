@@ -3,6 +3,7 @@
 
 #include "include/battery.h"
 
+#include <hardware/gpio.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +41,8 @@ void battery_init(battery_t *battery,
     float min_voltage,
     float max_voltage,
     pin battery_control_pin,
-    uint8_t adc_channel) {
+    uint8_t adc_channel,
+    mcp73871_t mcp73871) {
   battery->adc_max_value = adc_max_value;
   battery->min_voltage = min_voltage;
   battery->max_voltage = max_voltage;
@@ -50,6 +52,8 @@ void battery_init(battery_t *battery,
   battery->battery_voltage_str = (char *)malloc(sizeof(char) * 6);
   battery->battery_crude_adc_str = (char *)malloc(sizeof(char) * 5);
   adc_gpio_init(battery_control_pin);
+  battery->mcp73871 = mcp73871;
+  battery->status = UNDEFINED;
   battery->is_working = battery_is_working(battery);
 }
 
@@ -141,4 +145,57 @@ bool battery_is_working(battery_t *bat) {
       battery_get_voltage(bat) > bat->max_voltage)
     return false;
   return true;
+}
+
+void mcp73871_init(mcp73871_t *mcp73871, pin pg, pin stat1, pin stat2) {
+  mcp73871->pg = pg;
+  mcp73871->stat1 = stat1;
+  mcp73871->stat2 = stat2;
+  gpio_init(pg);
+  gpio_pull_up(pg);
+  gpio_set_dir(pg, GPIO_IN);
+
+  gpio_init(stat1);
+  gpio_pull_up(stat1);
+  gpio_set_dir(stat1, GPIO_IN);
+
+  gpio_init(stat2);
+  gpio_pull_up(stat2);
+  gpio_set_dir(stat2, GPIO_IN);
+}
+
+void mcp73871_update_status(mcp73871_t *mcp73871) {
+  mcp73871->pg_state = !gpio_get(mcp73871->pg);
+  mcp73871->stat1_state = !gpio_get(mcp73871->stat1);
+  mcp73871->stat2_state = !gpio_get(mcp73871->stat2);
+}
+
+uint8_t battery_get_status(battery_t *bat) {
+  mcp73871_update_status(&(bat->mcp73871));
+  if (!bat->mcp73871.stat1_state && !bat->mcp73871.stat2_state)
+    return NO_BATTERY;
+  if (!bat->mcp73871.stat1_state && bat->mcp73871.stat2_state)
+    return MCP_FAULT;
+  if (bat->mcp73871.stat1_state && !bat->mcp73871.stat2_state)
+    return CHARGE_COMPLETE;
+  if (bat->mcp73871.stat1_state && bat->mcp73871.stat2_state)
+    return CHARGING;
+  return UNDEFINED;
+}
+
+char *battery_status_to_str(uint8_t status) {
+  switch (status) {
+  case UNDEFINED:
+    return "undefined";
+  case MCP_FAULT:
+    return "mcp fault";
+  case NO_BATTERY:
+    return "no battery";
+  case CHARGING:
+    return "charging";
+  case CHARGE_COMPLETE:
+    return "charg complete";
+  default:
+    return "n/a";
+  }
 }
