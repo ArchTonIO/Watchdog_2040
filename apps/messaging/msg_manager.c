@@ -234,6 +234,7 @@ void answer() {
     send(msg_man_inst->answer_addr);
   options_page_free(yesno_page);
   msg_man_inst->awaiting_answer = false;
+  ssd1306_clear(&(drivers->ssd1306));
 }
 
 char *compose_message() {
@@ -305,7 +306,6 @@ void display_received_message(char *name, uint16_t src_address) {
     joystick_update(&(drivers->joystick));
     sleep_ms(100);
     if (joystick_get_direction(&(drivers->joystick)) == E) {
-      joystick_update(&(drivers->joystick));
       text_editor *editor = text_editor_launch(
           msg_man_inst->ulmp_impl->rx->recv_payloads_buf,
           false);
