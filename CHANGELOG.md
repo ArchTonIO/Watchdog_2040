@@ -6,6 +6,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## leakybob [1.42.0]
+
+### Added
+
+- External RTC (DS3231) and CMOS battery, now time never gets lost at reboots
+- Brightness of the oled screen is automatically adjusted by using a photoresistor
+- Fast response for incoming messages
+- Proper battery management with MCP73871, removed the necessity for an additional charging port and external charger, the battery charges via the USB-C port
+- Led flashlight
+- Reboot to bootsel directly into system app options
+- Shortcut to enter serial CLI
+- Settings to enable/disable auto screen brightness and haptic feedback, brightness can be manually set.
+
+### Fixed
+
+- System is more stable duo to less use of heap memory, malloc and free operations
+- MicroSD baud rate cranked up so use of i/o heavy apps feels more fluid
+- bug 18, bug 19 (password manager and text editor bugs, read buglist.txt for details)
+
+### Changed
+
+- Launchers are more neatly grouped, improving usability.
+- ULMP app renamed to messaging
+- Automatic online scan at messaging time removed due to long waiting time
+- Online contacts scan option is back
+
 ## leakybob [1.34.0]
 
 ### Added
