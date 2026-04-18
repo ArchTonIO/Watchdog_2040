@@ -172,14 +172,19 @@ void mcp73871_update_status(mcp73871_t *mcp73871) {
 
 uint8_t battery_get_status(battery_t *bat) {
   mcp73871_update_status(&(bat->mcp73871));
-  if (!bat->mcp73871.stat1_state && !bat->mcp73871.stat2_state)
+  bool s1 = bat->mcp73871.stat1_state;
+  bool s2 = bat->mcp73871.stat2_state;
+  bool pg = bat->mcp73871.pg_state;
+
+  if (!s1 && !s2 && pg)
     return NO_BATTERY;
-  if (!bat->mcp73871.stat1_state && bat->mcp73871.stat2_state)
-    return MCP_FAULT;
-  if (bat->mcp73871.stat1_state && !bat->mcp73871.stat2_state)
-    return CHARGE_COMPLETE;
-  if (bat->mcp73871.stat1_state && bat->mcp73871.stat2_state)
+  if (s1 && !s2 && pg)
     return CHARGING;
+  if (!s1 && s2 && pg)
+    return CHARGE_COMPLETE;
+  if (s1 && s2 && pg)
+    return MCP_FAULT;
+
   return UNDEFINED;
 }
 
