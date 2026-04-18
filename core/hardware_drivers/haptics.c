@@ -12,7 +12,6 @@
 
 #include "core/hardware_drivers/include/core1.h"
 #include "core/hardware_drivers/include/haptics.h"
-#include "core/utils/include/utils.h"
 #include "hardware/gpio.h"
 
 volatile uint8_t performing_core = 1;
@@ -112,20 +111,8 @@ void haptic_double_pulse() {
                        : haptic_pulse(DOUBLE_PULSE);
 }
 
-void haptic_disable() {
-  if (!is_haptic_enabled) {
-    print_usr_error("Haptic already\ndisabled !");
-    return;
-  }
-  is_haptic_enabled = false;
-  print_info("Haptic disabled !");
-}
+inline void haptics_disable() { is_haptic_enabled = false; }
 
-void haptic_enable() {
-  if (is_haptic_enabled) {
-    print_usr_error("Haptic already\nenabled !");
-    return;
-  }
-  is_haptic_enabled = true;
-  print_info("Haptic enabled !");
-}
+inline void haptics_enable() { is_haptic_enabled = true; }
+
+inline bool haptics_get_status() { return is_haptic_enabled; }

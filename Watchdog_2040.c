@@ -63,6 +63,7 @@ void sys_setup() {
     end_loading_screen();
   attach_background_routines();
   check_peripherals();
+  load_config();
 }
 
 void sys_mainloop() {

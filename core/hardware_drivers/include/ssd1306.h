@@ -74,6 +74,7 @@ typedef struct {
   mutex_t mutex;
   photoresistor_t photoresistor;
   bool auto_brightness;
+  uint8_t current_brightness;
 } ssd1306_t;
 
 void ssd1306_init(ssd1306_t *display,
@@ -84,6 +85,8 @@ void ssd1306_init(ssd1306_t *display,
     uint8_t width,
     uint8_t height,
     uint8_t SID);
+void ssd1306_enable_auto_brightness(ssd1306_t *display);
+void ssd1306_disable_auto_brightness(ssd1306_t *display);
 void ssd1306_set_brightness(ssd1306_t *display, uint8_t level);
 void ssd1306_auto_adjust_brightness(ssd1306_t *display);
 void ssd1306_draw_pixel(ssd1306_t *display, int16_t x, int16_t y, int color);

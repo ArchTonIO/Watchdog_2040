@@ -4,6 +4,7 @@
 #ifndef HAPTICS_H
 #define HAPTICS_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "config.h"
@@ -21,7 +22,8 @@ void haptic_long_pulse();
 void haptic_double_pulse();
 void haptic_pulse(uint8_t pulse_type);
 void haptics_switch_performing_core();
-void haptic_disable();
-void haptic_enable();
+bool haptics_get_status();
+void haptics_disable();
+void haptics_enable();
 
 #endif

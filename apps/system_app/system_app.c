@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "pico/bootrom.h"
+#include "pico/unique_id.h"
 
 #include "apps/system_app/include/bitmaps.h"
 #include "core/components/include/hw_manager.h"
@@ -15,6 +16,7 @@
 #include "core/data_structures/include/string_list.h"
 #include "core/graphics/include/graphic_primitives.h"
 #include "core/hardware_drivers/include/battery.h"
+#include "core/hardware_drivers/include/haptics.h"
 #include "core/hardware_drivers/include/joystick.h"
 #include "core/hardware_drivers/include/ssd1306.h"
 #include "core/tools/include/launcher.h"
@@ -24,14 +26,139 @@
 #include "device.h"
 #include "hardware/watchdog.h"
 
+static bool haptics = true;
+
+void system_settings_launch();
+
 DEFINE_LAUNCHER(system_app_launcher,
     "System",
     {"Reboot system", reboot_icon, display_reboot_screen},
     {"Bootsel", bootsel_icon, display_reboot_to_bootsel_screen},
+    {"System settings", system_settings_icon, system_settings_launch},
     {"System info", system_info_icon, display_system_info_wrapped},
     {"Battery status", battery_status_icon, display_battery_status},
     {"Check joystick", check_joystick_icon, display_joystick_check},
     {"System reset", reset_icon, reset_system})
+
+char *auto_brightness_onoff_flag(char *input) {
+  char *new_str;
+  if (strstr(input, "[ON]") != NULL) {
+    new_str = string_substring_replace(input, "[ON]", "[OFF]");
+    ssd1306_disable_auto_brightness(&(drivers->ssd1306));
+  } else {
+    new_str = string_substring_replace(input, "[OFF]", "[ON]");
+    ssd1306_enable_auto_brightness(&(drivers->ssd1306));
+  }
+  return new_str;
+}
+
+void system_settings_dump(system_settings_t settings) {
+  path_key_value_dump(sys_paths->files->config_file,
+      'w',
+      "auto_brightness",
+      drivers->ssd1306.auto_brightness ? "on" : "off");
+  char brightness_str[4];
+  snprintf(brightness_str, 4, "%d", settings.brightness_level);
+  path_key_value_dump(sys_paths->files->config_file,
+      'a',
+      "brightness",
+      brightness_str);
+  path_key_value_dump(sys_paths->files->config_file,
+      'a',
+      "haptics",
+      settings.haptics_enabled ? "on" : "off");
+}
+
+void system_settings_load(system_settings_t *settings) {
+  char *auto_b = path_key_value_get(sys_paths->files->config_file,
+      "auto_brightness");
+  char *b_level = path_key_value_get(sys_paths->files->config_file,
+      "brightness");
+  char *haptics = path_key_value_get(sys_paths->files->config_file, "haptics");
+  char *auto_b_no_lfd = string_remove_linefeed(auto_b);
+  char *b_level_no_lfd = string_remove_linefeed(b_level);
+  char *haptics_no_lfd = string_remove_linefeed(haptics);
+  uint8_t b_level_uint = atoi(b_level_no_lfd);
+  settings->auto_brightness_enabled = strcmp(auto_b_no_lfd, "on") == 0 ? true
+                                                                       : false;
+  settings->brightness_level = b_level_uint;
+  settings->haptics_enabled = strcmp(haptics_no_lfd, "on") == 0 ? true : false;
+  free(auto_b_no_lfd);
+  free(b_level_no_lfd);
+  free(haptics_no_lfd);
+}
+
+char *haptics_onoff_flag(char *input) {
+  char *new_str;
+  if (strstr(input, "[ON]") != NULL) {
+    new_str = string_substring_replace(input, "[ON]", "[OFF]");
+    haptics_disable();
+  } else {
+    new_str = string_substring_replace(input, "[OFF]", "[ON]");
+    haptics_enable();
+  }
+  return new_str;
+}
+
+void set_brightness() {
+  drivers->ssd1306.auto_brightness = false;
+  uint8_t level = (uint8_t)drivers->ssd1306.current_brightness / 25;
+  sleep_ms(200);
+  while (true) {
+    joystick_update(&(drivers->joystick));
+    if (joystick_get_direction(&(drivers->joystick)) == W && level > 0) {
+      haptic_auto_pulse();
+      level--;
+    }
+    if (joystick_get_direction(&(drivers->joystick)) == E && level < 10) {
+      haptic_auto_pulse();
+      level++;
+    }
+    if (joystick_check_long_press(&(drivers->joystick), 500))
+      break;
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
+        0,
+        0,
+        brightness_bar[level],
+        128,
+        64,
+        false);
+    ssd1306_print(&(drivers->ssd1306), "Long press to exit", 1, 0, false);
+    ssd1306_set_brightness(&(drivers->ssd1306), level * 23);
+    ssd1306_show(&(drivers->ssd1306));
+    sleep_ms(100);
+  }
+}
+
+void system_settings_launch() {
+  str_list *options = str_list_init();
+  char bright_stat_str[22];
+  char haptic_stat_str[22];
+  snprintf(bright_stat_str,
+      22,
+      "%s Auto brightness",
+      drivers->ssd1306.auto_brightness ? "[ON]" : "[OFF]");
+  snprintf(haptic_stat_str,
+      22,
+      "%s Haptic feedback",
+      haptics_get_status() ? "[ON]" : "[OFF]");
+  str_list_append(options, bright_stat_str);
+  str_list_append(options, haptic_stat_str);
+  str_list_append(options, "Set screen brightness");
+
+  options_page *settings_page = options_page_init("Settings", options);
+  attach_flag_callback_to_option(settings_page, 0, auto_brightness_onoff_flag);
+  attach_flag_callback_to_option(settings_page, 1, haptics_onoff_flag);
+  attach_callback_to_option(settings_page, 2, set_brightness);
+  options_page_launch(settings_page);
+  options_page_free(settings_page);
+
+  system_settings_t settings;
+  settings.auto_brightness_enabled = &(drivers->ssd1306.auto_brightness);
+  settings.brightness_level = drivers->ssd1306.current_brightness;
+  settings.haptics_enabled = haptics_get_status();
+  system_settings_dump(settings);
+}
 
 void system_app_launch() { launcher_start(&system_app_launcher); }
 
@@ -39,6 +166,8 @@ void display_system_info_wrapped() { display_system_info(false); }
 
 void display_system_info(bool serial_output) {
   str_list *options = str_list_init();
+  char board_uid[17];
+  pico_get_unique_board_id_string(board_uid, 17);
   uint64_t us_since_boot = to_us_since_boot(get_absolute_time());
   us_since_boot /= 1000000;
   char uptime_str[20];
@@ -60,6 +189,8 @@ void display_system_info(bool serial_output) {
   snprintf(cpu_temp_str, sizeof(cpu_temp_str), "%.2f C", cpu_temp);
   str_list_append(options, "Device:");
   str_list_append(options, DEVICE_NAME);
+  str_list_append(options, "Board uid:");
+  str_list_append(options, board_uid);
   str_list_append(options, "Hardware version:");
   str_list_append(options, HARDWARE_VERSION);
   str_list_append(options, "Firmware version:");

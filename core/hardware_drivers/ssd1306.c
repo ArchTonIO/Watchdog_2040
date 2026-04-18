@@ -168,7 +168,8 @@ void ssd1306_init(ssd1306_t *display,
   photoresistor_t photoresistor;
   photoresistor_init(PHOTORESISTOR_PIN, PHOTORESISTOR_CHANNEL, &photoresistor);
   display->photoresistor = photoresistor;
-  display->auto_brightness = true;
+  display->current_brightness = 0;
+  ssd1306_enable_auto_brightness(display);
 
   init_i2c(display);
   static const uint8_t cmds[] = {SET_DISP | 0x00,
@@ -202,6 +203,14 @@ void ssd1306_init(ssd1306_t *display,
   ssd1306_show(display);
 }
 
+inline void ssd1306_enable_auto_brightness(ssd1306_t *display) {
+  display->auto_brightness = true;
+}
+
+inline void ssd1306_disable_auto_brightness(ssd1306_t *display) {
+  display->auto_brightness = false;
+}
+
 void photoresistor_init(pin analog_pin,
     uint8_t channel,
     photoresistor_t *photoresistor) {
@@ -225,6 +234,7 @@ void ssd1306_set_brightness(ssd1306_t *display, uint8_t level) {
     level = MIN_BRIGHTNESS;
   if (level > MAX_BRIGHTNESS)
     level = MAX_BRIGHTNESS;
+  display->current_brightness = level;
   write_cmd(display, SET_CONTRAST);
   write_cmd(display, level);
 }
