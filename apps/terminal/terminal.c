@@ -10,15 +10,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "apps/terminal/include/bitmaps.h"
 #include "apps/terminal/include/terminal_commands.h"
 #include "apps/text_editor/include/text_editor.h"
 #include "core/components/include/malloc_mascot.h"
 #include "core/components/include/sys_paths_manager.h"
 #include "core/data_structures/include/string_list.h"
+#include "core/tools/include/launcher.h"
 #include "core/utils/include/path.h"
 #include "core/utils/include/utils.h"
 
 int8_t dispatch_command(terminal *term, const char *command);
+void embedded_cli_launch();
+void serial_cli_launch();
 
 void terminal_bind_std_commands(terminal *term) {
   terminal_add_command(term,
@@ -173,7 +177,14 @@ void terminal_update_prefix(terminal *term) {
   }
 }
 
-void terminal_launch() {
+DEFINE_LAUNCHER(terminal_launcher,
+    "System terminal",
+    {"Embedded CLI", cli_icon, embedded_cli_launch},
+    {"Serial CLI", serial_cli_icon, serial_cli_launch}, )
+
+void terminal_app_launch() { launcher_start(&terminal_launcher); }
+
+void embedded_cli_launch() {
   if (!request_password())
     return;
   terminal *term = terminal_init();
@@ -189,6 +200,19 @@ void terminal_launch() {
       terminal_kill(term);
       break;
     }
+  }
+}
+
+void serial_cli_launch() {
+  terminal *term = terminal_init();
+  terminal_bind_std_commands(term);
+  terminal_update_prefix(term);
+  char buf[40];
+  snprintf(buf, 40, "%s ser pwd_required", term->prefix);
+  int8_t ret = dispatch_command(term, buf);
+  if (ret == 0) {
+    terminal_kill(term);
+    return;
   }
 }
 

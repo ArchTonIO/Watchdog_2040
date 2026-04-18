@@ -25,8 +25,8 @@ struct terminal {
   bool on_serial;
 };
 
+void terminal_app_launch();
 terminal *terminal_init();
-void terminal_launch();
 void terminal_kill(terminal *term);
 void terminal_clear_buffers(terminal *term);
 void terminal_display_stdout(terminal *term);

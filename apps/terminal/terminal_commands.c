@@ -16,10 +16,14 @@
 #include "pico/time.h"
 
 #include "apps/system_app/include/system_app.h"
+#include "apps/terminal/include/bitmaps.h"
 #include "apps/text_editor/include/text_editor.h"
+#include "core/components/include/hw_manager.h"
 #include "core/components/include/malloc_mascot.h"
 #include "core/components/include/sys_paths_manager.h"
 #include "core/data_structures/include/string_list.h"
+#include "core/hardware_drivers/include/ssd1306.h"
+#include "core/tools/include/sha_256.h"
 #include "core/ulmp/include/ulmp.h"
 #include "core/utils/include/path.h"
 #include "core/utils/include/utils.h"
@@ -701,22 +705,57 @@ int8_t __history__(command_params params) {
 }
 
 int8_t __ser__(command_params params) {
+  bool pwd_required;
+  pwd_required = false;
+
   if (params.term->on_serial) {
     strcpy(params.term->stdout_buf, "You are already using serial CLI");
     terminal_display_stdout(params.term);
     return 0;
   }
-  strcpy(params.term->stdout_buf, "Exit this message to enter serial CLI");
-  terminal_display_stdout(params.term);
+
+  if (strcmp(str_list_get(params.args, 0), "pwd_required") == 0)
+    pwd_required = true;
+
+  if (!pwd_required) {
+    strcpy(params.term->stdout_buf, "Exit this message to enter serial CLI");
+    terminal_display_stdout(params.term);
+  }
+
   params.term->on_serial = true;
+  ssd1306_draw_bitmap(&(drivers->ssd1306), 0, 0, serial_cli, 128, 64, false);
+  ssd1306_show(&(drivers->ssd1306));
   while (!stdio_usb_connected()) {
     sleep_ms(100);
   }
-  printf("%s %s - serial CLI\n", DEVICE_NAME, FIRMWARE_VERSION);
-  printf("Type 'help' to see available commands.\n\n");
+
   char buf[64];
   int8_t ret;
   setvbuf(stdin, buf, _IOFBF, sizeof(buf));
+  printf("%s %s - serial CLI\n", DEVICE_NAME, FIRMWARE_VERSION);
+  if (pwd_required) {
+    while (true) {
+      printf("Enter you password to continue - type \"esc\" to exit");
+      fgets(buf, sizeof(buf), stdin);
+      char *buf_no_lfd = string_remove_linefeed(buf);
+      char *hashed = get_hash(buf_no_lfd);
+      if (strcmp(hashed, malloc_memories_inst->user_password_hashed) == 0) {
+        free(buf_no_lfd);
+        free(hashed);
+        break;
+      }
+      if (strcmp(buf_no_lfd, "esc") == 0) {
+        free(buf_no_lfd);
+        free(hashed);
+        return -1;
+      }
+      printf("Wrong password, please retry");
+      free(buf_no_lfd);
+      free(hashed);
+    }
+  }
+
+  printf("Type 'help' to see available commands.\n\n");
   while (1) {
     printf("%s", params.term->prefix);
     fgets(buf, sizeof(buf), stdin);
