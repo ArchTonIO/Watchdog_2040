@@ -13,6 +13,7 @@ void reset_system();
 void display_battery_status();
 void display_joystick_check();
 void display_reboot_screen();
+void display_reboot_to_bootsel_screen();
 void display_tutorial_page();
 
 #endif
