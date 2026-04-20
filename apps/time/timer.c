@@ -65,11 +65,12 @@ bool start_countdown(time_digits *digits) {
                           (digits->minute_tens * 10 + digits->minute_units) *
                               60 +
                           (digits->second_tens * 10 + digits->second_units);
+  absolute_time_t target;
   while (total_seconds > 0) {
+    target = delayed_by_us(get_absolute_time(), 1000000);
     joystick_update(&(drivers->joystick));
     if (joystick_get_direction(&(drivers->joystick)) == W)
       return false;
-    sleep_ms(1000);
     total_seconds--;
     digits->second_units--;
     if (digits->second_units < 0) {
@@ -97,6 +98,8 @@ bool start_countdown(time_digits *digits) {
     }
     time_digits_show(digits, 28, 23, 2);
     ssd1306_show(&(drivers->ssd1306));
+    while (get_absolute_time() < target)
+      ;
   }
   return true;
 }

@@ -203,7 +203,7 @@ void display_system_info(bool serial_output) {
   str_list_append(options, uptime_str);
   str_list_append(options, "Clock frequency: ");
   str_list_append(options, clock_freq_khz_str);
-  str_list_append(options, "CPU temperature: ");
+  str_list_append(options, "MCU temperature: ");
   str_list_append(options, cpu_temp_str);
   if (serial_output) {
     for (uint8_t i = 0; i < options->len; i++)
@@ -269,51 +269,32 @@ void display_battery_status() {
   joystick_update(&(drivers->joystick));
   while (joystick_get_direction(&(drivers->joystick)) != W) {
     joystick_update(&(drivers->joystick));
-    if (&(drivers->battery.mcp73871.pg_state)) {
-      char pg_str[6];
-      char stat1_str[9];
-      char stat2_str[9];
-      snprintf(pg_str, 6, "PG: %d", drivers->battery.mcp73871.pg_state);
-      snprintf(stat1_str,
-          9,
-          "STAT1: %d",
-          drivers->battery.mcp73871.stat1_state);
-      snprintf(stat2_str,
-          9,
-          "STAT2: %d",
-          drivers->battery.mcp73871.stat2_state);
-      ssd1306_print(&(drivers->ssd1306), pg_str, 0, 0, false);
-      ssd1306_print(&(drivers->ssd1306), stat1_str, 0, 1, false);
-      ssd1306_print(&(drivers->ssd1306), stat2_str, 0, 2, false);
-    } else {
-      ssd1306_print(&(drivers->ssd1306), "Battery status", 3, 0, false);
-      ssd1306_print(&(drivers->ssd1306), "Percentage:     ", 0, 2, false);
-      ssd1306_print(&(drivers->ssd1306),
-          battery_get_percentage_str(&(drivers->battery)),
-          12,
-          2,
-          false);
-      ssd1306_print(&(drivers->ssd1306), "Voltage:        ", 0, 3, false);
-      ssd1306_print(&(drivers->ssd1306),
-          battery_get_voltage_str(&(drivers->battery)),
-          12,
-          3,
-          false);
-      ssd1306_print(&(drivers->ssd1306), "Crude ADC:      ", 0, 4, false);
-      ssd1306_print(&(drivers->ssd1306),
-          battery_get_crude_adc_str(&(drivers->battery)),
-          12,
-          4,
-          false);
-      uint8_t status = battery_get_status(&(drivers->battery));
-      ssd1306_print(&(drivers->ssd1306), "State: ", 0, 5, false);
-      ssd1306_print(&(drivers->ssd1306),
-          battery_status_to_str(status),
-          7,
-          5,
-          false);
-    }
-
+    ssd1306_print(&(drivers->ssd1306), "Battery status", 3, 0, false);
+    ssd1306_print(&(drivers->ssd1306), "Percentage:     ", 0, 2, false);
+    ssd1306_print(&(drivers->ssd1306),
+        battery_get_percentage_str(&(drivers->battery)),
+        12,
+        2,
+        false);
+    ssd1306_print(&(drivers->ssd1306), "Voltage:        ", 0, 3, false);
+    ssd1306_print(&(drivers->ssd1306),
+        battery_get_voltage_str(&(drivers->battery)),
+        12,
+        3,
+        false);
+    ssd1306_print(&(drivers->ssd1306), "Crude ADC:      ", 0, 4, false);
+    ssd1306_print(&(drivers->ssd1306),
+        battery_get_crude_adc_str(&(drivers->battery)),
+        12,
+        4,
+        false);
+    uint8_t status = battery_get_status(&(drivers->battery));
+    ssd1306_print(&(drivers->ssd1306), "Status:", 0, 5, false);
+    ssd1306_print(&(drivers->ssd1306),
+        battery_status_to_str(status),
+        10,
+        5,
+        false);
     ssd1306_show(&(drivers->ssd1306));
     sleep_ms(100);
   }
@@ -332,7 +313,7 @@ void display_joystick_check() {
   char theta_str[10];
   char rho_str[10];
   circle c = create_circle(create_point(64, 40), 20);
-  circle c1 = create_circle(create_point(64, 40), 5);
+  circle c1 = create_circle(create_point(64, 40), 7);
   draw_circle(c);
   draw_circle(c1);
   while (!joystick_check_long_press(&(drivers->joystick), 2000)) {
@@ -340,7 +321,7 @@ void display_joystick_check() {
     clear_circle(c1);
     polar_coords polar = joystick_get_polar(&(drivers->joystick));
     float theta_rad = polar.theta_deg * (M_PI / 180.0f);
-    c1 = create_circle(create_point(64 + polar.l * 10 * cosf(theta_rad),
+    c1 = create_circle(create_point(64 + polar.l * 10 * cosf(theta_rad) * -1,
                            40 - polar.l * 10 * sinf(theta_rad)),
         7);
     draw_circle(c1);

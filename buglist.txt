@@ -18,3 +18,7 @@
 - [solved]   - bug17 - after sx1278 goes to sleep it does not work when set to rx mode (sx1278 needs to be re-initialized)
 - [solved]   - bug18 - passwords longer than 15 characters breaks password manager (was the sdcard buffer size in sdcard_write_file that was splitting the same line across multiple lines)
 - [solved]   - bug19 - when inserting a newline character in text editor it will sometime delete a character and put an empty space instead of it, always happening when a word is wrapped between two lines (it needed a condition on the logical row)
+- [solved]   - bug20 - alarm is not going off (year was in the past because not correctly taken from the internal_datetime rtc fields) 
+- [solved]   - bug21 - timer is quite inaccurate (seconds are too long) (used get_absolute_time() instead of dumb sleep(1000))
+- [solved]   - bug22 - battery status should show percentage and voltage when cable is not connected
+- [solved]   - bug23 - joystick check screen is off
