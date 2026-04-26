@@ -59,7 +59,11 @@ void sys_paths_manager_load_dirs() {
   path *notes_dir = path_init(NOTES_DIR);
   path *todo_dir = path_init(TODO_DIR);
   path *pwd_manager_dir = path_init(PWD_MANAGER_DIR);
-  path *temp_paths[] = {home_dir,
+  path *time_dir = path_init(TIME_DIR);
+  path *alarms_dir = path_init(ALARMS_DIR);
+  path *timers_dir = path_init(TIMERS_DIR);
+  path *temp_paths[] = {
+      home_dir,
       user_dir,
       malloc_mascot_dir,
       messages_dir,
@@ -68,7 +72,11 @@ void sys_paths_manager_load_dirs() {
       config_dir,
       notes_dir,
       todo_dir,
-      pwd_manager_dir};
+      pwd_manager_dir,
+      time_dir,
+      alarms_dir,
+      timers_dir,
+  };
   sys_paths->dirs->root_path = path_init(ROOT_DIR);
   sys_paths->dirs->home_path = path_init(home_dir->abs_path);
   sys_paths->dirs->user_path = path_concat(sys_paths->dirs->home_path,
@@ -89,6 +97,12 @@ void sys_paths_manager_load_dirs() {
       todo_dir);
   sys_paths->dirs->pwd_manager_path = path_concat(sys_paths->dirs->user_path,
       pwd_manager_dir);
+  sys_paths->dirs->time_path = path_concat(sys_paths->dirs->user_path,
+      time_dir);
+  sys_paths->dirs->alarms_path = path_concat(sys_paths->dirs->time_path,
+      alarms_dir);
+  sys_paths->dirs->timers_path = path_concat(sys_paths->dirs->time_path,
+      timers_dir);
   for (uint8_t i = 0; i < sizeof(temp_paths) / sizeof(temp_paths[0]); i++)
     path_free(temp_paths[i]);
 }
@@ -108,11 +122,17 @@ void sys_paths_manager_mkdirs() {
       sys_paths->dirs->notes_path,
       sys_paths->dirs->todo_path,
       sys_paths->dirs->pwd_manager_path,
+      sys_paths->dirs->time_path,
+      sys_paths->dirs->alarms_path,
+      sys_paths->dirs->timers_path,
   };
-  ssd1306_clear(&(drivers->ssd1306));
-  ssd1306_print(&(drivers->ssd1306), "Creating sys dir tree", 0, 0, false);
-  ssd1306_show(&(drivers->ssd1306));
   for (uint8_t i = 0; i < sizeof(paths) / sizeof(paths[0]); i++) {
+    if (path_exists(paths[i])) {
+      continue;
+    }
+    ssd1306_clear(&(drivers->ssd1306));
+    ssd1306_print(&(drivers->ssd1306), "Creating sys dirs", 0, 0, false);
+    ssd1306_show(&(drivers->ssd1306));
     if (path_mkdir(paths[i])) {
       ssd1306_print(&(drivers->ssd1306), "[OK] ", 0, 1 + i, false);
       ssd1306_print(&(drivers->ssd1306), paths[i]->abs_path, 4, 1 + i, false);
@@ -154,10 +174,13 @@ void sys_paths_manager_ftouch() {
       sys_paths->files->log_file,
       sys_paths->files->config_file,
   };
-  ssd1306_clear(&(drivers->ssd1306));
-  ssd1306_print(&(drivers->ssd1306), "Creating sys files", 0, 0, false);
-  ssd1306_show(&(drivers->ssd1306));
   for (uint8_t i = 0; i < sizeof(files) / sizeof(files[0]); i++) {
+    if (path_exists(files[i])) {
+      continue;
+    }
+    ssd1306_clear(&(drivers->ssd1306));
+    ssd1306_print(&(drivers->ssd1306), "Creating sys files", 0, 0, false);
+    ssd1306_show(&(drivers->ssd1306));
     if (path_ftouch(files[i])) {
       ssd1306_print(&(drivers->ssd1306), "[OK] ", 0, 1 + i, false);
       ssd1306_print(&(drivers->ssd1306), files[i]->abs_path, 4, 1 + i, false);

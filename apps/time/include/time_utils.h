@@ -5,6 +5,7 @@
 #define TIME_UTILS_H
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "core/graphics/include/graphic_primitives.h"
 
@@ -42,5 +43,8 @@ void set_seconds_tens(time_digits *digits,
     void (*at_change_callback)(time_digits *digits));
 void set_seconds_units(time_digits *digits,
     void(at_change_callback)(time_digits *digits));
+
+void time_digits_to_str(time_digits *time, char *buf, size_t buf_size);
+void time_digits_from_str(time_digits *time, char *buf);
 
 #endif

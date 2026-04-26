@@ -64,6 +64,7 @@ void sys_setup() {
   attach_background_routines();
   check_peripherals();
   load_config();
+  load_alarms();
 }
 
 void sys_mainloop() {

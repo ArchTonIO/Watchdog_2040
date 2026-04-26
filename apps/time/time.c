@@ -13,7 +13,6 @@ DEFINE_LAUNCHER(time_launcher,
     {"Set time", set_time_icon, set_time_launch},
     {"Set date", set_date_icon, set_date_launch},
     {"Set alarm", set_alarm_icon, set_alarm_launch},
-    {"Unset alarm", unset_alarm_icon, unset_alarm},
     {"Stopwatch", stopwatch_icon, stopwatch_launch},
     {"Timer", timer_icon, timer_launch})
 

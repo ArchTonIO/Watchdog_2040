@@ -4,8 +4,11 @@
 #ifndef SET_ALARM_SUBMENU_H
 #define SET_ALARM_SUBMENU_H
 
+#define ALARM_ON "[#ON]"
+#define ALARM_OFF "[OFF]"
+
 void set_alarm_launch();
-void unset_alarm();
 void process_alarm();
+void load_alarms();
 
 #endif

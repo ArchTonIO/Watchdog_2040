@@ -6,6 +6,7 @@
 #include <pico/time.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "core/components/include/bitmaps.h"
@@ -14,6 +15,8 @@
 #include "core/graphics/include/graphic_primitives.h"
 #include "core/hardware_drivers/include/haptics.h"
 #include "core/hardware_drivers/include/ssd1306.h"
+#include "core/utils/include/path.h"
+#include "core/utils/include/utils.h"
 #include "include/bitmaps.h"
 
 time_digits *time_digits_init() {
@@ -411,4 +414,27 @@ char *from_dotw_to_weekday(int8_t dotw) {
   default:
     return "Err";
   }
+}
+
+void time_digits_to_str(time_digits *time, char *buf, size_t buf_size) {
+  snprintf(buf,
+      buf_size,
+      "%d%d_%d%d_%d%d",
+      time->hour_tens,
+      time->hour_units,
+      time->minute_tens,
+      time->minute_units,
+      time->second_tens,
+      time->second_units);
+}
+
+void time_digits_from_str(time_digits *time, char *buf) {
+  str_list *slices = string_split(buf, '_');
+  time->hour_tens = (int8_t)((str_list_get(slices, 0)[0]) - '0');
+  time->hour_units = (int8_t)((str_list_get(slices, 0)[1]) - '0');
+  time->minute_tens = (int8_t)((str_list_get(slices, 1)[0]) - '0');
+  time->minute_units = (int8_t)((str_list_get(slices, 1)[1]) - '0');
+  time->second_tens = (int8_t)((str_list_get(slices, 2)[0]) - '0');
+  time->second_units = (int8_t)((str_list_get(slices, 2)[1]) - '0');
+  str_list_free(slices);
 }
