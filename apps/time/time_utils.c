@@ -15,7 +15,6 @@
 #include "core/graphics/include/graphic_primitives.h"
 #include "core/hardware_drivers/include/haptics.h"
 #include "core/hardware_drivers/include/ssd1306.h"
-#include "core/utils/include/path.h"
 #include "core/utils/include/utils.h"
 #include "include/bitmaps.h"
 
