@@ -440,7 +440,7 @@ int8_t __cat__(command_params params) {
     path_free(full_path);
     return 1;
   }
-  char *content = str_list_concat(lines, ' ');
+  char *content = str_list_concat(lines, NO_SEP);
   strcpy(params.term->stdout_buf, content);
   terminal_display_stdout(params.term);
   free(content);
@@ -530,7 +530,7 @@ int8_t __tail__(command_params params) {
     path_free(full_path);
     return 1;
   }
-  char *content = str_list_concat(lines, ' ');
+  char *content = str_list_concat(lines, NO_SEP);
   strcpy(params.term->stdout_buf, content);
   terminal_display_stdout(params.term);
   free(content);
@@ -667,7 +667,7 @@ int8_t __unano__(command_params params) {
     return 0;
   }
   str_list *lines = path_fread(full_path);
-  char *concat_lines = str_list_concat(lines, ' ');
+  char *concat_lines = str_list_concat(lines, NO_SEP);
   text_editor *editor = text_editor_launch(concat_lines, false);
   char *buf = text_editor_get_buf(editor);
   text_editor_kill(editor);

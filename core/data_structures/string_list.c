@@ -212,7 +212,8 @@ uinteger str_list_compare(str_list *list1, str_list *list2) {
  * @brief Concatenate all the strings in the list.
  *
  * @param *list The list to concatenate.
- * @param char separator The separator to use between strings.
+ * @param char separator The separator to use between strings,
+ * using the NO_SEP macro will result in no separator being used
  * @return char * The concatenated string.
  */
 char *str_list_concat(str_list *list, char separator) {
@@ -227,7 +228,8 @@ char *str_list_concat(str_list *list, char separator) {
   for (int i = 0; i < list->len; i++) {
     total_length += strlen(str_list_get(list, i));
   }
-  total_length += (list->len - 1) + 1;
+  if (separator != NO_SEP)
+    total_length += (list->len - 1) + 1;
   char *total_payload = (char *)malloc(total_length);
   if (!total_payload)
     return NULL;
@@ -237,7 +239,7 @@ char *str_list_concat(str_list *list, char separator) {
     size_t len = strlen(payload);
     memcpy(ptr, payload, len);
     ptr += len;
-    if (i < list->len - 1) {
+    if (i < list->len - 1 && separator != NO_SEP) {
       *ptr = separator;
       ptr++;
     }

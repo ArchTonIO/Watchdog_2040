@@ -22,3 +22,5 @@
 - [solved]   - bug21 - timer is quite inaccurate (seconds are too long) (used get_absolute_time() instead of dumb sleep(1000))
 - [solved]   - bug22 - battery status should show percentage and voltage when cable is not connected
 - [solved]   - bug23 - joystick check screen is off
+- [solved]   - bug24 - line feed on notes app causes blank line to appear at read time (was the mandatory separator being used in str_list_concat function, now replaced with the special value NO_SEP)
+- [solved]   - bug25 - line feed on text editor (unano) causes an empty space to appear before the actual characters at read time (was the mandatory separator being used in str_list_concat function, now replaced with the special value NO_SEP)

@@ -49,7 +49,7 @@ void take_note(crud_list *list) {
 void open_existing_note(crud_list *list, const char *note_name) {
   path *note_path = get_item_path(list, note_name);
   str_list *note_content = path_fread(note_path);
-  char *note_content_str = str_list_concat(note_content, '\n');
+  char *note_content_str = str_list_concat(note_content, NO_SEP);
   text_editor *note_editor = text_editor_launch(note_content_str, false);
   char *buf = text_editor_get_buf(note_editor);
   text_editor_kill(note_editor);

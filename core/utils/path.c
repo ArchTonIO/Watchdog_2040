@@ -137,7 +137,7 @@ bool path_rename(path *src, path *dest) {
  */
 bool path_fcopy(path *src, path *dest) {
   str_list *src_content = sdcard_read_file(&(drivers->sd_card), src);
-  char *concat_content = str_list_concat(src_content, '\n');
+  char *concat_content = str_list_concat(src_content, NO_SEP);
   bool ret = sdcard_write_file(&(drivers->sd_card), dest, concat_content, 'w');
   free(concat_content);
   str_list_free(src_content);
