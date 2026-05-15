@@ -18,6 +18,7 @@
 #include "core/components/include/sys_paths_manager.h"
 #include "core/components/include/system_launchers.h"
 #include "core/data_structures/include/string_list.h"
+#include "core/hardware_drivers/include/haptics.h"
 #include "core/hardware_drivers/include/joystick.h"
 #include "core/hardware_drivers/include/ssd1306.h"
 #include "core/tools/include/sha_256.h"
@@ -29,13 +30,14 @@ malloc_memories *malloc_memories_inst = NULL;
 void start_malloc_mascot_tutorial() {
   malloc_memories *memories = malloc_memories_init();
   malloc_greets_you();
-  malloc_explains_you_joystick();
-  malloc_explains_you_menu();
-  malloc_explains_you_text_editor();
+  malloc_explains_joystick();
+  malloc_explains_menu();
+  malloc_explains_text_editor();
   malloc_asks_your_name();
   malloc_asks_for_password();
-  malloc_explains_you_home_screen();
-  malloc_generates_ulcp_address();
+  malloc_explains_home_screen();
+  malloc_generates_ulmp_address();
+  malloc_explains_rxcontinuous();
   malloc_says_goodbye();
 }
 
@@ -55,6 +57,7 @@ void right_to_continue() {
     joystick_update(&(drivers->joystick));
     sleep_ms(10);
   }
+  haptic_auto_pulse();
 }
 
 void clear_text_area() {
@@ -86,7 +89,7 @@ void malloc_greets_you() {
   clear_text_area();
 }
 
-void malloc_explains_you_joystick() {
+void malloc_explains_joystick() {
   ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
@@ -105,7 +108,7 @@ void malloc_explains_you_joystick() {
   clear_text_area();
 }
 
-void malloc_explains_you_menu() {
+void malloc_explains_menu() {
   ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
@@ -251,7 +254,7 @@ void malloc_explains_keyboard_commands() {
   clear_text_area();
 }
 
-void malloc_explains_you_text_editor() {
+void malloc_explains_text_editor() {
   ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
@@ -418,7 +421,7 @@ void malloc_asks_for_password() {
   get_password();
 }
 
-void malloc_explains_you_home_screen() {
+void malloc_explains_home_screen() {
   ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
@@ -471,7 +474,7 @@ void malloc_explains_you_home_screen() {
       "e' inserita e\n"
       "funziona\n"
       "correttamente\n"
-      "vedi questa",
+      "vedi questo",
       4,
       2,
       0);
@@ -485,11 +488,8 @@ void malloc_explains_you_home_screen() {
       16,
       0);
   ssd1306_print_gradually(&(drivers->ssd1306),
-      "Se la microsd\n"
-      "non e' inserita\n"
-      "o non funziona\n"
-      "correttamente\n"
-      "vedi questa",
+      "Altrimenti\n"
+      "vedi questo",
       4,
       2,
       0);
@@ -517,10 +517,7 @@ void malloc_explains_you_home_screen() {
   clear_text_area_reduced();
   ssd1306_draw_bitmap(&(drivers->ssd1306), 42, 0, lora_not_working, 21, 16, 0);
   ssd1306_print_gradually(&(drivers->ssd1306),
-      "Se il modulo\n"
-      "LoRa non\n"
-      "funziona\n"
-      "correttamente\n"
+      "Altrimenti\n"
       "vedi questo",
       4,
       2,
@@ -556,10 +553,7 @@ void malloc_explains_you_home_screen() {
       16,
       0);
   ssd1306_print_gradually(&(drivers->ssd1306),
-      "Se il sensore\n"
-      "ENS160 non\n"
-      "funziona\n"
-      "correttamente\n"
+      "Altrimenti\n"
       "vedi questo",
       4,
       2,
@@ -604,8 +598,7 @@ void malloc_explains_you_home_screen() {
   clear_text_area_reduced();
   ssd1306_draw_bitmap(&(drivers->ssd1306), 105, 0, alarm_disabled, 21, 16, 0);
   ssd1306_print_gradually(&(drivers->ssd1306),
-      "Se la sveglia\n"
-      "non e' attiva\n"
+      "Altrimenti\n"
       "vedi questo",
       4,
       2,
@@ -635,7 +628,7 @@ uint16_t malloc_get_ulcp_address() {
     return malloc_memories_inst->ulmp_addr;
 }
 
-void malloc_generates_ulcp_address() {
+void malloc_generates_ulmp_address() {
   ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
       19,
@@ -809,6 +802,86 @@ void malloc_generates_ulcp_address() {
   clear_text_area();
 }
 
+void malloc_explains_rxcontinuous() {
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
+      0,
+      19,
+      malloc_with_glasses,
+      26,
+      28,
+      0);
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
+      105,
+      24,
+      rxcontinuous_enabled,
+      21,
+      16,
+      false);
+  ssd1306_print_gradually(&(drivers->ssd1306),
+      "Questa e'\n"
+      "l'icona dell\n"
+      "rxcontinuous",
+      4,
+      0,
+      0);
+  right_to_continue();
+  clear_text_area();
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
+      105,
+      24,
+      rxcontinuous_enabled,
+      21,
+      16,
+      false);
+  ssd1306_print_gradually(&(drivers->ssd1306),
+      "Solo quando\n"
+      "e' attivo puoi\n"
+      "ricevere\n"
+      "messaggi in\n"
+      "standby\n"
+      "(mentre non usi\n"
+      "il dispositivo)",
+      4,
+      0,
+      0);
+  right_to_continue();
+  clear_text_area();
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
+      105,
+      24,
+      rxcontinuous_disabled,
+      21,
+      16,
+      false);
+  ssd1306_print_gradually(&(drivers->ssd1306),
+      "Cosi' invece\n"
+      "e' disattivato.\n"
+      "Puoi spegnerlo\n"
+      "o accenderlo\n"
+      "premendo il\n"
+      "joystick",
+      4,
+      0,
+      0);
+  right_to_continue();
+  clear_text_area();
+  ssd1306_draw_bitmap(&(drivers->ssd1306),
+      105,
+      24,
+      rxcontinuous_disabled,
+      21,
+      16,
+      false);
+  ssd1306_print_gradually(&(drivers->ssd1306),
+      "Quando sei\n"
+      "nella home page",
+      4,
+      0,
+      0);
+  right_to_continue();
+  clear_text_area();
+}
+
 void malloc_says_goodbye() {
   ssd1306_draw_bitmap(&(drivers->ssd1306),
       0,
@@ -822,22 +895,13 @@ void malloc_says_goodbye() {
       "bella\n"
       "chiacchierata\n"
       "(o forse un\n"
-      "monologo), se\n"
-      "hai bisogno di\n"
-      "me, non esitare",
+      "monologo).\n"
+      "A presto!",
       4,
       0,
       0);
   right_to_continue();
   clear_text_area();
-  ssd1306_print_gradually(&(drivers->ssd1306),
-      "a venirmi a\n"
-      "trovare\n"
-      "nel menu\n"
-      "principale!",
-      4,
-      0,
-      0);
   sleep_ms(100);
   ssd1306_draw_bitmap(&(drivers->ssd1306), 0, 19, malloc_saying_hi, 26, 28, 0);
   ssd1306_print_gradually(&(drivers->ssd1306), "Ciao! :)", 4, 4, 0);
