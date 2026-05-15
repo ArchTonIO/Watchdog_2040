@@ -53,6 +53,7 @@ void sys_setup() {
     sys_paths_manager_make();
     write_first_boot_file();
     dump_malloc_memories_to_sd();
+    write_default_config();
   }
   path_free(first_boot_file);
   load_malloc_memories_from_sd();

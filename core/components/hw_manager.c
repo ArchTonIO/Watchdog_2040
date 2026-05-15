@@ -141,19 +141,22 @@ hw_drivers *hardware_drivers_init() {
 
 void end_loading_screen() { core1_await(); }
 
+void write_default_config() {
+  system_settings_t settings;
+  settings.auto_brightness_enabled = true;
+  settings.haptics_enabled = true;
+  system_settings_dump(settings);
+}
+
 void load_config() {
   system_settings_t settings;
   system_settings_load(&settings);
   if (!settings.auto_brightness_enabled) {
     ssd1306_disable_auto_brightness(&(drivers->ssd1306));
     ssd1306_set_brightness(&(drivers->ssd1306), settings.brightness_level);
-    printf("AUTO BRIGHTNESS DISABLED, LEVEL: %d\n",
-        drivers->ssd1306.current_brightness);
   }
-  if (!settings.haptics_enabled) {
+  if (!settings.haptics_enabled)
     haptics_disable();
-    printf("HAPTICS DISABLED\n");
-  }
 }
 
 uint32_t get_total_heap(void) {

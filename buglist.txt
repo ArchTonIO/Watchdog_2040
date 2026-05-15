@@ -24,3 +24,5 @@
 - [solved]   - bug23 - joystick check screen is off
 - [solved]   - bug24 - line feed on notes app causes blank line to appear at read time (was the mandatory separator being used in str_list_concat function, now replaced with the special value NO_SEP)
 - [solved]   - bug25 - line feed on text editor (unano) causes an empty space to appear before the actual characters at read time (was the mandatory separator being used in str_list_concat function, now replaced with the special value NO_SEP)
+- [solved]   - bug26 - When booting for the first time auto brightness and haptics are disabled by default (added the write_default_config function in hw_manager to set them to be both enabled by default)
+- [solved]   - bug27 - Messy prints at sys files and directory creation

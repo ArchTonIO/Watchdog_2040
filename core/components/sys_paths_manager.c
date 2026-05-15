@@ -130,7 +130,6 @@ void sys_paths_manager_mkdirs() {
     if (path_exists(paths[i])) {
       continue;
     }
-    ssd1306_clear(&(drivers->ssd1306));
     ssd1306_print(&(drivers->ssd1306), "Creating sys dirs", 0, 0, false);
     ssd1306_show(&(drivers->ssd1306));
     if (path_mkdir(paths[i])) {
@@ -142,6 +141,8 @@ void sys_paths_manager_mkdirs() {
     }
     ssd1306_show(&(drivers->ssd1306));
   }
+  ssd1306_clear(&(drivers->ssd1306));
+  ssd1306_show(&(drivers->ssd1306));
 }
 
 void sys_paths_manager_load_files() {
@@ -178,7 +179,6 @@ void sys_paths_manager_ftouch() {
     if (path_exists(files[i])) {
       continue;
     }
-    ssd1306_clear(&(drivers->ssd1306));
     ssd1306_print(&(drivers->ssd1306), "Creating sys files", 0, 0, false);
     ssd1306_show(&(drivers->ssd1306));
     if (path_ftouch(files[i])) {

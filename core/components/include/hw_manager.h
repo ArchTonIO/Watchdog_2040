@@ -38,6 +38,7 @@ extern uint8_t __flash_binary_end;
 
 hw_drivers *hardware_drivers_init();
 void end_loading_screen();
+void write_default_config();
 void load_config();
 uint32_t get_free_heap();
 void print_free_heap();
