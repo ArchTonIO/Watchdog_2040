@@ -15,7 +15,11 @@
 #include "core/hardware_drivers/include/joystick.h"
 #include "core/hardware_drivers/include/ssd1306.h"
 
-void handle_scroll(options_page *page);
+void handle_vscroll(options_page *page);
+void handle_hscroll(options_page *pg,
+    option opt,
+    uint8_t left_padding,
+    uint8_t screen_row);
 
 /**
  * @brief Initializes an options page with a list of options.
@@ -133,11 +137,6 @@ char *options_page_launch(options_page *page) {
 
       if (i == page->selected_option) {
         left_padding = page->options[i].icon != NULL ? 2 : 0;
-        ssd1306_print(&(drivers->ssd1306),
-            page->options[i].display_name,
-            left_padding,
-            screen_row,
-            true);
         if (page->options[i].icon != NULL) {
           ssd1306_draw_bitmap(&(drivers->ssd1306),
               0,
@@ -147,6 +146,7 @@ char *options_page_launch(options_page *page) {
               8,
               true);
         }
+        handle_hscroll(page, page->options[i], left_padding, screen_row);
       } else {
         ssd1306_print(&(drivers->ssd1306),
             page->options[i].display_name,
@@ -205,16 +205,63 @@ char *options_page_launch(options_page *page) {
       ssd1306_disable_mutex_support(&(drivers->ssd1306));
       return "";
     }
-    handle_scroll(page);
+    handle_vscroll(page);
   }
 }
 
-void handle_scroll(options_page *page) {
+void handle_vscroll(options_page *page) {
   if (page->selected_option < page->scroll) {
     page->scroll = page->selected_option;
   } else if (page->selected_option >= page->scroll + MAX_OPTIONS_ON_SCREEN) {
     page->scroll = page->selected_option - MAX_OPTIONS_ON_SCREEN + 1;
   }
+}
+
+void handle_hscroll(options_page *page,
+    option op,
+    uint8_t left_padding,
+    uint8_t screen_row) {
+  ssd1306_print(&(drivers->ssd1306),
+      op.display_name,
+      left_padding,
+      screen_row,
+      true);
+  if (strlen(op.name) <= MAX_X_CHARS)
+    return;
+
+  sleep_ms(100);
+  joystick_update(&(drivers->joystick));
+  int16_t incr = 0;
+  while (joystick_get_direction(&(drivers->joystick)) == C) {
+    joystick_update(&(drivers->joystick));
+
+    if ((drivers->joystick).button_pressed) {
+      if (page->options[page->selected_option].flag_callback != NULL) {
+        sleep_ms(INTERAC_TIMEOUT);
+        char *buf = page->options[page->selected_option].flag_callback(
+            page->options[page->selected_option].display_name);
+        free(page->options[page->selected_option].display_name);
+        page->options[page->selected_option].display_name = buf;
+      }
+    }
+
+    char to_print[MAX_X_CHARS];
+    for (size_t i = 0; i < MAX_X_CHARS; i++)
+      if ((i + incr) < strlen(op.name) - 1)
+        to_print[i] = op.name[i + incr];
+      else {
+        incr = -1;
+        break;
+      }
+    ssd1306_print(&(drivers->ssd1306),
+        to_print,
+        left_padding,
+        screen_row,
+        true);
+    ssd1306_show(&(drivers->ssd1306));
+    incr++;
+  }
+  sleep_ms(100);
 }
 
 void options_page_free(options_page *page) {
