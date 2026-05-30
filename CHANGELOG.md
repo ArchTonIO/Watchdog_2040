@@ -6,6 +6,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## unreleased
+
+## Added
+
+- Horizontal scroll for entries longer than 21 characters in any list.
+- Tutorial: explanation of rxcontinuous mode
+
+## Fixed
+
+- bug 24, 25 - issues in the text editor when saving files containing linefeed
+- bug 26 - auto brightness and haptics were disabled by default at first boot
+- bug 27 - messy prints in the sys paths creation step at first boot
+
 ## leakybob [1.42.5]
 
 ## Added

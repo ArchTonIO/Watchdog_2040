@@ -163,8 +163,8 @@ void layer_add_circle(layer *ly, circle c) {
  * @param r The rectangle to add.
  */
 void layer_add_rectangle(layer *ly, rectangle r) {
-  ly->rectangles_count++;
   ly->rectangles[ly->rectangles_count] = r;
+  ly->rectangles_count++;
 }
 
 /**

@@ -12,7 +12,6 @@
 #include <string.h>
 
 #include "core/hardware_drivers/include/config.h"
-#include "core/hardware_drivers/include/haptics.h"
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
 
@@ -376,8 +375,6 @@ void ssd1306_print_gradually(ssd1306_t *display,
         c,
         reversed);
     display->cursorx += CHAR_WIDTH - 2;
-    if (c != '\n' && c != ' ')
-      haptic_micro_pulse();
     ssd1306_show(display);
   }
 }

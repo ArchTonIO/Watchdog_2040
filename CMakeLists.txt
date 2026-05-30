@@ -43,6 +43,11 @@ add_executable(Watchdog_2040
 apps/AQI/aqi.c
 apps/AQI/bitmaps.c
 
+## calendar ##
+apps/calendar/bitmaps.c
+apps/calendar/calendar.c
+apps/calendar/event.c
+
 ## drawing board ##
 apps/drawing_board/bitmaps.c
 apps/drawing_board/board.c

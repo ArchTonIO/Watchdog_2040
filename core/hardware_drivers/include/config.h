@@ -76,7 +76,7 @@ lib/no-Os-FatFS-SD-SPI-RPi-Pico/FatFs_SPI/sd_driver/hw_config.c*/
 #define JOYSTICK_AUTO_CALIBRATION_SAMPLES 150
 #define JOYSTICK_AUTO_CALIBRATION_INTERVAL_MS 10
 #define JOYSTICK_SENSITIVITY 0.2f
-#define JOYSTICK_ROTATION 0
+#define JOYSTICK_ROTATION -90
 
 /*battery settings*/
 #define ADC_MAX_VALUE 4095.0

@@ -5,6 +5,9 @@
 
 #include "apps/AQI/include/aqi.h"
 #include "apps/AQI/include/bitmaps.h"
+#include "apps/calendar/include/calendar.h"
+#include "apps/drawing_board/include/bitmaps.h"
+#include "apps/drawing_board/include/board.h"
 #include "apps/flashlight/include/bitmaps.h"
 #include "apps/flashlight/include/flashlight.h"
 #include "apps/messaging/include/bitmaps.h"
@@ -36,6 +39,7 @@ DEFINE_LAUNCHER(main_launcher,
     {"Notes", notes_icon, notes_launch},
     {"Todo", todo_icon, todo_launch},
     {"Password manager", password_manager_icon, password_manager_launch},
+    {"Calendar", drawing_board_icon, calendar_launch},
     {"Flashlight", flashlight_icon, flashlight_launch},
     {"System", qfn_package_icon, system_app_launch}, )
 
