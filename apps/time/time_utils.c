@@ -416,6 +416,16 @@ char *from_dotw_to_weekday(int8_t dotw) {
 }
 
 void time_digits_to_str(time_digits *time, char *buf, size_t buf_size) {
+  if (buf_size == 6) {
+    snprintf(buf,
+        buf_size,
+        "%d%d_%d%d",
+        time->hour_tens,
+        time->hour_units,
+        time->minute_tens,
+        time->minute_units);
+    return;
+  }
   snprintf(buf,
       buf_size,
       "%d%d_%d%d_%d%d",

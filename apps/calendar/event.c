@@ -23,7 +23,7 @@
 #include "core/utils/include/path.h"
 #include "core/utils/include/utils.h"
 
-int8_t selected_year;
+int16_t selected_year;
 int8_t selected_month;
 int8_t selected_day;
 int8_t selected_dotw;
@@ -105,8 +105,8 @@ void create_event(crud_list *clist) {
   time_digits *start_time = time_digits_init();
   time_digits *end_time = time_digits_init();
   str_list *time_options = str_list_init();
-  char start_time_buf[9];
-  char end_time_buf[9];
+  char start_time_buf[6];
+  char end_time_buf[6];
   str_list_append(time_options, "all day");
   str_list_append(time_options, "set start time");
   str_list_append(time_options, "set start/end time");
@@ -115,27 +115,30 @@ void create_event(crud_list *clist) {
   char *selected_option = options_page_launch(time_options_page);
   if (strcmp(selected_option, "all day") == 0) {
     all_day = true;
+    end_time_set = true;
     start_time_buf[0] = '0';
     start_time_buf[1] = '0';
     start_time_buf[2] = '_';
     start_time_buf[3] = '0';
     start_time_buf[4] = '0';
     end_time_buf[0] = '2';
-    end_time_buf[0] = '3';
-    end_time_buf[0] = '_';
-    end_time_buf[0] = '5';
-    end_time_buf[0] = '9';
+    end_time_buf[1] = '3';
+    end_time_buf[2] = '_';
+    end_time_buf[3] = '5';
+    end_time_buf[4] = '9';
   } else if (strcmp(selected_option, "set start time") == 0) {
     set_alarm_time(start_time);
-    time_digits_to_str(start_time, start_time_buf, 9);
+    time_digits_to_str(start_time, start_time_buf, 6);
     print_info("Start time set!");
   } else if (strcmp(selected_option, "set start/end time") == 0) {
     set_alarm_time(start_time);
-    time_digits_to_str(start_time, start_time_buf, 9);
+    time_digits_to_str(start_time, start_time_buf, 6);
     print_info("Start time set!");
+    printf("Start time: %s\n", start_time_buf);
     set_alarm_time(end_time);
-    time_digits_to_str(end_time, end_time_buf, 9);
+    time_digits_to_str(end_time, end_time_buf, 6);
     print_info("End time set!");
+    printf("End time: %s\n", end_time_buf);
     end_time_set = true;
   } else {
     print_usr_error("Quitting event\ncreation!");
@@ -151,25 +154,28 @@ void create_event(crud_list *clist) {
   end_time_buf[5] = '\0';
 
   /*Saving event*/
-
   datetime_t datetime_start_time;
   datetime_start_time.year = selected_year;
   datetime_start_time.month = selected_month;
   datetime_start_time.day = selected_day;
   datetime_start_time.dotw = selected_dotw;
-  datetime_start_time.hour = start_time_buf[0] * 10 + start_time_buf[1];
-  datetime_start_time.min = start_time_buf[3] * 10 + start_time_buf[4];
+  datetime_start_time.hour = ((int8_t)start_time_buf[0] - '0') * 10 +
+                             ((int8_t)start_time_buf[1] - '0');
+  datetime_start_time.min = ((int8_t)start_time_buf[3] - '0') * 10 +
+                            ((int8_t)start_time_buf[4] - '0');
   datetime_start_time.sec = 0;
 
-  datetime_t datetime_end_time = {0};
+  datetime_t datetime_end_time;
   if (end_time_set) {
-    datetime_start_time.year = selected_year;
-    datetime_start_time.month = selected_month;
-    datetime_start_time.day = selected_day;
-    datetime_start_time.dotw = selected_dotw;
-    datetime_start_time.hour = end_time_buf[0] * 10 + end_time_buf[1];
-    datetime_start_time.min = end_time_buf[3] * 10 + end_time_buf[4];
-    datetime_start_time.sec = 0;
+    datetime_end_time.year = selected_year;
+    datetime_end_time.month = selected_month;
+    datetime_end_time.day = selected_day;
+    datetime_end_time.dotw = selected_dotw;
+    datetime_end_time.hour = ((int8_t)end_time_buf[0] - '0') * 10 +
+                             ((int8_t)end_time_buf[1] - '0');
+    datetime_end_time.min = ((int8_t)end_time_buf[3] - '0') * 10 +
+                            ((int8_t)end_time_buf[4] - '0');
+    datetime_end_time.sec = 0;
   }
   event_t new_event;
   new_event.name = name_buf;
@@ -178,7 +184,6 @@ void create_event(crud_list *clist) {
   new_event.end_time = datetime_end_time;
   new_event.end_time_set = end_time_set;
   new_event.all_day = all_day;
-
   event_dump(clist, &new_event);
 
   /*freeing memory*/
@@ -199,13 +204,13 @@ str_list *time_to_str_list(datetime_t time) {
   char hour_buf[3];
   char min_buf[3];
   char sec_buf[3];
-  itoa(time.year, year_buf, 5);
-  itoa(time.month, month_buf, 3);
-  itoa(time.day, day_buf, 3);
-  itoa(time.dotw, dotw_buf, 3);
-  itoa(time.hour, hour_buf, 3);
-  itoa(time.min, min_buf, 3);
-  itoa(time.sec, sec_buf, 3);
+  snprintf(year_buf, sizeof(year_buf), "%04d", time.year);
+  snprintf(month_buf, sizeof(month_buf), "%02d", time.month);
+  snprintf(day_buf, sizeof(day_buf), "%02d", time.day);
+  snprintf(dotw_buf, sizeof(dotw_buf), "%02d", time.dotw);
+  snprintf(hour_buf, sizeof(hour_buf), "%02d", time.hour);
+  snprintf(min_buf, sizeof(min_buf), "%02d", time.min);
+  snprintf(sec_buf, sizeof(sec_buf), "%02d", time.sec);
   str_list_append(time_str_list, year_buf);
   str_list_append(time_str_list, month_buf);
   str_list_append(time_str_list, day_buf);
@@ -217,7 +222,6 @@ str_list *time_to_str_list(datetime_t time) {
 }
 
 void event_dump(crud_list *clist, event_t *event) {
-
   size_t filename_len = strlen(EVENT_ALARM_ON) + 1 + strlen("00_00/00_00") +
                         1 + strlen(event->name) + 1 + 1;
   size_t filecontent_len = strlen(event->description) + 1;
@@ -226,15 +230,15 @@ void event_dump(crud_list *clist, event_t *event) {
 
   str_list *start_time_parts = time_to_str_list(event->start_time);
   str_list *end_time_parts = time_to_str_list(event->end_time);
-  char start_time_buf[5];
+  char start_time_buf[6];
   snprintf(start_time_buf,
-      5,
+      6,
       "%s_%s",
       str_list_get(start_time_parts, -3),
       str_list_get(start_time_parts, -2));
-  char end_time_buf[5];
-  snprintf(start_time_buf,
-      5,
+  char end_time_buf[6];
+  snprintf(end_time_buf,
+      6,
       "%s_%s",
       str_list_get(end_time_parts, -3),
       str_list_get(end_time_parts, -2));

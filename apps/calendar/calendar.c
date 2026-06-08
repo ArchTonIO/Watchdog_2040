@@ -566,6 +566,11 @@ void run_calendar(calendar_t *this_calendar) {
         joystick_get_direction(&(drivers->joystick)));
     if (drivers->joystick.button_pressed) {
       sleep_ms(200);
+      joystick_update(&(drivers->joystick));
+      if (drivers->joystick.button_pressed) {
+        layout_free(this_calendar->month_page_layout);
+        return;
+      }
       open_events_page_by_day(this_calendar);
     }
   }
