@@ -10,6 +10,8 @@
 
 #include "core/data_structures/include/string_list.h"
 
+#define MAX_FILL_SPACES 64
+
 /*Testing functions*/
 void wait_for_serial_input();
 
@@ -38,5 +40,9 @@ char *string_replace(const char *str, char old_char, char new_char);
 char *
 string_substring_replace(const char *str, const char *old, const char *new);
 char *gen_random_string(size_t length);
+void str_fill_spaces(char *buf,
+    size_t buf_size,
+    size_t n_spaces_left,
+    size_t n_spaces_right);
 
 #endif

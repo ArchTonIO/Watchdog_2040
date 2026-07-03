@@ -418,3 +418,196 @@ void load_days_with_events(calendar_t *this_calendar) {
   path_free(calendar_events_path);
   str_list_free(events_by_day);
 }
+
+static char *build_event_name_from_filename(const char *filename) {
+  str_list *parts = string_split(filename, ' ');
+  if (parts->len < 3) {
+    char *name = strdup(filename);
+    str_list_free(parts);
+    return name;
+  }
+
+  size_t total_len = 1;
+  for (integer i = 2; i < (integer)parts->len; i++) {
+    total_len += strlen(str_list_get(parts, i)) + 1;
+  }
+
+  char *name = malloc(total_len);
+  if (name == NULL) {
+    str_list_free(parts);
+    return strdup("");
+  }
+
+  name[0] = '\0';
+  for (integer i = 2; i < (integer)parts->len; i++) {
+    size_t offset = strlen(name);
+    if (i > 2 && offset + 1 < total_len)
+      name[offset++] = ' ';
+    snprintf(name + offset, total_len - offset, "%s", str_list_get(parts, i));
+  }
+
+  str_list_free(parts);
+  return name;
+}
+
+str_list *get_today_events(void) {
+  str_list *today_events = str_list_init();
+  char *time_now = rtc_time_now(&(drivers->internal_rtc));
+  int16_t current_year = 0;
+  int8_t current_month = 0;
+  int8_t current_day = 0;
+
+  char weekday_buf[16];
+  char month_name_buf[16];
+  int parsed_day = 0;
+  int parsed_hour = 0;
+  int parsed_minute = 0;
+  int parsed_second = 0;
+  int parsed_year = 0;
+
+  if (sscanf(time_now,
+          "%15s %d %15s %d:%d:%d %d",
+          weekday_buf,
+          &parsed_day,
+          month_name_buf,
+          &parsed_hour,
+          &parsed_minute,
+          &parsed_second,
+          &parsed_year) != 7) {
+    printf("NOTHING TO DO: Failed to parse current date from RTC: %s\n",
+        time_now);
+    return today_events;
+  }
+
+  current_day = (int8_t)parsed_day;
+  current_year = (int16_t)parsed_year;
+
+  if (strcmp(month_name_buf, "January") == 0) {
+    current_month = 1;
+  } else if (strcmp(month_name_buf, "February") == 0) {
+    current_month = 2;
+  } else if (strcmp(month_name_buf, "March") == 0) {
+    current_month = 3;
+  } else if (strcmp(month_name_buf, "April") == 0) {
+    current_month = 4;
+  } else if (strcmp(month_name_buf, "May") == 0) {
+    current_month = 5;
+  } else if (strcmp(month_name_buf, "June") == 0) {
+    current_month = 6;
+  } else if (strcmp(month_name_buf, "July") == 0) {
+    current_month = 7;
+  } else if (strcmp(month_name_buf, "August") == 0) {
+    current_month = 8;
+  } else if (strcmp(month_name_buf, "September") == 0) {
+    current_month = 9;
+  } else if (strcmp(month_name_buf, "October") == 0) {
+    current_month = 10;
+  } else if (strcmp(month_name_buf, "November") == 0) {
+    current_month = 11;
+  } else if (strcmp(month_name_buf, "December") == 0) {
+    current_month = 12;
+  } else {
+    printf("NOTHING TO DO: Unsupported month in RTC string: %s\n",
+        month_name_buf);
+    return today_events;
+  }
+
+  char today_str[11];
+  snprintf(today_str,
+      sizeof(today_str),
+      "%04d-%02d-%02d",
+      current_year,
+      current_month,
+      current_day);
+
+  path *calendar_events_path = path_init(CALENDAR_EVENTS_DIR);
+  path *calendar_events_full_path = path_concat(sys_paths->dirs->user_path,
+      calendar_events_path);
+  path *today_str_path = path_init(today_str);
+  path *today_events_path = path_concat(calendar_events_full_path,
+      today_str_path);
+  path_free(today_str_path);
+
+  if (!path_exists(today_events_path)) {
+    path_free(calendar_events_path);
+    path_free(calendar_events_full_path);
+    path_free(today_events_path);
+    return today_events;
+  }
+
+  str_list *event_files = path_listdir(today_events_path);
+  for (uinteger i = 0; i < event_files->len; i++) {
+    char *event_file_name = str_list_get(event_files, i);
+    path *event_file_name_path = path_init(event_file_name);
+    path *event_file_path = path_concat(today_events_path,
+        event_file_name_path);
+    path_free(event_file_name_path);
+
+    char *description = path_key_value_get(event_file_path, "description");
+    char *start_time_value = path_key_value_get(event_file_path, "start_time");
+    char *end_time_value = path_key_value_get(event_file_path, "end_time");
+
+    event_t event;
+    memset(&event, 0, sizeof(event));
+    event.name = build_event_name_from_filename(event_file_name);
+    event.description = description ? description : "";
+
+    event.end_time_set = (end_time_value != NULL);
+    event.all_day = (strcmp(event_file_name, "") != 0 &&
+                     strstr(event_file_name, "all_day") != NULL);
+
+    if (start_time_value != NULL) {
+      str_list *start_parts = string_split(start_time_value, '|');
+      if (start_parts->len >= 7) {
+        event.start_time.year = atoi(str_list_get(start_parts, 0));
+        event.start_time.month = atoi(str_list_get(start_parts, 1));
+        event.start_time.day = atoi(str_list_get(start_parts, 2));
+        event.start_time.dotw = atoi(str_list_get(start_parts, 3));
+        event.start_time.hour = atoi(str_list_get(start_parts, 4));
+        event.start_time.min = atoi(str_list_get(start_parts, 5));
+        event.start_time.sec = atoi(str_list_get(start_parts, 6));
+      }
+      str_list_free(start_parts);
+    }
+
+    if (end_time_value != NULL) {
+      str_list *end_parts = string_split(end_time_value, '|');
+      if (end_parts->len >= 7) {
+        event.end_time.year = atoi(str_list_get(end_parts, 0));
+        event.end_time.month = atoi(str_list_get(end_parts, 1));
+        event.end_time.day = atoi(str_list_get(end_parts, 2));
+        event.end_time.dotw = atoi(str_list_get(end_parts, 3));
+        event.end_time.hour = atoi(str_list_get(end_parts, 4));
+        event.end_time.min = atoi(str_list_get(end_parts, 5));
+        event.end_time.sec = atoi(str_list_get(end_parts, 6));
+      }
+      str_list_free(end_parts);
+    }
+
+    char display_buf[80];
+    if (event.all_day) {
+      snprintf(display_buf, sizeof(display_buf), "all day-%s", event.name);
+    } else {
+      snprintf(display_buf,
+          sizeof(display_buf),
+          "%02d:%02d-%s",
+          event.start_time.hour,
+          event.start_time.min,
+          event.name);
+    }
+
+    str_list_append(today_events, display_buf);
+
+    free((char *)event.name);
+    free(description);
+    free(start_time_value);
+    free(end_time_value);
+    path_free(event_file_path);
+  }
+
+  str_list_free(event_files);
+  path_free(calendar_events_path);
+  path_free(calendar_events_full_path);
+  path_free(today_events_path);
+  return today_events;
+}

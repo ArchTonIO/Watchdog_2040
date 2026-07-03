@@ -51,6 +51,7 @@ void delete_event(crud_list *clist, const char *event_data);
 // void delete_event(event_t *e);
 // void dump_event(event_t *e);
 void load_days_with_events(calendar_t *this_calendar);
+str_list *get_today_events(void);
 void process_calendar_events();
 
 #endif

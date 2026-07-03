@@ -101,7 +101,6 @@ void edit_service_credentials(crud_list *list, const char *service_name) {
   char *buf = text_editor_get_buf(credentials_editor);
 
   str_list *editor_buf = string_split(buf, '\n');
-  str_list_print(editor_buf);
   str_list *username_buf = string_split(str_list_get(editor_buf, 0), ' ');
   str_list *password_buf = string_split(str_list_get(editor_buf, 1), ' ');
 

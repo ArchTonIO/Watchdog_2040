@@ -27,6 +27,11 @@ typedef struct {
   bool sx1278_status;
   bool en160_status;
   bool alarm_set;
+  bool show_today_events;
+  str_list *today_events;
+  uint8_t date_switch_counter;
+  uint8_t event_switch_counter;
+  uint8_t current_event_index;
   clock_bitmaps *clock_bmp;
   uint8_t alarm_time;
   uint8_t aqi;

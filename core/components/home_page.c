@@ -7,7 +7,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "apps/calendar/include/event.h"
 #include "apps/messaging/include/msg_manager.h"
 #include "apps/time/include/time_utils.h"
 #include "core/components/include/bitmaps.h"
@@ -22,6 +24,7 @@
 #include "core/hardware_drivers/include/sdcard.h"
 #include "core/hardware_drivers/include/ssd1306.h"
 #include "core/hardware_drivers/include/sx1278.h"
+#include "core/utils/include/utils.h"
 
 home_page *home_page_inst;
 
@@ -41,6 +44,10 @@ home_page *home_page_init() {
   new_home_page->bpm = 0;
   new_home_page->spo2 = 0;
   new_home_page->notifications = 0;
+  new_home_page->show_today_events = true;
+  new_home_page->date_switch_counter = 0;
+  new_home_page->event_switch_counter = 0;
+  new_home_page->current_event_index = 0;
   new_home_page->ly = layout_init();
   home_page_inst = new_home_page;
   layout_add_layer(home_page_inst->ly, "top_bar_bitmaps");
@@ -72,6 +79,7 @@ void process_system_state() {
   home_page_inst->alarm_set = drivers->internal_rtc.alarm_set;
   home_page_inst->aqi = ens160_read_aqi(&(drivers->ens160));
   home_page_inst->notifications = msg_man_inst->received_msgs_count;
+  home_page_inst->today_events = get_today_events();
 }
 
 const uint8_t *get_battery_level_bitmap() {
@@ -304,6 +312,8 @@ void update_clock(uint8_t start_pix_w, uint8_t start_pix_h, uint8_t spacing) {
 }
 
 void update_texts() {
+  layer *text_areas_ly = get_layer_by_name(home_page_inst->ly, "text_areas");
+
   uint8_t aqi_value = ens160_read_aqi(&(drivers->ens160));
   char *aqi_value_str;
   if (aqi_value == 1) {
@@ -347,32 +357,116 @@ void update_texts() {
       .posx = 12,
       .posy = 7,
       .is_inverted = false};
-  char *weekday = from_dotw_to_weekday(
-      drivers->internal_rtc.internal_datetime.dotw);
-  static char date_str[13];
-  snprintf(date_str,
-      10,
-      "%02d/%02d/%02d",
-      drivers->internal_rtc.internal_datetime.day,
-      drivers->internal_rtc.internal_datetime.month,
-      drivers->internal_rtc.internal_datetime.year - 2000);
-  text_area day_text = {.text = weekday,
-      .posx = 7,
-      .posy = 6,
-      .is_inverted = false};
-  text_area date_text = {.text = date_str,
-      .posx = 5,
-      .posy = 7,
-      .is_inverted = false};
-  layer *text_areas_ly = get_layer_by_name(home_page_inst->ly, "text_areas");
-  layer_add_text_area(text_areas_ly, aqi_text);
-  layer_add_text_area(text_areas_ly, aqi_value_text);
-  layer_add_text_area(text_areas_ly, ulmp_text);
-  layer_add_text_area(text_areas_ly, ulmp_addr_text);
-  layer_add_text_area(text_areas_ly, sram_text);
-  layer_add_text_area(text_areas_ly, used_ram_text);
-  layer_add_text_area(text_areas_ly, day_text);
-  layer_add_text_area(text_areas_ly, date_text);
+
+  if (!home_page_inst->show_today_events ||
+      home_page_inst->today_events->len == 0) {
+    char *weekday = from_dotw_to_weekday(
+        drivers->internal_rtc.internal_datetime.dotw);
+    static char day_str[11];
+    static char date_str[11];
+    snprintf(day_str, 11, "%s", weekday);
+    snprintf(date_str,
+        11,
+        "%02d/%02d/%02d",
+        drivers->internal_rtc.internal_datetime.day,
+        drivers->internal_rtc.internal_datetime.month,
+        drivers->internal_rtc.internal_datetime.year - 2000);
+    str_fill_spaces(day_str, 11, 4, 4);
+    str_fill_spaces(date_str, 11, 1, 1);
+    text_area day_text = {.text = day_str,
+        .posx = 4,
+        .posy = 6,
+        .is_inverted = false};
+    text_area date_text = {.text = date_str,
+        .posx = 4,
+        .posy = 7,
+        .is_inverted = false};
+    home_page_inst->date_switch_counter++;
+    if (home_page_inst->date_switch_counter >= 10) {
+      home_page_inst->show_today_events = true;
+      home_page_inst->date_switch_counter = 0;
+    }
+    str_list_free(home_page_inst->today_events);
+    layer_remove_text_areas(text_areas_ly);
+    layer_add_text_area(text_areas_ly, day_text);
+    layer_add_text_area(text_areas_ly, date_text);
+    layer_add_text_area(text_areas_ly, aqi_text);
+    layer_add_text_area(text_areas_ly, aqi_value_text);
+    layer_add_text_area(text_areas_ly, ulmp_text);
+    layer_add_text_area(text_areas_ly, ulmp_addr_text);
+    layer_add_text_area(text_areas_ly, sram_text);
+    layer_add_text_area(text_areas_ly, used_ram_text);
+    return;
+  }
+  if (home_page_inst->show_today_events &&
+      home_page_inst->today_events->len > 0) {
+    char *event_str = str_list_get(home_page_inst->today_events,
+        home_page_inst->current_event_index);
+    static char event_time_buf[16];
+    static char event_name_buf[32];
+    char *separator = strchr(event_str, '-');
+
+    if (separator != NULL) {
+      size_t time_len = (size_t)(separator - event_str);
+      if (time_len >= sizeof(event_time_buf))
+        time_len = sizeof(event_time_buf) - 1;
+      memcpy(event_time_buf, event_str, time_len);
+      event_time_buf[time_len] = '\0';
+
+      const char *event_name = separator + 1;
+      size_t name_len = strlen(event_name);
+      if (name_len >= sizeof(event_name_buf))
+        name_len = sizeof(event_name_buf) - 1;
+      memcpy(event_name_buf, event_name, name_len);
+      event_name_buf[name_len] = '\0';
+    } else {
+      snprintf(event_time_buf, sizeof(event_time_buf), "%s", event_str);
+      event_name_buf[0] = '\0';
+    }
+    static char event_time_str[11];
+    static char event_name_str[11];
+    snprintf(event_time_str, 11, "%s  ", event_time_buf);
+    str_fill_spaces(event_time_str,
+        11,
+        (11 - strlen(event_time_str)) / 2,
+        (11 - strlen(event_time_str)) / 2);
+    snprintf(event_name_str, 11, "%s", event_name_buf);
+    str_fill_spaces(event_name_str,
+        11,
+        (11 - strlen(event_name_str)) / 2,
+        (11 - strlen(event_name_str)) / 2);
+    text_area event_time_text = {.text = event_time_str,
+        .posx = 4,
+        .posy = 6,
+        .is_inverted = false};
+    text_area event_name_text = {.text = event_name_str,
+        .posx = 4,
+        .posy = 7,
+        .is_inverted = false};
+    home_page_inst->event_switch_counter++;
+    printf("current event index: %d", home_page_inst->current_event_index);
+    if (home_page_inst->event_switch_counter >= 10) {
+      if (home_page_inst->current_event_index <
+          home_page_inst->today_events->len - 1) {
+        home_page_inst->current_event_index++;
+      } else {
+        home_page_inst->show_today_events = false;
+        home_page_inst->current_event_index = 0;
+      }
+      home_page_inst->event_switch_counter = 0;
+    }
+    str_list_free(home_page_inst->today_events);
+    layer_remove_text_areas(text_areas_ly);
+    layer_add_text_area(text_areas_ly, event_time_text);
+    layer_add_text_area(text_areas_ly, event_name_text);
+    layer_add_text_area(text_areas_ly, aqi_text);
+    layer_add_text_area(text_areas_ly, aqi_value_text);
+    layer_add_text_area(text_areas_ly, ulmp_text);
+    layer_add_text_area(text_areas_ly, ulmp_addr_text);
+    layer_add_text_area(text_areas_ly, sram_text);
+    layer_add_text_area(text_areas_ly, used_ram_text);
+    return;
+  }
 }
 
 void create_lines() {

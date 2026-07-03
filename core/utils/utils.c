@@ -256,3 +256,27 @@ string_substring_replace(const char *str, const char *old, const char *new) {
   strcpy(dst, p);
   return result;
 }
+
+void str_fill_spaces(char *buf,
+    size_t buf_size,
+    size_t n_spaces_left,
+    size_t n_spaces_right) {
+  size_t len = strlen(buf);
+
+  if (len >= buf_size)
+    return;
+
+  size_t avail = buf_size - len - 1;
+
+  if (n_spaces_left + n_spaces_right > avail) {
+    if (n_spaces_left > avail)
+      n_spaces_left = avail;
+    n_spaces_right = avail - n_spaces_left;
+  }
+
+  memmove(buf + n_spaces_left, buf, len + 1);
+  memset(buf, ' ', n_spaces_left);
+  memset(buf + n_spaces_left + len, ' ', n_spaces_right);
+
+  buf[n_spaces_left + len + n_spaces_right] = '\0';
+}
