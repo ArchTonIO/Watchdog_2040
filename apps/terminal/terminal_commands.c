@@ -422,6 +422,9 @@ int8_t __cat__(command_params params) {
     return 1;
   }
   char *file = str_list_get(params.args, 0);
+  if (params.args->len > 1)
+    file = str_list_concat(params.args, ' ');
+
   path *file_path = path_init(file);
   path *full_path = path_concat(params.term->current_path, file_path);
   path_free(file_path);
