@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "core/components/include/hw_manager.h"
+#include "core/graphics/include/graphic_primitives.h"
 #include "core/hardware_drivers/include/ssd1306.h"
 
 layer *get_layer_by_name(layout *lo, char *layer_name) {
@@ -32,6 +33,8 @@ static layer *create_layer(char *layer_name) {
   ly->polylines_count = 0;
   ly->bitmap_defs_count = 0;
   ly->text_areas_count = 0;
+  ly->buttons_count = 0;
+  ly->toggle_buttons_count = 0;
   return ly;
 }
 
@@ -197,6 +200,16 @@ void layer_add_text_area(layer *ly, text_area ta) {
   ly->text_areas_count++;
 }
 
+void layer_add_button(layer *ly, button_t btn) {
+  ly->buttons[ly->buttons_count] = btn;
+  ly->buttons_count++;
+}
+
+void layer_add_toggle_button(layer *ly, toggle_button_t btn) {
+  ly->toggle_buttons[ly->toggle_buttons_count] = btn;
+  ly->toggle_buttons_count++;
+}
+
 /**
  * @brief Draws all elements in the layer to the OLED screen memory.
  * @param ly The layer to draw.
@@ -235,6 +248,33 @@ void layer_draw_all(layer *ly) {
         ly->text_areas[i].posy,
         ly->text_areas[i].is_inverted);
   }
+  for (uint8_t i = 0; i < ly->buttons_count; i++) {
+    ssd1306_draw_bitmap(&(drivers->ssd1306),
+        ly->buttons[i].bd.posx,
+        ly->buttons[i].bd.posy,
+        ly->buttons[i].bd.bitmap,
+        ly->buttons[i].bd.width,
+        ly->buttons[i].bd.height,
+        ly->buttons[i].selected);
+  }
+  for (uint8_t i = 0; i < ly->toggle_buttons_count; i++) {
+    if (!ly->toggle_buttons[i].state)
+      ssd1306_draw_bitmap(&(drivers->ssd1306),
+          ly->toggle_buttons[i].bd_state_1.posx,
+          ly->toggle_buttons[i].bd_state_1.posy,
+          ly->toggle_buttons[i].bd_state_1.bitmap,
+          ly->toggle_buttons[i].bd_state_1.width,
+          ly->toggle_buttons[i].bd_state_1.height,
+          ly->toggle_buttons[i].selected);
+    else
+      ssd1306_draw_bitmap(&(drivers->ssd1306),
+          ly->toggle_buttons[i].bd_state_2.posx,
+          ly->toggle_buttons[i].bd_state_2.posy,
+          ly->toggle_buttons[i].bd_state_2.bitmap,
+          ly->toggle_buttons[i].bd_state_2.width,
+          ly->toggle_buttons[i].bd_state_2.height,
+          ly->toggle_buttons[i].selected);
+  }
 }
 
 /**
@@ -256,6 +296,18 @@ void layer_clear_all(layer *ly) {
   }
   for (uint8_t i = 0; i < ly->polylines_count; i++) {
     clear_polyline(ly->polylines[i]);
+  }
+}
+
+void layer_clear_bitmap_definitions(layer *ly) {
+  for (uint8_t i = 0; i < ly->bitmap_defs_count; i++) {
+    uint8_t min_x = ly->bitmap_defs[i].posx;
+    uint8_t min_y = ly->bitmap_defs[i].posy;
+    uint8_t max_x = ly->bitmap_defs[i].posx + ly->bitmap_defs[i].width - 1;
+    uint8_t max_y = ly->bitmap_defs[i].posy + ly->bitmap_defs[i].height - 1;
+    for (uint8_t x = min_x; x <= max_x; x++)
+      for (uint8_t y = min_y; y <= max_y; y++)
+        ssd1306_draw_pixel(&(drivers->ssd1306), x, y, 0);
   }
 }
 

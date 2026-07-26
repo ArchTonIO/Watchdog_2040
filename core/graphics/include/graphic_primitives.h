@@ -48,6 +48,21 @@ typedef struct {
   bool is_inverted;
 } text_area;
 
+typedef struct {
+  bitmap_definition bd;
+  bool selected;
+  void (*press_callback)(void);
+} button_t;
+
+typedef struct {
+  bitmap_definition bd_state_1;   /* state: false */
+  bitmap_definition bd_state_2;   /* state: true */
+  void (*press_callback_1)(void); /* state: false */
+  void (*press_callback_2)(void); /* state: true */
+  bool state;
+  bool selected;
+} toggle_button_t;
+
 point create_point(uint8_t x, uint8_t y);
 void draw_point(point p);
 void clear_point(point p);
@@ -67,5 +82,9 @@ void draw_rectangle(rectangle r);
 polyline create_polyline(point *points);
 void clear_polyline(polyline pl);
 void draw_polyline(polyline pl);
+
+void button_init();
+void button_select();
+void button_press();
 
 #endif

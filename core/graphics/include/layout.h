@@ -19,6 +19,8 @@ typedef struct {
   polyline polylines[MAX_ENTITIES_BY_TYPE];
   bitmap_definition bitmap_defs[MAX_ENTITIES_BY_TYPE];
   text_area text_areas[MAX_ENTITIES_BY_TYPE];
+  button_t buttons[MAX_ENTITIES_BY_TYPE];
+  toggle_button_t toggle_buttons[MAX_ENTITIES_BY_TYPE];
   uint8_t points_count;
   uint8_t lines_count;
   uint8_t circles_count;
@@ -26,6 +28,8 @@ typedef struct {
   uint8_t polylines_count;
   uint8_t bitmap_defs_count;
   uint8_t text_areas_count;
+  uint8_t buttons_count;
+  uint8_t toggle_buttons_count;
 } layer;
 
 typedef struct {
@@ -40,33 +44,6 @@ void layout_add_layer(layout *lo, char *layer_name);
 
 void layout_draw_layer(layout *lo, char *layer_name);
 void layout_draw_all_layers(layout *lo);
-
-// void layout_add_point_to_layer(layout *lo, char *layer_name, point p);
-// void layout_add_line_to_layer(layout *lo, char *layer_name, line l);
-// void layout_add_circle_to_layer(layout *lo, char *layer_name, circle c);
-// void layout_add_rectangle_to_layer(layout *lo, char *layer_name, rectangle
-// r); void layout_add_polyline_to_layer(layout *lo, char *layer_name, polyline
-// pl); void layout_add_bitmap_definition_to_layer(layout *lo,
-//     char *layer_name,
-//     bitmap_definition bd);
-// void layout_add_text_area_to_layer(layout *lo, char *layer_name, text_area
-// ta);
-
-// void layout_remove_point_from_layer(layout *lo, char *layer_name, point p);
-// void layout_remove_line_from_layer(layout *lo, char *layer_name, line l);
-// void layout_remove_circle_from_layer(layout *lo, char *layer_name, circle
-// c); void layout_remove_rectangle_from_layer(layout *lo,
-//     char *layer_name,
-//     rectangle r);
-// void layout_remove_polyline_from_layer(layout *lo,
-//     char *layer_name,
-//     polyline pl);
-// void layout_remove_bitmap_definition_from_layer(layout *lo,
-//     char *layer_name,
-//     bitmap_definition bd);
-// void layout_remove_text_area_from_layer(layout *lo,
-//     char *layer_name,
-//     text_area ta);
 void layout_remove_layer_entities(layout *lo, char *layer_name);
 void layout_remove_all_layers_entities(layout *lo);
 
@@ -89,8 +66,9 @@ void layer_add_circle(layer *ly, circle c);
 void layer_add_rectangle(layer *ly, rectangle r);
 void layer_add_polyline(layer *ly, polyline p);
 void layer_add_bitmap_definition(layer *ly, bitmap_definition bd);
+void layer_add_button(layer *ly, button_t btn);
+void layer_add_toggle_button(layer *ly, toggle_button_t btn);
 void layer_add_text_area(layer *ly, text_area ta);
-
 /*
 layer l yer_remove functions
 
@@ -106,6 +84,8 @@ void layer_remove_rectangles(layer *ly);
 void layer_remove_polylines(layer *ly);
 void layer_remove_bitmap_definitions(layer *ly);
 void layer_remove_text_areas(layer *ly);
+void layer_remove_buttons(layer *ly);
+void layer_remove_toggle_buttons(layer *ly);
 void layer_remove_all(layer *ly);
 
 /*
@@ -124,6 +104,8 @@ void layer_draw_rectangles(layer *ly);
 void layer_draw_polylines(layer *ly);
 void layer_draw_bitmap_definitions(layer *ly);
 void layer_draw_text_areas(layer *ly);
+void layer_draw_buttons(layer *ly);
+void layer_draw_toggle_buttons(layer *ly);
 void layer_draw_all(layer *ly);
 
 /*
@@ -145,6 +127,8 @@ void layer_clear_rectangles(layer *ly);
 void layer_clear_polylines(layer *ly);
 void layer_clear_bitmap_definitions(layer *ly);
 void layer_clear_text_areas(layer *ly);
+void layer_clear_buttons(layer *ly);
+void layer_clear_toggle_buttons(layer *ly);
 void layer_clear_all(layer *ly);
 
 #endif
