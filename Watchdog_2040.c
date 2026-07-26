@@ -15,7 +15,7 @@
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/malloc_mascot.h"
 #include "core/components/include/sys_paths_manager.h"
-#include "core/components/include/system_launchers.h"
+#include "core/components/include/system_tray.h"
 #include "core/data_structures/include/string_list.h"
 #include "core/hardware_drivers/include/core1.h"
 #include "core/hardware_drivers/include/haptics.h"
@@ -73,33 +73,34 @@ void sys_mainloop() {
   uint8_t screen_up_seconds = 10;
   uint32_t screen_up_start;
   while (true) {
+    home_page_reset_state();
     if (!first_run)
       sys_idle();
-    joystick_update(&(drivers->joystick));
     update_conversations();
     process_answer();
     haptic_short_pulse();
     first_run = false;
     screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
+    joystick_update(&(drivers->joystick));
     while (true) {
+      joystick_update(&(drivers->joystick));
       check_peripherals();
       process_system_state();
       update_conversations();
       process_answer();
       display_home_page();
-      joystick_update(&(drivers->joystick));
-      if ((drivers->joystick).button_pressed)
-        toggle_continuous_rx();
-      if (joystick_get_direction(&(drivers->joystick)) == E) {
-        display_main_menu();
+      if (joystick_get_direction(&(drivers->joystick)) == E &&
+          !system_tray_in_use()) {
         sleep_ms(200);
         screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
       }
-      joystick_update(&(drivers->joystick));
-      if (joystick_get_direction(&(drivers->joystick)) == W) {
+      if (joystick_get_direction(&(drivers->joystick)) == W &&
+          !system_tray_in_use()) {
         sleep_ms(200);
         break;
       }
+      if (system_tray_in_use())
+        screen_up_start = to_us_since_boot(get_absolute_time()) / 1000000;
       if ((to_us_since_boot(get_absolute_time()) / 1000000) - screen_up_start >
           screen_up_seconds)
         break;

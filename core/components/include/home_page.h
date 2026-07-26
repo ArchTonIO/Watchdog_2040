@@ -7,8 +7,16 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "core/components/include/system_tray.h"
 #include "core/data_structures/include/string_list.h"
 #include "core/graphics/include/layout.h"
+
+/*GUI layers*/
+#define TOP_BAR_BITMAPS "top_bar_bitmaps"
+// #define RXCONTINUOUS "rxcontinuous"
+#define CLOCK_BITMAPS "clock_bitmaps"
+#define TEXT_AREAS "text_areas"
+#define LINES "lines"
 
 typedef struct {
   const uint8_t *hour_tens_bitmap;
@@ -39,11 +47,15 @@ typedef struct {
   uint8_t spo2;
   uint16_t notifications;
   layout *ly;
+  system_tray_t system_tray;
+  bool system_tray_expanded;
 } home_page;
 
 home_page *home_page_init();
 void check_peripherals();
 void process_system_state();
 void display_home_page();
+void home_page_reset_state();
+bool system_tray_in_use();
 
 #endif

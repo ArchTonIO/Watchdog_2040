@@ -390,12 +390,10 @@ uint16_t choose_from_contacts() {
   return addr;
 }
 
-void enable_message_notifications() {
+inline void enable_message_notifications() {
   msg_man_inst->should_notify = true;
-  print_info("Notifications enabled");
 }
 
-void disable_message_notifications() {
+inline void disable_message_notifications() {
   msg_man_inst->should_notify = false;
-  print_info("Notifications disabled");
 }

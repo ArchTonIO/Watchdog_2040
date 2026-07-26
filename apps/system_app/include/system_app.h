@@ -26,4 +26,7 @@ void display_reboot_screen();
 void display_reboot_to_bootsel_screen();
 void display_tutorial_page();
 
+void enable_auto_brightness();
+void disable_auto_brightness();
+
 #endif

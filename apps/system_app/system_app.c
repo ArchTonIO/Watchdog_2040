@@ -372,3 +372,11 @@ void display_tutorial_page() {
   options_page_launch(tutorial_page);
   options_page_free(tutorial_page);
 }
+
+inline void enable_auto_brightness() {
+  ssd1306_enable_auto_brightness(&(drivers->ssd1306));
+}
+
+inline void disable_auto_brightness() {
+  ssd1306_disable_auto_brightness(&(drivers->ssd1306));
+}

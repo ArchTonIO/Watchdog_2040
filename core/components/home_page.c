@@ -15,11 +15,15 @@
 #include "core/components/include/bitmaps.h"
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/malloc_mascot.h"
+#include "core/components/include/system_launchers.h"
+#include "core/components/include/system_tray.h"
 #include "core/data_structures/include/string_list.h"
 #include "core/graphics/include/graphic_primitives.h"
 #include "core/graphics/include/layout.h"
 #include "core/hardware_drivers/include/battery.h"
 #include "core/hardware_drivers/include/ens160.h"
+#include "core/hardware_drivers/include/haptics.h"
+#include "core/hardware_drivers/include/joystick.h"
 #include "core/hardware_drivers/include/rtc_time.h"
 #include "core/hardware_drivers/include/sdcard.h"
 #include "core/hardware_drivers/include/ssd1306.h"
@@ -49,11 +53,16 @@ home_page *home_page_init() {
   new_home_page->event_switch_counter = 0;
   new_home_page->current_event_index = 0;
   new_home_page->ly = layout_init();
+  system_tray_t sys_tray;
+  system_tray_init(&sys_tray);
+  new_home_page->system_tray = sys_tray;
+  new_home_page->system_tray_expanded = false;
+
   home_page_inst = new_home_page;
-  layout_add_layer(home_page_inst->ly, "top_bar_bitmaps");
-  layout_add_layer(home_page_inst->ly, "clock_bitmaps");
-  layout_add_layer(home_page_inst->ly, "text_areas");
-  layout_add_layer(home_page_inst->ly, "lines");
+  layout_add_layer(home_page_inst->ly, TOP_BAR_BITMAPS);
+  layout_add_layer(home_page_inst->ly, CLOCK_BITMAPS);
+  layout_add_layer(home_page_inst->ly, TEXT_AREAS);
+  layout_add_layer(home_page_inst->ly, LINES);
   create_lines();
   return new_home_page;
 }
@@ -145,12 +154,6 @@ const uint8_t *get_alarm_status_bitmap() {
     return alarm_disabled;
 }
 
-const uint8_t *get_rxcontinuous_indicator_bitmap() {
-  if (is_rxcontinuous_enabled())
-    return rxcontinuous_enabled;
-  return rxcontinuous_disabled;
-}
-
 void update_clock_bitmaps() {
   update_time(&(drivers->internal_rtc));
   int8_t hour = drivers->internal_rtc.internal_datetime.hour;
@@ -213,28 +216,13 @@ void update_top_bar() {
       .posy = 0,
       .is_inverted = false};
   layer *top_bar_bitmaps_ly = get_layer_by_name(home_page_inst->ly,
-      "top_bar_bitmaps");
+      TOP_BAR_BITMAPS);
   layer_add_bitmap_definition(top_bar_bitmaps_ly, battery_level_btmp_def);
   layer_add_bitmap_definition(top_bar_bitmaps_ly, sd_status_btmp_def);
   layer_add_bitmap_definition(top_bar_bitmaps_ly, sx1278_status_btmp_def);
   layer_add_bitmap_definition(top_bar_bitmaps_ly, en160_status_btmp_def);
   layer_add_bitmap_definition(top_bar_bitmaps_ly, notifications_btmp_def);
   layer_add_bitmap_definition(top_bar_bitmaps_ly, alarm_status_btmp_def);
-}
-
-void update_rxcontinuous_indicator() {
-  bitmap_definition rxcontinuous_indicator_btmp_def = {
-      .bitmap = get_rxcontinuous_indicator_bitmap(),
-      .width = 21,
-      .height = 16,
-      .posx = TOP_BAR_BITMAPS_W * 5, // aligned with the alarm top tray icon
-      .posy = 24,
-      .is_inverted = false,
-  };
-  layer *top_bar_bitmaps_ly = get_layer_by_name(home_page_inst->ly,
-      "top_bar_bitmaps");
-  layer_add_bitmap_definition(top_bar_bitmaps_ly,
-      rxcontinuous_indicator_btmp_def);
 }
 
 void update_clock(uint8_t start_pix_w, uint8_t start_pix_h, uint8_t spacing) {
@@ -300,7 +288,7 @@ void update_clock(uint8_t start_pix_w, uint8_t start_pix_h, uint8_t spacing) {
       .posy = start_pix_h,
       .is_inverted = false};
   layer *clock_bitmaps_ly = get_layer_by_name(home_page_inst->ly,
-      "clock_bitmaps");
+      CLOCK_BITMAPS);
   layer_add_bitmap_definition(clock_bitmaps_ly, hour_tens_btmp_def);
   layer_add_bitmap_definition(clock_bitmaps_ly, hour_units_btmp_def);
   layer_add_bitmap_definition(clock_bitmaps_ly, clock_dots_btmp_def);
@@ -312,7 +300,7 @@ void update_clock(uint8_t start_pix_w, uint8_t start_pix_h, uint8_t spacing) {
 }
 
 void update_texts() {
-  layer *text_areas_ly = get_layer_by_name(home_page_inst->ly, "text_areas");
+  layer *text_areas_ly = get_layer_by_name(home_page_inst->ly, TEXT_AREAS);
 
   uint8_t aqi_value = ens160_read_aqi(&(drivers->ens160));
   char *aqi_value_str;
@@ -444,7 +432,6 @@ void update_texts() {
         .posy = 7,
         .is_inverted = false};
     home_page_inst->event_switch_counter++;
-    printf("current event index: %d", home_page_inst->current_event_index);
     if (home_page_inst->event_switch_counter >= 10) {
       if (home_page_inst->current_event_index <
           home_page_inst->today_events->len - 1) {
@@ -486,7 +473,7 @@ void create_lines() {
       create_point(SSD1306_WIDTH - 35,
           start_pix_h + CLOCK_DOTS_BITMAPS_H + line_padding * 2 - 3),
       create_point(SSD1306_WIDTH - 35, SSD1306_HEIGHT - 1));
-  layer *lines_ly = get_layer_by_name(home_page_inst->ly, "lines");
+  layer *lines_ly = get_layer_by_name(home_page_inst->ly, LINES);
   layer_add_line(lines_ly, l);
   layer_add_line(lines_ly, l1);
   layer_add_line(lines_ly, date_line_left);
@@ -497,8 +484,8 @@ void display_home_page() {
   uint8_t start_pix_w = 28;
   uint8_t start_pix_h = 23;
   uint8_t spacing = 2;
-  update_top_bar();
-  update_rxcontinuous_indicator();
+  if (!home_page_inst->system_tray_expanded)
+    update_top_bar();
   update_clock_bitmaps();
   update_clock(start_pix_w, start_pix_h, spacing);
   update_texts();
@@ -507,11 +494,56 @@ void display_home_page() {
   ssd1306_show(&(drivers->ssd1306));
   ssd1306_release_mutex(&(drivers->ssd1306));
   layer *top_bar_bitmaps = get_layer_by_name(home_page_inst->ly,
-      "top_bar_bitmaps");
-  layer *clock_bitmaps = get_layer_by_name(home_page_inst->ly,
-      "clock_bitmaps");
-  layer *text_areas = get_layer_by_name(home_page_inst->ly, "text_areas");
-  layer_remove_bitmap_definitions(top_bar_bitmaps);
+      TOP_BAR_BITMAPS);
+  layer *clock_bitmaps = get_layer_by_name(home_page_inst->ly, CLOCK_BITMAPS);
+  layer *text_areas = get_layer_by_name(home_page_inst->ly, TEXT_AREAS);
   layer_remove_bitmap_definitions(clock_bitmaps);
   layer_remove_text_areas(text_areas);
+
+  joystick_update(&(drivers->joystick));
+  if (joystick_get_direction(&(drivers->joystick)) == S) {
+    layer_clear_bitmap_definitions(top_bar_bitmaps);
+    layer_remove_bitmap_definitions(top_bar_bitmaps);
+    ssd1306_show(&(drivers->ssd1306));
+    system_tray_expand(&(home_page_inst->system_tray));
+    system_tray_refresh(&(home_page_inst->system_tray));
+    home_page_inst->system_tray_expanded = true;
+  }
+  if (joystick_get_direction(&(drivers->joystick)) == N &&
+      home_page_inst->system_tray_expanded) {
+    system_tray_collapse(&(home_page_inst->system_tray));
+    home_page_inst->system_tray_expanded = false;
+  }
+  if (joystick_get_direction(&(drivers->joystick)) == E) {
+    if (home_page_inst->system_tray_expanded) {
+      haptic_auto_pulse();
+      system_tray_select_right(&(home_page_inst->system_tray));
+      system_tray_refresh(&(home_page_inst->system_tray));
+    } else {
+      display_main_menu();
+    }
+  }
+  if (joystick_get_direction(&(drivers->joystick)) == W) {
+    if (home_page_inst->system_tray_expanded) {
+      haptic_auto_pulse();
+      system_tray_select_left(&(home_page_inst->system_tray));
+      system_tray_refresh(&(home_page_inst->system_tray));
+    }
+  }
+  if ((drivers->joystick).button_pressed &&
+      home_page_inst->system_tray_expanded) {
+    system_tray_press_button(&(home_page_inst->system_tray));
+    system_tray_refresh(&(home_page_inst->system_tray));
+  }
+  if (!home_page_inst->system_tray_expanded) {
+    layer_remove_bitmap_definitions(top_bar_bitmaps);
+  }
+}
+
+inline void home_page_reset_state() {
+  home_page_inst->system_tray_expanded = false;
+}
+
+inline bool system_tray_in_use() {
+  return home_page_inst->system_tray_expanded;
 }
