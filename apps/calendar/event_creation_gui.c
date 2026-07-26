@@ -11,6 +11,7 @@
 #include "core/graphics/include/layout.h"
 #include "core/hardware_drivers/include/config.h"
 #include "core/hardware_drivers/include/joystick.h"
+#include "core/utils/include/utils.h"
 
 static uint8_t repeat = REPEAT_ONCE;
 static bool alarm_30_min;
@@ -18,56 +19,20 @@ static bool alarm_24_hrs;
 static bool alarm_1_week;
 static bool should_exit = false;
 
-static inline void set_repeat_day() {
-  printf("set repeat: day\n");
-  repeat = REPEAT_DAILY;
-}
-static inline void set_repeat_week() {
-  printf("set repeat: week\n");
-  repeat = REPEAT_WEEKLY;
-}
-static inline void set_repeat_month() {
-  printf("set repeat: month\n");
-  repeat = REPEAT_MONTHLY;
-}
-static inline void set_repeat_year() {
-  printf("set repeat: year\n");
-  repeat = REPEAT_YEARLY;
-}
-static inline void set_alarm_30_min() {
-  printf("set alarm: 30 min\n");
-  alarm_30_min = true;
-}
-static inline void set_alarm_24_hrs() {
-  printf("set alarm: 24 hrs\n");
-  alarm_24_hrs = true;
-}
-static inline void set_alarm_1_week() {
-  printf("set alarm: 1 week\n");
-  alarm_1_week = true;
-}
+static inline void set_repeat_day() { repeat = REPEAT_DAILY; }
+static inline void set_repeat_week() { repeat = REPEAT_WEEKLY; }
+static inline void set_repeat_month() { repeat = REPEAT_MONTHLY; }
+static inline void set_repeat_year() { repeat = REPEAT_YEARLY; }
+static inline void set_alarm_30_min() { alarm_30_min = true; }
+static inline void set_alarm_24_hrs() { alarm_24_hrs = true; }
+static inline void set_alarm_1_week() { alarm_1_week = true; }
 
-static inline void unset_repeat() {
-  printf("unset repeat\n");
-  repeat = REPEAT_ONCE;
-}
+static inline void unset_repeat() { repeat = REPEAT_ONCE; }
 
-static inline void unset_alarm_30_min() {
-  printf("unset alarm: 30 min\n");
-  alarm_30_min = false;
-}
-static inline void unset_alarm_24_hrs() {
-  printf("unset alarm: 24 hrs\n");
-  alarm_24_hrs = false;
-}
-static inline void unset_alarm_1_week() {
-  printf("unset alarm: 1 week\n");
-  alarm_1_week = false;
-}
-static inline void exit_event_creation_gui() {
-  printf("exit event creation gui\n");
-  should_exit = true;
-}
+static inline void unset_alarm_30_min() { alarm_30_min = false; }
+static inline void unset_alarm_24_hrs() { alarm_24_hrs = false; }
+static inline void unset_alarm_1_week() { alarm_1_week = false; }
+static inline void exit_event_creation_gui() { should_exit = true; }
 
 void event_set_datetime_alarm(event_t *event, uint8_t alarm_type) {
   datetime_t alarm_time = event->start_time;
@@ -372,6 +337,34 @@ void event_creation_gui_run(event_creation_gui_t *gui) {
         gui->selected_button_index > 3 && gui->selected_button_index < 8)
       gui->selected_button_index = 0;
 
+    if (should_exit) {
+      gui->event->repeat = repeat;
+      if (alarm_30_min) {
+        event_set_datetime_alarm(gui->event, 0);
+        gui->event->alarms_counter++;
+      }
+      if (alarm_24_hrs) {
+        event_set_datetime_alarm(gui->event, 1);
+        gui->event->alarms_counter++;
+      }
+      if (alarm_1_week) {
+        event_set_datetime_alarm(gui->event, 2);
+        gui->event->alarms_counter++;
+      }
+      if (!alarm_30_min && !alarm_24_hrs && !alarm_1_week) {
+        event_set_datetime_alarm(gui->event, 3);
+        gui->event->alarms_counter = 0;
+      }
+      layout_free(gui->gui_layout);
+      print_loading("Saving event...");
+      repeat = REPEAT_ONCE;
+      alarm_30_min = false;
+      alarm_24_hrs = false;
+      alarm_1_week = false;
+      should_exit = false;
+      return;
+    }
+
     layer_clear_bitmap_definitions(selections_layer);
 
     for (size_t i = 0; i < selections_layer->toggle_buttons_count + 1; i++) {
@@ -385,27 +378,7 @@ void event_creation_gui_run(event_creation_gui_t *gui) {
     if (drivers->joystick.button_pressed) {
       sleep_ms(200);
       joystick_update(&(drivers->joystick));
-      if (should_exit) {
-        gui->event->repeat = repeat;
-        if (alarm_30_min) {
-          event_set_datetime_alarm(gui->event, 0);
-          gui->event->alarms_counter++;
-        }
-        if (alarm_24_hrs) {
-          event_set_datetime_alarm(gui->event, 1);
-          gui->event->alarms_counter++;
-        }
-        if (alarm_1_week) {
-          event_set_datetime_alarm(gui->event, 2);
-          gui->event->alarms_counter++;
-        }
-        if (!alarm_30_min && !alarm_24_hrs && !alarm_1_week) {
-          event_set_datetime_alarm(gui->event, 3);
-          gui->event->alarms_counter = 0;
-        }
-        layout_free(gui->gui_layout);
-        return;
-      }
+
       if (selections_layer->toggle_buttons[gui->selected_button_index].state) {
         selections_layer->toggle_buttons[gui->selected_button_index]
             .press_callback_1();

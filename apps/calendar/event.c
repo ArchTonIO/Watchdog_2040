@@ -440,9 +440,6 @@ void load_days_with_events(calendar_t *this_calendar) {
       this_calendar
           ->days_with_events[this_calendar->days_with_events_counter] = atoi(
           str_list_get(file_name_parts, 2));
-      printf("Day with event: %d\n",
-          this_calendar
-              ->days_with_events[this_calendar->days_with_events_counter]);
       this_calendar->days_with_events_counter++;
     }
     str_list_free(file_name_parts);
