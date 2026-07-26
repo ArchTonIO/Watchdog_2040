@@ -241,6 +241,7 @@ void exit_idle() {
         GPIO_IRQ_EDGE_FALL,
         false,
         &joystick_irq);
+    free(drivers->sx1278);
     drivers->sx1278 = sx1278_init(SX1278_MOSI,
         SX1278_MISO,
         SX1278_SCK,
