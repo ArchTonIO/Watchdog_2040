@@ -813,7 +813,7 @@ void malloc_explains_rxcontinuous() {
   ssd1306_draw_bitmap(&(drivers->ssd1306),
       105,
       24,
-      rxcontinuous_enabled,
+      rxcontinuous_on_icon,
       21,
       16,
       false);
@@ -829,7 +829,7 @@ void malloc_explains_rxcontinuous() {
   ssd1306_draw_bitmap(&(drivers->ssd1306),
       105,
       24,
-      rxcontinuous_enabled,
+      rxcontinuous_on_icon,
       21,
       16,
       false);
@@ -849,7 +849,7 @@ void malloc_explains_rxcontinuous() {
   ssd1306_draw_bitmap(&(drivers->ssd1306),
       105,
       24,
-      rxcontinuous_disabled,
+      rxcontinuous_off_icon,
       21,
       16,
       false);
@@ -868,7 +868,7 @@ void malloc_explains_rxcontinuous() {
   ssd1306_draw_bitmap(&(drivers->ssd1306),
       105,
       24,
-      rxcontinuous_disabled,
+      rxcontinuous_off_icon,
       21,
       16,
       false);

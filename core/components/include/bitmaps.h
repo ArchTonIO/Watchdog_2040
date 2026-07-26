@@ -26,8 +26,6 @@ extern const uint8_t alarm_enabled[];
 extern const uint8_t alarm_disabled[];
 extern const uint8_t *clock_digits[10];
 extern const uint8_t clock_dots[];
-extern const uint8_t rxcontinuous_disabled[];
-extern const uint8_t rxcontinuous_enabled[];
 extern const uint8_t message_received[];
 extern const uint8_t message_received_open[];
 extern const uint8_t malloc_the_mascot[];
@@ -39,6 +37,21 @@ extern const uint8_t malloc_with_both_eyes[];
 extern const uint8_t malloc_with_both_eyes_saying_hi[];
 extern const uint8_t easyarrow[];
 extern const uint8_t NO_ICON[8];
+
+/* system tray icons */
+extern const uint8_t settings_icon[];
+extern const uint8_t brightness_auto_icon[];
+extern const uint8_t brightness_manual_icon[];
+extern const uint8_t flashlight_off_icon[];
+extern const uint8_t flashlight_on_icon[];
+extern const uint8_t notif_off_icon[];
+extern const uint8_t notif_on_icon[];
+extern const uint8_t haptics_on_icon[];
+extern const uint8_t haptics_off_icon[];
+extern const uint8_t rxcontinuous_on_icon[];
+extern const uint8_t rxcontinuous_off_icon[];
+extern const uint8_t *sys_tray_brightness_bar[10];
+
 #define TOP_BAR_BITMAPS_H 16
 #define TOP_BAR_BITMAPS_W 21
 #define CLOCK_DIGIT_BITMAPS_H 17

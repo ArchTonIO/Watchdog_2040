@@ -16,16 +16,17 @@
 #define EVENT_ALARM_OFF "[__]"
 
 #define REPEAT_ONCE 0
-#define REPEAT_WEEKLY 1
-#define REPEAT_MONTHLY 2
-#define REPEAT_YEARLY 3
+#define REPEAT_DAILY 1
+#define REPEAT_WEEKLY 2
+#define REPEAT_MONTHLY 3
+#define REPEAT_YEARLY 4
 
-typedef struct {
-  bool enabled;
-  datetime_t *time;
-  const char *event_name;
-  uint8_t repeat;
-} event_alarm_t;
+#define MAX_REPEATS 30
+
+#define ALARM_30_MIN 0
+#define ALARM_24_HRS 1
+#define ALARM_1_WEEK 2
+#define ALARM_UNSET 3
 
 typedef struct {
   const char *name;
@@ -34,14 +35,17 @@ typedef struct {
   datetime_t end_time;
   bool end_time_set;
   bool all_day;
+  uint8_t repeat;
+  uint8_t alarms_counter;
+  datetime_t alarms[3];
 } event_t;
 
-void event_alarm_dump(event_alarm_t *alarm);
-void event_alarm_load(event_alarm_t *alarm);
 void load_all_event_alarms();
 
-void event_dump(crud_list *clist, event_t *event);
+void event_dump(crud_list *clist, event_t *event, path *base_dir);
+void event_dump_repeats(crud_list *clist, event_t *event);
 void event_load(event_t *event);
+void event_attach_alarm(event_t *event);
 
 void open_events_page_by_day(calendar_t *this_calendar);
 void create_event(crud_list *clist);

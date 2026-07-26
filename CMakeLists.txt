@@ -46,7 +46,9 @@ apps/AQI/bitmaps.c
 ## calendar ##
 apps/calendar/bitmaps.c
 apps/calendar/calendar.c
+apps/calendar/event_creation_gui.c
 apps/calendar/event.c
+apps/calendar/utils.c
 
 ## drawing board ##
 apps/drawing_board/bitmaps.c
@@ -117,6 +119,7 @@ core/components/hw_manager.c
 core/components/malloc_mascot.c
 core/components/sys_paths_manager.c
 core/components/system_launchers.c
+core/components/system_tray.c
 
 ## data structures ##
 core/data_structures/string_list.c

@@ -5,28 +5,24 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "apps/calendar/include/bitmaps.h"
 #include "apps/calendar/include/calendar.h"
+#include "apps/calendar/include/event_creation_gui.h"
+#include "apps/calendar/include/utils.h"
 #include "apps/text_editor/include/text_editor.h"
 #include "apps/time/include/set_alarm.h"
 #include "apps/time/include/time_utils.h"
 #include "core/components/include/hw_manager.h"
 #include "core/components/include/sys_paths_manager.h"
-#include "core/graphics/include/graphic_primitives.h"
-#include "core/graphics/include/layout.h"
-#include "core/hardware_drivers/include/haptics.h"
-#include "core/hardware_drivers/include/joystick.h"
 #include "core/hardware_drivers/include/rtc_time.h"
-#include "core/hardware_drivers/include/ssd1306.h"
 #include "core/tools/include/crud_list.h"
 #include "core/tools/include/options_gen.h"
 #include "core/utils/include/path.h"
 #include "core/utils/include/utils.h"
 
-int16_t selected_year;
-int8_t selected_month;
-int8_t selected_day;
-int8_t selected_dotw;
+static int16_t selected_year;
+static int8_t selected_month;
+static int8_t selected_day;
+static int8_t selected_dotw;
 
 void open_events_page_by_day(calendar_t *this_calendar) {
   path *calendar_events_path = path_init(CALENDAR_EVENTS_DIR);
@@ -43,8 +39,10 @@ void open_events_page_by_day(calendar_t *this_calendar) {
       selected_year,
       selected_month + 1,
       selected_day + 1);
+  path *today_events_dir_name = path_init(today_str);
   path *today_events_path = path_concat(calendar_events_full_path,
-      path_init(today_str));
+      today_events_dir_name);
+  path_free(today_events_dir_name);
   if (!path_exists(calendar_events_full_path))
     path_mkdir(calendar_events_full_path);
   if (!path_exists(today_events_path))
@@ -58,16 +56,14 @@ void open_events_page_by_day(calendar_t *this_calendar) {
   events.create_callback = create_event;
   events.read_update_callback = edit_event;
   events.delete_callback = delete_event;
-  events.flag_callback = flag_event;
-  events.flag_string = EVENT_ALARM_ON;
-  events.unflag_string = EVENT_ALARM_OFF;
+  events.flag_callback = NULL;
   launch_crud_list(&events);
 
   str_list *created_events = path_listdir(today_events_path);
   if (created_events->len == 0) {
     path_fdelete(today_events_path);
   }
-
+  str_list_free(created_events);
   path_free(calendar_events_path);
   path_free(calendar_events_full_path);
   path_free(today_events_path);
@@ -134,11 +130,9 @@ void create_event(crud_list *clist) {
     set_alarm_time(start_time);
     time_digits_to_str(start_time, start_time_buf, 6);
     print_info("Start time set!");
-    printf("Start time: %s\n", start_time_buf);
     set_alarm_time(end_time);
     time_digits_to_str(end_time, end_time_buf, 6);
     print_info("End time set!");
-    printf("End time: %s\n", end_time_buf);
     end_time_set = true;
   } else {
     print_usr_error("Quitting event\ncreation!");
@@ -156,8 +150,8 @@ void create_event(crud_list *clist) {
   /*Saving event*/
   datetime_t datetime_start_time;
   datetime_start_time.year = selected_year;
-  datetime_start_time.month = selected_month;
-  datetime_start_time.day = selected_day;
+  datetime_start_time.month = selected_month + 1;
+  datetime_start_time.day = selected_day + 1;
   datetime_start_time.dotw = selected_dotw;
   datetime_start_time.hour = ((int8_t)start_time_buf[0] - '0') * 10 +
                              ((int8_t)start_time_buf[1] - '0');
@@ -165,11 +159,11 @@ void create_event(crud_list *clist) {
                             ((int8_t)start_time_buf[4] - '0');
   datetime_start_time.sec = 0;
 
-  datetime_t datetime_end_time;
+  datetime_t datetime_end_time = datetime_start_time;
   if (end_time_set) {
     datetime_end_time.year = selected_year;
-    datetime_end_time.month = selected_month;
-    datetime_end_time.day = selected_day;
+    datetime_end_time.month = selected_month + 1;
+    datetime_end_time.day = selected_day + 1;
     datetime_end_time.dotw = selected_dotw;
     datetime_end_time.hour = ((int8_t)end_time_buf[0] - '0') * 10 +
                              ((int8_t)end_time_buf[1] - '0');
@@ -184,7 +178,14 @@ void create_event(crud_list *clist) {
   new_event.end_time = datetime_end_time;
   new_event.end_time_set = end_time_set;
   new_event.all_day = all_day;
-  event_dump(clist, &new_event);
+  new_event.repeat = REPEAT_ONCE;
+  new_event.alarms_counter = 0;
+
+  event_creation_gui_t gui;
+  event_creation_gui_init(&gui, &new_event);
+  event_creation_gui_run(&gui);
+  event_dump(clist, &new_event, clist->workdir);
+  event_dump_repeats(clist, &new_event);
 
   /*freeing memory*/
   free(name_buf);
@@ -221,15 +222,15 @@ str_list *time_to_str_list(datetime_t time) {
   return time_str_list;
 }
 
-void event_dump(crud_list *clist, event_t *event) {
-  size_t filename_len = strlen(EVENT_ALARM_ON) + 1 + strlen("00_00/00_00") +
-                        1 + strlen(event->name) + 1 + 1;
+void event_dump(crud_list *clist, event_t *event, path *base_dir) {
+  size_t filename_len = strlen("00_00/00_00") + 1 + strlen(event->name) + 1 +
+                        1;
   size_t filecontent_len = strlen(event->description) + 1;
   char filename_buf[filename_len];
   char file_buf[filecontent_len];
 
   str_list *start_time_parts = time_to_str_list(event->start_time);
-  str_list *end_time_parts = time_to_str_list(event->end_time);
+  str_list *end_time_parts = NULL;
   char start_time_buf[6];
   snprintf(start_time_buf,
       6,
@@ -237,73 +238,160 @@ void event_dump(crud_list *clist, event_t *event) {
       str_list_get(start_time_parts, -3),
       str_list_get(start_time_parts, -2));
   char end_time_buf[6];
-  snprintf(end_time_buf,
-      6,
-      "%s_%s",
-      str_list_get(end_time_parts, -3),
-      str_list_get(end_time_parts, -2));
+  if (event->end_time_set) {
+    end_time_parts = time_to_str_list(event->end_time);
+    snprintf(end_time_buf,
+        6,
+        "%s_%s",
+        str_list_get(end_time_parts, -3),
+        str_list_get(end_time_parts, -2));
+  }
 
   if (!event->end_time_set || event->all_day)
     snprintf(filename_buf,
         filename_len,
-        "%s %s %s",
-        EVENT_ALARM_OFF,
+        "%s %s",
         event->all_day ? "all_day" : start_time_buf,
         event->name);
   else
     snprintf(filename_buf,
         filename_len,
-        "%s %s-%s %s",
-        EVENT_ALARM_OFF,
+        "%s-%s %s",
         start_time_buf,
         end_time_buf,
         event->name);
 
   path *file_path_part = path_init(filename_buf);
-  path *file_path = path_concat(clist->workdir, file_path_part);
+  path *file_path = path_concat(base_dir, file_path_part);
+  path_free(file_path_part);
   path_key_value_dump(file_path, 'w', "description", event->description);
-  path_key_value_dump(file_path,
-      'a',
-      "start_time",
-      str_list_concat(start_time_parts, '|'));
-  if (event->end_time_set)
-    path_key_value_dump(file_path,
-        'a',
-        "end_time",
-        str_list_concat(end_time_parts, '|'));
+  char *start_time_str = str_list_concat(start_time_parts, '|');
+  path_key_value_dump(file_path, 'a', "start_time", start_time_str);
+  free(start_time_str);
+  if (event->end_time_set) {
+    char *end_time_str = str_list_concat(end_time_parts, '|');
+    path_key_value_dump(file_path, 'a', "end_time", end_time_str);
+    free(end_time_str);
+  }
+  if (event->repeat) {
+    char repeat_buf[2];
+    snprintf(repeat_buf, 2, "%d", event->repeat);
+    path_key_value_dump(file_path, 'a', "repeat", repeat_buf);
+  }
+  for (size_t i = 0; i < event->alarms_counter; i++) {
+    str_list *alarm_time_parts = time_to_str_list(event->alarms[i]);
+    str_list_print(alarm_time_parts);
+    char alarm_time_buf[6];
+    snprintf(alarm_time_buf,
+        6,
+        "%s_%s",
+        str_list_get(alarm_time_parts, -3),
+        str_list_get(alarm_time_parts, -2));
+    char alarm_name[8];
+    snprintf(alarm_name, 8, "alarm_%d", i);
+    path_key_value_dump(file_path, 'a', alarm_name, alarm_time_buf);
+    str_list_free(alarm_time_parts);
+  }
 
   path_free(file_path);
   str_list_free(start_time_parts);
-  str_list_free(end_time_parts);
+  if (end_time_parts)
+    str_list_free(end_time_parts);
 }
+
+path *datetime_to_path(crud_list *clist, datetime_t dt, event_t *event) {
+  char iso_datetime[20];
+  snprintf(iso_datetime,
+      20,
+      "%04d-%02d-%02d",
+      event->start_time.year,
+      event->start_time.month,
+      event->start_time.day);
+  path *base_dir = path_init(iso_datetime);
+  path *full_base_dir = path_concat(clist->workdir->parent, base_dir);
+  if (!path_exists(full_base_dir))
+    path_mkdir(full_base_dir);
+  path_free(base_dir);
+  return full_base_dir;
+}
+
+void event_dump_repeats(crud_list *clist, event_t *event) {
+  if (!event->repeat)
+    return;
+  event_t base_event = *event;
+  int base_year = 0;
+  int base_month = 0;
+  int base_day = 0;
+  if (sscanf(clist->workdir->full_name,
+          "%d-%d-%d",
+          &base_year,
+          &base_month,
+          &base_day) == 3) {
+    base_event.start_time.year = (int16_t)base_year;
+    base_event.start_time.month = (int8_t)base_month;
+    base_event.start_time.day = (int8_t)base_day;
+    if (base_event.end_time_set) {
+      base_event.end_time.year = (int16_t)base_year;
+      base_event.end_time.month = (int8_t)base_month;
+      base_event.end_time.day = (int8_t)base_day;
+    }
+  }
+  if (event->repeat == REPEAT_DAILY)
+    for (size_t i = 0; i < MAX_REPEATS; i++) {
+      event_t new_event = base_event;
+      add_days(&new_event.start_time, (i + 1));
+      add_days(&new_event.end_time, (i + 1));
+      path *full_base_dir = datetime_to_path(clist,
+          new_event.start_time,
+          &new_event);
+      event_dump(clist, &new_event, full_base_dir);
+      path_free(full_base_dir);
+      event_attach_alarm(&new_event);
+    }
+  if (event->repeat == REPEAT_WEEKLY)
+    for (size_t i = 0; i < MAX_REPEATS; i++) {
+      event_t new_event = base_event;
+      add_weeks(&new_event.start_time, (i + 1));
+      add_weeks(&new_event.end_time, (i + 1));
+      path *full_base_dir = datetime_to_path(clist,
+          new_event.start_time,
+          &new_event);
+      event_dump(clist, &new_event, full_base_dir);
+      path_free(full_base_dir);
+      event_attach_alarm(&new_event);
+    }
+  if (event->repeat == REPEAT_MONTHLY)
+    for (size_t i = 0; i < MAX_REPEATS; i++) {
+      event_t new_event = base_event;
+      add_months(&new_event.start_time, (i + 1));
+      add_months(&new_event.end_time, (i + 1));
+      path *full_base_dir = datetime_to_path(clist,
+          new_event.start_time,
+          &new_event);
+      event_dump(clist, &new_event, full_base_dir);
+      path_free(full_base_dir);
+      event_attach_alarm(&new_event);
+    }
+  if (event->repeat == REPEAT_YEARLY)
+    for (size_t i = 0; i < MAX_REPEATS; i++) {
+      event_t new_event = base_event;
+      add_years(&new_event.start_time, (i + 1));
+      add_years(&new_event.end_time, (i + 1));
+      path *full_base_dir = datetime_to_path(clist,
+          new_event.start_time,
+          &new_event);
+      event_dump(clist, &new_event, full_base_dir);
+      path_free(full_base_dir);
+      event_attach_alarm(&new_event);
+    }
+}
+
+void event_attach_alarm(event_t *event) {}
 
 void edit_event(crud_list *clist, const char *event_data) {
-  path *event_path = get_item_path(clist, event_data);
-  str_list *fcontent = path_fread(event_path);
-  char *event_descr = str_list_concat(fcontent, NO_SEP);
-  str_list *slices = string_split(event_data, ' ');
-
-  char *alarm = str_list_get(slices, 0);
-  char *time = str_list_get(slices, 1);
-  char *name = str_list_get(slices, 2);
-
-  char event_details_buf[50];
-  snprintf(event_details_buf,
-      50,
-      "Name: %s\nTime: %s\nDescr: %s",
-      name,
-      time,
-      event_descr);
-
-  text_editor *event_editor = text_editor_launch(event_details_buf, false);
-  char *buf = text_editor_get_buf(event_editor);
-  free(buf);
-  text_editor_kill(event_editor);
-  path_free(event_path);
-  str_list_free(fcontent);
-  str_list_free(slices);
-  free(event_descr);
-}
+  print_info("Event edit not\nimplemented yet!");
+  return;
+} // todo: implement
 
 void save_event_alarm(crud_list *clist,
     const char *event_data,
@@ -322,63 +410,6 @@ void save_event_alarm(crud_list *clist,
   char *name = str_list_get(slices, 2);
 }
 
-void create_event_alarm(crud_list *clist, const char *event_data) {
-  str_list *alarm_options = str_list_init();
-  str_list_append(alarm_options, "30 min before");
-  str_list_append(alarm_options, "1 day before");
-  str_list_append(alarm_options, "1 week before");
-  str_list_append(alarm_options, "1 month before");
-  options_page *alarm_op_page = options_page_init("Select alarm option",
-      alarm_options);
-  char *time_before = options_page_launch(alarm_op_page);
-
-  str_list *alarm_repeat = str_list_init();
-  str_list_append(alarm_repeat, "No repeat");
-  str_list_append(alarm_repeat, "Repeat weekly");
-  str_list_append(alarm_repeat, "Repeat monthly");
-  str_list_append(alarm_repeat, "Repeat yearly");
-  options_page *alarm_repeat_page = options_page_init("Select a repeat type",
-      alarm_repeat);
-  char *time_repeat = options_page_launch(alarm_repeat_page);
-
-  path *event_path = get_item_path(clist, event_data);
-  str_list *fcontent = path_fread(event_path);
-  char *event_descr = str_list_concat(fcontent, NO_SEP);
-  str_list *slices = string_split(event_data, ' ');
-
-  char *alarm = str_list_get(slices, 0);
-  char *str_time = str_list_get(slices, 1);
-  char *name = str_list_get(slices, 2);
-
-  time_digits *event_time;
-  event_time->hour_tens = str_time[0];
-  event_time->hour_units = str_time[1];
-  event_time->minute_tens = str_time[3];
-  event_time->minute_units = str_time[4];
-  int8_t event_hour = event_time->hour_tens * 10 + event_time->hour_units;
-  int8_t event_minute = event_time->minute_tens * 10 +
-                        event_time->minute_units;
-
-  // if (strcmp(time_before, "30 min before") == 0) {
-
-  // }
-}
-
-char *flag_event(char *event_data) {
-  char *new_str;
-  if (strstr(event_data, EVENT_ALARM_OFF) != NULL) {
-    new_str = string_substring_replace(event_data,
-        EVENT_ALARM_OFF,
-        EVENT_ALARM_ON);
-    // create_event_alarm();
-  } else {
-    new_str = string_substring_replace(event_data,
-        EVENT_ALARM_ON,
-        EVENT_ALARM_OFF);
-  }
-  return new_str;
-}
-
 void delete_event(crud_list *clist, const char *event_data) {
   path *event_path = get_item_path(clist, event_data);
   delete_item_basic(clist, event_data);
@@ -387,7 +418,7 @@ void delete_event(crud_list *clist, const char *event_data) {
   str_list *events_on_this_day = path_listdir(day_folder);
   if (events_on_this_day->len == 0)
     path_rmtree(day_folder);
-  free(event_path);
+  path_free(event_path);
   str_list_free(events_on_this_day);
 }
 
@@ -409,6 +440,9 @@ void load_days_with_events(calendar_t *this_calendar) {
       this_calendar
           ->days_with_events[this_calendar->days_with_events_counter] = atoi(
           str_list_get(file_name_parts, 2));
+      printf("Day with event: %d\n",
+          this_calendar
+              ->days_with_events[this_calendar->days_with_events_counter]);
       this_calendar->days_with_events_counter++;
     }
     str_list_free(file_name_parts);
@@ -417,37 +451,6 @@ void load_days_with_events(calendar_t *this_calendar) {
   path_free(calendar_events_full_path);
   path_free(calendar_events_path);
   str_list_free(events_by_day);
-}
-
-static char *build_event_name_from_filename(const char *filename) {
-  str_list *parts = string_split(filename, ' ');
-  if (parts->len < 3) {
-    char *name = strdup(filename);
-    str_list_free(parts);
-    return name;
-  }
-
-  size_t total_len = 1;
-  for (integer i = 2; i < (integer)parts->len; i++) {
-    total_len += strlen(str_list_get(parts, i)) + 1;
-  }
-
-  char *name = malloc(total_len);
-  if (name == NULL) {
-    str_list_free(parts);
-    return strdup("");
-  }
-
-  name[0] = '\0';
-  for (integer i = 2; i < (integer)parts->len; i++) {
-    size_t offset = strlen(name);
-    if (i > 2 && offset + 1 < total_len)
-      name[offset++] = ' ';
-    snprintf(name + offset, total_len - offset, "%s", str_list_get(parts, i));
-  }
-
-  str_list_free(parts);
-  return name;
 }
 
 str_list *get_today_events(void) {
@@ -464,20 +467,6 @@ str_list *get_today_events(void) {
   int parsed_minute = 0;
   int parsed_second = 0;
   int parsed_year = 0;
-
-  if (sscanf(time_now,
-          "%15s %d %15s %d:%d:%d %d",
-          weekday_buf,
-          &parsed_day,
-          month_name_buf,
-          &parsed_hour,
-          &parsed_minute,
-          &parsed_second,
-          &parsed_year) != 7) {
-    printf("NOTHING TO DO: Failed to parse current date from RTC: %s\n",
-        time_now);
-    return today_events;
-  }
 
   current_day = (int8_t)parsed_day;
   current_year = (int16_t)parsed_year;
@@ -506,12 +495,7 @@ str_list *get_today_events(void) {
     current_month = 11;
   } else if (strcmp(month_name_buf, "December") == 0) {
     current_month = 12;
-  } else {
-    printf("NOTHING TO DO: Unsupported month in RTC string: %s\n",
-        month_name_buf);
-    return today_events;
   }
-
   char today_str[11];
   snprintf(today_str,
       sizeof(today_str),
@@ -536,7 +520,7 @@ str_list *get_today_events(void) {
   }
 
   str_list *event_files = path_listdir(today_events_path);
-  for (uinteger i = 0; i < event_files->len; i++) {
+  for (size_t i = 0; i < event_files->len; i++) {
     char *event_file_name = str_list_get(event_files, i);
     path *event_file_name_path = path_init(event_file_name);
     path *event_file_path = path_concat(today_events_path,
@@ -549,7 +533,11 @@ str_list *get_today_events(void) {
 
     event_t event;
     memset(&event, 0, sizeof(event));
-    event.name = build_event_name_from_filename(event_file_name);
+    str_list *event_file_name_parts = string_split(event_file_name, ' ');
+    char *display_name = strdup(str_list_get(event_file_name_parts, 1));
+    event.name = display_name;
+    str_list_free(event_file_name_parts);
+
     event.description = description ? description : "";
 
     event.end_time_set = (end_time_value != NULL);
@@ -598,7 +586,7 @@ str_list *get_today_events(void) {
 
     str_list_append(today_events, display_buf);
 
-    free((char *)event.name);
+    free(display_name);
     free(description);
     free(start_time_value);
     free(end_time_value);

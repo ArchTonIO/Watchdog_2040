@@ -320,8 +320,8 @@ void build_current_day_indicator(calendar_t *this_calendar) {
 
 void build_event_indicator(calendar_t *this_calendar, uint8_t day) {
   uint8_t dotw_day1 = get_dotw_from_date(1,
-      this_calendar->actual_month,
-      this_calendar->actual_year);
+      this_calendar->selected_month,
+      this_calendar->selected_year);
   uint8_t visual_index = day + dotw_day1;
   uint8_t col = visual_index % 7;
   uint8_t row = visual_index / 7;
