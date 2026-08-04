@@ -346,6 +346,18 @@ void update_texts() {
       .posy = 7,
       .is_inverted = false};
 
+  float mcu_temp = get_cpu_temp();
+  char temp_buf[8];
+  snprintf(temp_buf, sizeof(temp_buf), "%.0f C", mcu_temp);
+  text_area temp_title = {.text = "MCU",
+      .posx = 13,
+      .posy = 3,
+      .is_inverted = false};
+  text_area temp_text = {.text = temp_buf,
+      .posx = 13,
+      .posy = 4,
+      .is_inverted = false};
+
   if (!home_page_inst->show_today_events ||
       home_page_inst->today_events->len == 0) {
     char *weekday = from_dotw_to_weekday(
@@ -384,6 +396,8 @@ void update_texts() {
     layer_add_text_area(text_areas_ly, ulmp_addr_text);
     layer_add_text_area(text_areas_ly, sram_text);
     layer_add_text_area(text_areas_ly, used_ram_text);
+    layer_add_text_area(text_areas_ly, temp_title);
+    layer_add_text_area(text_areas_ly, temp_text);
     return;
   }
   if (home_page_inst->show_today_events &&
