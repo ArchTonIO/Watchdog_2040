@@ -182,7 +182,7 @@ DEFINE_LAUNCHER(terminal_launcher,
     {"Embedded CLI", cli_icon, embedded_cli_launch},
     {"Serial CLI", serial_cli_icon, serial_cli_launch}, )
 
-void terminal_app_launch() { launcher_start(&terminal_launcher); }
+void terminal_app_launch() { launcher_start_tui(&terminal_launcher); }
 
 void embedded_cli_launch() {
   if (!request_password())

@@ -19,7 +19,7 @@ DEFINE_LAUNCHER(flashlight_app_launcher,
     {"Screen", scr_light_icon, scr_flashlight_launch},
     {"Led", led_light_icon, led_flashlight_launch}, )
 
-void flashlight_launch() { launcher_start(&flashlight_app_launcher); }
+void flashlight_launch() { launcher_start_tui(&flashlight_app_launcher); }
 
 void init_flashlight() {
   gpio_init(FLASH_LED_PIN);

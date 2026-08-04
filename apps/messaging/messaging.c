@@ -22,5 +22,7 @@ DEFINE_LAUNCHER(notifications_launcher,
         disable_notifications_icon,
         disable_message_notifications})
 
-void messaging_launch() { launcher_start(&messaging_launcher); }
-void notifications_menu_launch() { launcher_start(&notifications_launcher); }
+void messaging_launch() { launcher_start_tui(&messaging_launcher); }
+void notifications_menu_launch() {
+  launcher_start_tui(&notifications_launcher);
+}

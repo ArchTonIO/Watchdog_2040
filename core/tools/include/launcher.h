@@ -7,7 +7,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "core/graphics/include/layout.h"
+
 #define MAX_APPS 50
+
+#define GUI_MAX_PAGES 8
+#define GUI_APPS_PER_PAGE 6
+#define GUI_APPS_PER_ROW 3
+#define GUI_APPS_PER_COLUMN 2
 
 typedef struct {
   char *name;
@@ -21,6 +28,12 @@ typedef struct {
   application applications[MAX_APPS];
 } launcher;
 
+typedef struct {
+  layout *gui_layout;
+  uint8_t selected_button;
+  uint8_t selected_page;
+} launcher_gui;
+
 #define LAUNCHER_INIT(NAME)                                                   \
   {                                                                           \
     NAME, 0, { 0 }                                                            \
@@ -30,7 +43,8 @@ void launcher_add_application(launcher *self,
     char *name,
     const uint8_t *icon,
     void (*entry_point)(void));
-void launcher_start(launcher *self);
+void launcher_start_tui(launcher *self);
+void launcher_start_gui(launcher *self);
 
 #define DEFINE_LAUNCHER(VAR_NAME, TITLE, ...)                                 \
   launcher VAR_NAME = LAUNCHER_INIT(TITLE);                                   \

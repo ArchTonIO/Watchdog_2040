@@ -50,10 +50,6 @@ apps/calendar/event_creation_gui.c
 apps/calendar/event.c
 apps/calendar/utils.c
 
-## drawing board ##
-apps/drawing_board/bitmaps.c
-apps/drawing_board/board.c
-
 ## flashlight ##
 apps/flashlight/bitmaps.c
 apps/flashlight/flashlight.c

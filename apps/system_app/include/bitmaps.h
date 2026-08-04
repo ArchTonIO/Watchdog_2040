@@ -16,5 +16,6 @@ extern const uint8_t manual_brightness_icon[8];
 extern const uint8_t enable_haptic_icon[8];
 extern const uint8_t disable_haptic_icon[8];
 extern const uint8_t *brightness_bar[11];
+extern const uint8_t system_app_icon_big[];
 
 #endif

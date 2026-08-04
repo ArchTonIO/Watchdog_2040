@@ -18,5 +18,6 @@ extern const uint8_t set_timedate_incr[];
 extern const uint8_t set_timedate_decr[];
 extern const uint8_t set_timedate_leftmost[];
 extern const uint8_t set_timedate_rigthmost[];
+extern const uint8_t time_icon_big[];
 
 #endif

@@ -4,5 +4,6 @@
 #include <stdint.h>
 
 extern const uint8_t todo_icon[8];
+extern const uint8_t todo_icon_big[];
 
 #endif

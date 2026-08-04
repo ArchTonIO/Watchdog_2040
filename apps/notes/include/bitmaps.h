@@ -4,5 +4,6 @@
 #include <stdint.h>
 
 extern const uint8_t notes_icon[8];
+extern const uint8_t notes_icon_big[];
 
 #endif

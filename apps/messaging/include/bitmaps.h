@@ -12,5 +12,6 @@ extern const uint8_t scan_contacts_icon[8];
 extern const uint8_t notifications_icon[8];
 extern const uint8_t enable_notifications_icon[8];
 extern const uint8_t disable_notifications_icon[8];
+extern const uint8_t messaging_icon_big[];
 
 #endif

@@ -6,5 +6,6 @@
 extern const uint8_t cli_icon[8];
 extern const uint8_t serial_cli_icon[8];
 extern const uint8_t serial_cli[];
+extern const uint8_t terminal_icon_big[];
 
 #endif

@@ -5,9 +5,8 @@
 
 #include "apps/AQI/include/aqi.h"
 #include "apps/AQI/include/bitmaps.h"
+#include "apps/calendar/include/bitmaps.h"
 #include "apps/calendar/include/calendar.h"
-#include "apps/drawing_board/include/bitmaps.h"
-#include "apps/drawing_board/include/board.h"
 #include "apps/flashlight/include/bitmaps.h"
 #include "apps/flashlight/include/flashlight.h"
 #include "apps/messaging/include/bitmaps.h"
@@ -32,16 +31,16 @@ void display_malloc_menu();
 
 DEFINE_LAUNCHER(main_launcher,
     "Apps",
-    {"Time", set_time_icon, time_launch},
-    {"Air quality", AQI_icon, aqi_launch},
-    {"Messaging", ulmp_icon, messaging_launch},
-    {"Terminal", cli_icon, terminal_app_launch},
-    {"Notes", notes_icon, notes_launch},
-    {"Todo", todo_icon, todo_launch},
-    {"Password manager", password_manager_icon, password_manager_launch},
-    {"Calendar", drawing_board_icon, calendar_launch},
-    {"Flashlight", flashlight_icon, flashlight_launch},
-    {"System", qfn_package_icon, system_app_launch}, )
+    {"Time", time_icon_big, time_launch},
+    {"Air quality", aqi_icon_big, aqi_launch},
+    {"Messaging", messaging_icon_big, messaging_launch},
+    {"Terminal", terminal_icon_big, terminal_app_launch},
+    {"Calendar", calendar_icon_big, calendar_launch},
+    {"Notes", notes_icon_big, notes_launch},
+    {"Todo", todo_icon_big, todo_launch},
+    {"Password manager", password_manager_icon_big, password_manager_launch},
+    {"Flashlight", flashlight_icon_big, flashlight_launch},
+    {"System", system_app_icon_big, system_app_launch}, )
 
 DEFINE_LAUNCHER(tutorial_launcher,
     "Tutorial",
@@ -54,5 +53,5 @@ DEFINE_LAUNCHER(tutorial_launcher,
     {"Entry 6", NO_ICON, display_tutorial_page},
     {"Entry 7", NO_ICON, display_tutorial_page})
 
-void display_main_menu() { launcher_start(&main_launcher); }
-void display_tutorial_menu() { launcher_start(&tutorial_launcher); }
+void display_main_menu() { launcher_start_gui(&main_launcher); }
+void display_tutorial_menu() { launcher_start_tui(&tutorial_launcher); }

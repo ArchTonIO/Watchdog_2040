@@ -94,4 +94,6 @@ extern const uint8_t *months_bitmaps[12];
 extern const uint8_t *year_digit_bitmaps[10];
 extern const uint8_t *dotw_bitmaps[7];
 
+extern const uint8_t calendar_icon_big[];
+
 #endif

@@ -16,4 +16,4 @@ DEFINE_LAUNCHER(time_launcher,
     {"Stopwatch", stopwatch_icon, stopwatch_launch},
     {"Timer", timer_icon, timer_launch})
 
-void time_launch() { launcher_start(&time_launcher); }
+void time_launch() { launcher_start_tui(&time_launcher); }

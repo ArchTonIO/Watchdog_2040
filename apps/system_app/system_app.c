@@ -160,7 +160,7 @@ void system_settings_launch() {
   system_settings_dump(settings);
 }
 
-void system_app_launch() { launcher_start(&system_app_launcher); }
+void system_app_launch() { launcher_start_tui(&system_app_launcher); }
 
 void display_system_info_wrapped() { display_system_info(false); }
 

@@ -1077,7 +1077,7 @@ DEFINE_LAUNCHER(main_launcher,
 
 // Usage in your code
 void display_main_menu() {
-  launcher_start(&main_launcher);  // Automatically handles everything!
+  launcher_start_tui(&main_launcher);  // Automatically handles everything!
 }
 ```
 
@@ -1094,7 +1094,7 @@ void create_game_launcher() {
   launcher_add_application(games, "Tetris", tetris_icon, tetris_game_launch);
   
   // Start launcher
-  launcher_start(games);
+  launcher_start_tui(games);
   
   // Cleanup (optional - handled automatically for DEFINE_LAUNCHER)
   launcher_free(games);
@@ -1127,7 +1127,7 @@ extern const uint8_t my_app_icon[8];
 - `DEFINE_LAUNCHER(name, title, ...)` - Macro to declaratively define a launcher
 - `launcher_init(char *name)` - Initialize launcher programmatically
 - `launcher_add_application(launcher *self, char *name, const uint8_t *icon, void (*entry_point)(void))` - Add an app
-- `launcher_start(launcher *self)` - Display launcher and handle selection
+ `launcher_start_tui(launcher *self)` - Display launcher and handle selection
 - `launcher_free(launcher *self)` - Cleanup memory
 
 ##### Integration Patterns
