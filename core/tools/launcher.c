@@ -86,7 +86,6 @@ void launcher_start_tui(launcher *self) {
 
 void launcher_start_gui(launcher *self) {
   /* creating app name label */
-
   text_area app_name = {.text = self->applications[0].name,
       .posx = 0,
       .posy = 0,
@@ -146,6 +145,7 @@ void launcher_start_gui(launcher *self) {
 
   /* navigate and select */
   ssd1306_clear(&(drivers->ssd1306));
+  haptic_auto_pulse();
   sleep_ms(200);
   while (true) {
     joystick_update(&(drivers->joystick));

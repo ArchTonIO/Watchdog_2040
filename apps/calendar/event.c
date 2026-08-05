@@ -465,6 +465,19 @@ str_list *get_today_events(void) {
   int parsed_second = 0;
   int parsed_year = 0;
 
+  if (sscanf(time_now,
+          "%15s %d %15s %d:%d:%d %d",
+          weekday_buf,
+          &parsed_day,
+          month_name_buf,
+          &parsed_hour,
+          &parsed_minute,
+          &parsed_second,
+          &parsed_year) != 7) {
+    printf("[ERROR]: Failed to parse current date from RTC: %s\n", time_now);
+    return today_events;
+  }
+
   current_day = (int8_t)parsed_day;
   current_year = (int16_t)parsed_year;
 
