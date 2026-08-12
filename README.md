@@ -1,6 +1,8 @@
 <!-- markdownlint-disable MD024 -->
 # Watchdog_2040
 
+![alt-text](doc_images/WD_2040.png)
+
 ## Aims
 
 Building a **functional** piece of wearable technology, featuring:
@@ -34,6 +36,7 @@ Building a **functional** piece of wearable technology, featuring:
   - [Battery and power path](#battery-and-power-path)
   - [Peripherals](#peripherals)
     - [Notes](#notes)
+  - [Design files](#design-files)
 - [Firmware](#firmware)
   - [Project overview](#project-overview)
   - [Core - layer 0: the hardware drivers and their management](#core---layer-0-the-hardware-drivers-and-their-management)
@@ -96,6 +99,13 @@ With very low skills in embedded C and PCB prototyping I built them along the wa
 
 ## Hardware
 
+A 60*40 mm PCB hosts all the need components and connectors to make the device work.
+
+![alt text](doc_images/bear_PCB.jpg)
+![alt text](doc_images/assembled_PCB.jpg)
+*Naked and assembled PCB.*
+
+
 ### Microcontroller choice
 
 The microcontroller I've chosen for this project is - quite obviously as the name suggests - the `Raspberry Pi RP2040`.
@@ -136,6 +146,31 @@ flowchart LR
 ```
 *Diagram 1 – Power path overview*
 
+### Quick board overview
+
+![alt text](doc_images/board_overview.jpg)
+![alt text](doc_images/board_back_overview.jpg)
+
+**`Front`**
+
+- `yellow`: **Micrcocontroller and crystal oscillator**
+
+- `blue`: **USB-C receptacle and terminating series resistors**
+
+- `red`: **MCP73871 battery charger and power path management IC**
+
+- `purple`: **Analog section (mosfet, joystick connector, photoresistor on the left)**
+
+- `orange`: **DS3231 RTC**
+
+**`Back`**
+
+- **haptic motor and CR1220 RTC battery**
+
+
+
+
+
 ### Peripherals
 
 The device is equipped with the following peripherals:
@@ -156,6 +191,9 @@ The device is equipped with the following peripherals:
 | `Haptics motor`                 | Digital output                         | Haptic feedback                                            | THT     | SINGLE COMPONENT        | SOLDERED        | NO                       | NO            |
 *Table 1 – Peripherals overview*
 
+![alt text](doc_images/assembled.jpg)
+*Pheripherals visible on top of the PCB assembly.*
+
 #### Notes
 
 Components marked as *MODULE* are pre-built modules that can be easily found on the market, while components marked as *SINGLE COMPONENT* are single electronic components that need to be soldered and connected together to work.
@@ -164,7 +202,13 @@ Components marked as *SOCKET* are connected to the main board through a socket, 
 
 Components marked as *HOT SWAPPABLE* can be replaced without powering off the device, while components not marked as such should be replaced with the device powered off to avoid damage.
 
-photos here
+### Design files
+
+Gerber files can be found as a zip in [Gerber_Watchdog_2040_V1.0_REV5.zip](Gerber_Watchdog_2040_V1.0_REV5.zip)
+
+3D files can be found as .STL and .3dm files as a zip in [3D_files.zip](3D_files.zip), the .3dm files can be opened with [Rhinoceros 3D](https://www.rhino3d.com/), while the .STL files can be opened with any 3D viewer or slicer software.
+
+Icons PNG's can be found as a zip in [Watchdog_2040_PNGs.zip](Watchdog_2040_PNGs.zip)
 
 ## Firmware
 
