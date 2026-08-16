@@ -183,9 +183,6 @@ void create_or_overwrite_item(crud_list *list,
  * @param item_name The name of the item to delete.
  */
 void delete_item_basic(crud_list *list, const char *item_name) {
-  // char print_buf[50];
-  // snprintf(print_buf, 30, "Deleting\n%s...", item_name);
-  // print_loading(print_buf);
   path *item_path = get_item_path(list, item_name);
   if (list->create_as_dir)
     path_rmtree(item_path);

@@ -71,6 +71,10 @@ void terminal_bind_std_commands(terminal *term) {
       create_command("reboot", "Reboot the device.", __reboot__));
   terminal_add_command(term,
       create_command("bootsel", "Reboot to BOOTSEL mode.", __bootsel__));
+  terminal_add_command(term,
+      create_command("pwd_man",
+          "Launch the password manager via CLI",
+          __pwd_man__));
 }
 
 void terminal_add_command(terminal *term, command cmd) {
@@ -206,6 +210,10 @@ void embedded_cli_launch() {
 void serial_cli_launch() {
   terminal *term = terminal_init();
   terminal_bind_std_commands(term);
+  printf("commands are\n");
+  for (size_t i = 0; i < term->commands_count; i++) {
+    printf("%s\n", term->commands[i].name);
+  }
   terminal_update_prefix(term);
   char buf[40];
   snprintf(buf, 40, "%s ser pwd_required", term->prefix);

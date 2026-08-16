@@ -70,6 +70,7 @@ apps/notes/notes.c
 apps/pwd_manager/aes_ctr.c
 apps/pwd_manager/bitmaps.c
 apps/pwd_manager/key.c
+apps/pwd_manager/pwd_manager_cli.c
 apps/pwd_manager/pwd_manager.c
 
 ## system app ##

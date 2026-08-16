@@ -36,6 +36,16 @@ bool request_password() {
   return true;
 }
 
+bool is_password_ok(char *password) {
+  char *hashed = get_hash(password);
+  if (strcmp(hashed, malloc_memories_inst->user_password_hashed) != 0) {
+    free(hashed);
+    return false;
+  }
+  free(hashed);
+  return true;
+}
+
 bool request_and_get_password(char return_buf[]) {
   text_editor *pwd_editor = text_editor_launch("#Enter your password", true);
   char *buf = text_editor_get_buf(pwd_editor);
@@ -152,6 +162,13 @@ uint16_t array_find_min(uint16_t *array, size_t len) {
     if (array[i] < min)
       min = array[i];
   return min;
+}
+
+float array_find_avg(float *array, size_t len) {
+  float sum = 0;
+  for (uint8_t i = 0; i < len; i++)
+    sum += array[i];
+  return sum / len;
 }
 
 bool is_string_numeric(const char *str) {

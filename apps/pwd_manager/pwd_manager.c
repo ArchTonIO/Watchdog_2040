@@ -21,7 +21,6 @@
 
 encrypt_fields encrypt;
 
-void init_encrypt_fields(crud_list *list);
 void register_new_service(crud_list *list);
 void edit_service_credentials(crud_list *list, const char *service_name);
 int hex_string_to_bytes(const char *str, uint8_t *out, size_t max_len);
@@ -29,7 +28,9 @@ void encrypt_and_save_credentials(crud_list *list,
     const char *service_name,
     char *username,
     char *password);
-void delete_service_credentials(char *service_name);
+void encrypt_and_save_credentials_cli(path *service_path,
+    char *username,
+    char *password);
 
 void password_manager_launch() {
   crud_list list;
@@ -41,13 +42,25 @@ void password_manager_launch() {
   list.read_update_callback = edit_service_credentials;
   list.delete_callback = delete_item_basic;
   list.flag_callback = NULL;
-  init_encrypt_fields(&list);
+  init_encrypt_fields(false);
+  launch_crud_list(&list);
 }
 
-void init_encrypt_fields(crud_list *list) {
+bool init_encrypt_fields(bool cli) {
   char pwd_buf[30];
-  if (!request_and_get_password(pwd_buf)) {
-    return;
+  if (cli) {
+    char pwd_cli_buf[64];
+    printf("Master password: ");
+    fgets(pwd_cli_buf, sizeof(pwd_cli_buf), stdin);
+    char *pwd_buf_nlfd = string_remove_linefeed(pwd_cli_buf);
+    strcpy(pwd_buf, pwd_buf_nlfd);
+    free(pwd_buf_nlfd);
+    if (!is_password_ok(pwd_buf)) {
+      printf("Wrong password !\n");
+      return false;
+    }
+  } else if (!request_and_get_password(pwd_buf)) {
+    return false;
   }
   encrypt.master_password = pwd_buf;
   uint8_t *master_password_as_uint = (uint8_t *)encrypt.master_password;
@@ -59,7 +72,118 @@ void init_encrypt_fields(crud_list *list) {
       strlen(encrypt.master_password),
       encrypt.salt,
       8);
-  launch_crud_list(list);
+  return true;
+}
+
+void edit_service_credentials_cli(const char *service_name) {
+  path *temp_fpath = path_init(service_name);
+  path *fpath = path_concat(sys_paths->dirs->pwd_manager_path, temp_fpath);
+  str_list *file_content = path_fread(fpath);
+  str_list *parts = string_split(str_list_get(file_content, 0), '|');
+
+  char *username = str_list_get(parts, 0);
+  char *encrypted_password = str_list_get(parts, 1);
+  char *nonce = str_list_get(parts, 2);
+  uint8_t encrypted_password_as_uint[MAX_PASSWORD_LENGTH];
+  uint8_t nonce_as_uint[KEY_SIZE];
+
+  size_t password_len = (strlen(encrypted_password) + 1) / 3;
+
+  hex_string_to_bytes(encrypted_password,
+      encrypted_password_as_uint,
+      password_len);
+  hex_string_to_bytes(nonce, nonce_as_uint, KEY_SIZE);
+
+  uint8_t round_keys[176];
+  aes128_key_expand(encrypt.key, round_keys);
+  aes128_ctr_crypt(encrypted_password_as_uint,
+      password_len,
+      round_keys,
+      nonce_as_uint);
+
+  encrypted_password_as_uint[password_len] = '\0';
+
+  size_t text_len = (strlen(username) + password_len +
+                     strlen("Username: Password: ") + 4);
+  char text[text_len];
+  snprintf(text,
+      text_len,
+      "Username: %s\n\nPassword: %s",
+      username,
+      (char *)encrypted_password_as_uint);
+  printf("%s", text);
+  memset(encrypted_password_as_uint, 0, password_len);
+  path_free(temp_fpath);
+  path_free(fpath);
+  str_list_free(file_content);
+  str_list_free(parts);
+
+  return;
+}
+
+void update_service_credentials_cli(const char *service_name) {
+  path *temp_fpath = path_init(service_name);
+  path *fpath = path_concat(sys_paths->dirs->pwd_manager_path, temp_fpath);
+  if (!path_exists(fpath)) {
+    printf("Service not found: %s\n", service_name);
+    path_free(temp_fpath);
+    path_free(fpath);
+    return;
+  }
+
+  char buf[64];
+  printf("New username for %s:", service_name);
+  fgets(buf, sizeof(buf), stdin);
+  char *username = strdup(buf);
+  char *username_nlfd = string_remove_linefeed(username);
+
+  printf("New password for %s:", service_name);
+  fgets(buf, sizeof(buf), stdin);
+  char *password = strdup(buf);
+  char *password_nlfd = string_remove_linefeed(password);
+
+  if (strlen(username_nlfd) > MAX_USERNAME_LENGTH) {
+    printf("Username too long! Max length is %d chars\n", MAX_USERNAME_LENGTH);
+    free(username);
+    free(password);
+    free(username_nlfd);
+    free(password_nlfd);
+    path_free(temp_fpath);
+    path_free(fpath);
+    return;
+  }
+
+  if (strlen(password_nlfd) > MAX_PASSWORD_LENGTH) {
+    printf("Password too long! Max length is %d chars\n", MAX_PASSWORD_LENGTH);
+    free(username);
+    free(password);
+    free(username_nlfd);
+    free(password_nlfd);
+    path_free(temp_fpath);
+    path_free(fpath);
+    return;
+  }
+
+  if (strstr(password_nlfd, " ")) {
+    printf("Blank spaces not allowed!\n");
+    free(username);
+    free(password);
+    free(username_nlfd);
+    free(password_nlfd);
+    path_free(temp_fpath);
+    path_free(fpath);
+    return;
+  }
+
+  encrypt_and_save_credentials_cli(fpath, username_nlfd, password_nlfd);
+  printf("Credentials updated for %s\n", service_name);
+
+  free(username);
+  free(password);
+  free(username_nlfd);
+  free(password_nlfd);
+  path_free(temp_fpath);
+  path_free(fpath);
 }
 
 void edit_service_credentials(crud_list *list, const char *service_name) {
@@ -134,6 +258,7 @@ void delete_service_credentials(char *service_name) {
   path_fdelete(full_service_path);
   path_free(service_path);
   path_free(full_service_path);
+  printf("Successfully deleted service %s credentials", service_name);
 }
 
 void populate_nonce(encrypt_fields *encrypt) {
@@ -181,6 +306,64 @@ int hex_string_to_bytes(const char *str, uint8_t *out, size_t max_len) {
   }
 
   return count;
+}
+
+void register_new_service_cli() {
+  char buf[64];
+
+  printf("Service name: ");
+  fgets(buf, sizeof(buf), stdin);
+  char *service_name = strdup(buf);
+  char *service_name_nlfd = string_remove_linefeed(service_name);
+  path *temp_fpath = path_init(service_name_nlfd);
+  path *fpath = path_concat(sys_paths->dirs->pwd_manager_path, temp_fpath);
+  if (path_exists(fpath)) {
+    printf("A service with this name already exists!");
+    path_free(temp_fpath);
+    path_free(fpath);
+    free(service_name);
+    free(service_name_nlfd);
+    return;
+  }
+
+  printf("Username for %s:", service_name_nlfd);
+  fgets(buf, sizeof(buf), stdin);
+  char *username = strdup(buf);
+  char *username_nlfd = string_remove_linefeed(username);
+
+  printf("Password for %s:", service_name_nlfd);
+  fgets(buf, sizeof(buf), stdin);
+  char *password = strdup(buf);
+  char *password_nlfd = string_remove_linefeed(password);
+  if (strstr(password_nlfd, " ")) {
+    printf("Blank spaces not allowed!");
+    free(service_name);
+    free(username);
+    free(password);
+    free(service_name_nlfd);
+    free(username_nlfd);
+    free(password_nlfd);
+    path_free(temp_fpath);
+    path_free(fpath);
+    return;
+  }
+
+  encrypt_and_save_credentials_cli(fpath, username_nlfd, password_nlfd);
+  printf("Username and ecnrypted password saved for %s\n", service_name_nlfd);
+  free(service_name);
+  free(username);
+  free(password);
+  free(service_name_nlfd);
+  free(username_nlfd);
+  free(password_nlfd);
+  path_free(temp_fpath);
+  path_free(fpath);
+}
+
+void get_all_services_cli() {
+  str_list *services = path_listdir(sys_paths->dirs->pwd_manager_path);
+  for (size_t i = 0; i < services->len; i++)
+    printf("Service: %s\n", str_list_get(services, i));
 }
 
 void register_new_service(crud_list *list) {
@@ -236,6 +419,30 @@ void register_new_service(crud_list *list) {
   free(service_name);
   free(username);
   free(password);
+}
+
+void encrypt_and_save_credentials_cli(path *service_path,
+    char *username,
+    char *password) {
+  populate_nonce(&encrypt);
+  uint8_t round_keys[176];
+  aes128_key_expand(encrypt.key, round_keys);
+  aes128_ctr_crypt((uint8_t *)password,
+      strlen(password),
+      round_keys,
+      encrypt.nonce);
+
+  char chipher_text[MAX_PASSWORD_LENGTH * 3 + 1];
+  bytes_to_hex_string((uint8_t *)password, strlen(password), chipher_text);
+
+  char nonce_text[KEY_SIZE * 3 + 1];
+  bytes_to_hex_string(encrypt.nonce, sizeof(encrypt.nonce), nonce_text);
+
+  size_t buf_len = strlen(username) + strlen(chipher_text) +
+                   strlen(nonce_text) + 3;
+  char buf[buf_len];
+  snprintf(buf, buf_len, "%s|%s|%s", username, chipher_text, nonce_text);
+  path_fwrite(service_path, buf, 'w');
 }
 
 void encrypt_and_save_credentials(crud_list *list,

@@ -346,9 +346,12 @@ void update_texts() {
       .posy = 7,
       .is_inverted = false};
 
-  float mcu_temp = get_cpu_temp();
-  char temp_buf[8];
-  snprintf(temp_buf, sizeof(temp_buf), "%.0f C", mcu_temp);
+  float cpu_temps[10];
+  for (size_t i = 0; i < 10; i++)
+    cpu_temps[i] = get_cpu_temp();
+  float avg_temp = array_find_avg(cpu_temps, 10);
+  static char temp_buf[8];
+  snprintf(temp_buf, sizeof(temp_buf), "%.0f C", avg_temp);
   text_area temp_title = {.text = "MCU",
       .posx = 13,
       .posy = 3,

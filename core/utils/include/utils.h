@@ -18,6 +18,7 @@ void wait_for_serial_input();
 /*User input functions*/
 bool request_password();
 bool request_and_get_password(char return_buf[]);
+bool is_password_ok(char *password);
 
 /*Logging functions*/
 void print_info(const char *message);
@@ -29,6 +30,7 @@ void print_loading(const char *message);
 /*Array helpers*/
 uint16_t array_find_max(uint16_t *array, size_t len);
 uint16_t array_find_min(uint16_t *array, size_t len);
+float array_find_avg(float *array, size_t len);
 
 /*Strings helpers*/
 bool is_string_numeric(const char *str);

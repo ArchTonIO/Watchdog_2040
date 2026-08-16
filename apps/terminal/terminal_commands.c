@@ -15,6 +15,7 @@
 #include "pico/stdio_usb.h"
 #include "pico/time.h"
 
+#include "apps/pwd_manager/include/pwd_manager_cli.h"
 #include "apps/system_app/include/system_app.h"
 #include "apps/terminal/include/bitmaps.h"
 #include "apps/text_editor/include/text_editor.h"
@@ -704,6 +705,11 @@ int8_t __history__(command_params params) {
   strcpy(params.term->stdout_buf, history_content);
   terminal_display_stdout(params.term);
   free(history_content);
+  return 0;
+}
+
+int8_t __pwd_man__(command_params params) {
+  password_manager_launch_cli();
   return 0;
 }
 

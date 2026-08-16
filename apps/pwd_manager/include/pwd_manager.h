@@ -9,6 +9,7 @@
 #define MAX_USERNAME_LENGTH 32
 #define MAX_PASSWORD_LENGTH 32
 
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef struct {
@@ -25,5 +26,13 @@ typedef struct {
   uint8_t nonce[KEY_SIZE];
 } encrypt_fields;
 
+bool init_encrypt_fields(bool cli);
+void register_new_service_cli();
+void edit_service_credentials_cli(const char *service_name);
+void update_service_credentials_cli(const char *service_name);
+void get_all_services_cli();
+void delete_service_credentials(char *service_name);
+
 void password_manager_launch();
+
 #endif
