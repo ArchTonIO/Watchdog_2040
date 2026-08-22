@@ -306,7 +306,7 @@ void malloc_asks_your_name() {
       "Ma veniamo al\n"
       "tuo nome:\n"
       "Come vuoi essere\n"
-      "chiamato?",
+      "chiamato/a?",
       4,
       0,
       0);
@@ -858,8 +858,8 @@ void malloc_explains_rxcontinuous() {
       "e' disattivato.\n"
       "Puoi spegnerlo\n"
       "o accenderlo\n"
-      "premendo il\n"
-      "joystick",
+      "accedendo alla\n"
+      "barra di sistema.",
       4,
       0,
       0);
@@ -873,8 +873,10 @@ void malloc_explains_rxcontinuous() {
       16,
       false);
   ssd1306_print_gradually(&(drivers->ssd1306),
-      "Quando sei\n"
-      "nella home page",
+      "La trovi andando\n"
+      "giu col joystick\n"
+      "quando sei nella\n"
+      "home page.",
       4,
       0,
       0);
